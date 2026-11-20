@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>투지</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap">
+<style>
+:root{
+  /* 레이아웃: 한 손 폰 화면 한 칼럼, 두꺼운 먹선과 딱딱한 그림자의 스티커 느낌 */
+  --ground:#C9F2DC;
+  --ink:#1D1B26;
+  --paper:#FFFDF5;
+  --pink:#FF5D8F;
+  --sun:#FFD23F;
+  --board:#F6C177;
+  --ban:#C4002B;
+  --muted:#4A4756;
+  --live:#2FBF71;
+  --display:'Jua','Noto Sans KR',system-ui,sans-serif;
+  --body:'Noto Sans KR',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-weight:500;font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.app{max-width:492px;margin:0 auto;padding:20px 16px 32px;display:flex;flex-direction:column;gap:16px}
+.view[hidden]{display:none}
+.view{display:flex;flex-direction:column;gap:16px}
+
+.sticker{background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.btn{min-height:50px;padding:0 18px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:4px 4px 0 var(--ink);font-family:var(--display);font-size:19px;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.sun{background:var(--sun)}
+.btn.pink{background:var(--pink)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* 홈 */
+.logo{display:flex;align-items:center;gap:12px}
+.logo h1{margin:0;font-family:var(--display);font-weight:400;font-size:52px;line-height:1;letter-spacing:1px}
+.logo .tag{margin-left:auto;display:flex;align-items:center;gap:6px;padding:5px 12px;border:3px solid var(--ink);border-radius:999px;background:var(--paper);font-family:var(--display);font-size:15px;transform:rotate(4deg);white-space:nowrap}
+.logo .tag i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);background:var(--sun)}
+.logo .tag.ok i{background:var(--live)}
+.logo .tag.off i{background:var(--muted)}
+.pair{display:flex;margin-right:2px}
+.mini{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink)}
+.mini.b{background:radial-gradient(circle at 36% 42%,#fff 0 9%,transparent 10%),radial-gradient(circle at 64% 42%,#fff 0 9%,transparent 10%),var(--ink)}
+.mini.w{margin-left:-10px;background:radial-gradient(circle at 36% 42%,var(--ink) 0 9%,transparent 10%),radial-gradient(circle at 64% 42%,var(--ink) 0 9%,transparent 10%),var(--paper)}
+.sub{margin:0;color:var(--muted)}
+.vs{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vs .who{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.vs .name{font-family:var(--display);font-size:24px}
+.vs .score{font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.vs .mid{font-family:var(--display);font-size:22px;color:var(--pink);transform:rotate(-8deg)}
+.me{padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.me span{font-family:var(--display);font-size:18px}
+.seg{display:flex;gap:8px;margin-left:auto}
+.seg button{min-height:44px;padding:0 16px;border:3px solid var(--ink);border-radius:999px;background:var(--paper);font-family:var(--display);font-size:17px}
+.seg button[aria-pressed="true"]{background:var(--sun);box-shadow:3px 3px 0 var(--ink)}
+.feature{padding:18px;display:flex;flex-direction:column;gap:14px}
+.feature .row{display:flex;align-items:center;gap:14px}
+.feature h2{margin:0;font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1}
+.feature p{margin:0;color:var(--muted);font-size:14px}
+.feature .now{color:var(--ink);font-weight:700}
+.thumb{flex:none;width:64px;height:64px;border:3px solid var(--ink);border-radius:16px;background:var(--board);position:relative;transform:rotate(-5deg)}
+.thumb i{position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid var(--ink)}
+.thumb i:nth-child(1){left:7px;top:7px;background:var(--ink)}
+.thumb i:nth-child(2){right:7px;bottom:7px;background:var(--paper)}
+.slot{padding:18px;border:3px dashed var(--ink);border-radius:20px;display:flex;flex-direction:column;gap:2px}
+.slot b{font-family:var(--display);font-weight:400;font-size:20px}
+.slot span{color:var(--muted);font-size:14px}
+.note{margin:0;padding:10px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-size:14px}
+.note[hidden]{display:none}
+
+/* 대국 */
+.top{display:flex;align-items:center;gap:10px}
+.top h2{margin:0;font-family:var(--display);font-weight:400;font-size:28px;flex:1}
+.icon{width:48px;min-height:48px;padding:0;font-size:22px}
+.small{min-height:48px;font-size:16px;padding:0 14px}
+.players{display:flex;gap:10px}
+.chip{flex:1;display:flex;align-items:center;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:18px;background:var(--paper);opacity:.6;transition:transform .15s;min-width:0}
+.chip.on{opacity:1;background:var(--sun);box-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg)}
+.chip .mini{flex:none;margin:0}
+.chip .n{font-family:var(--display);font-size:20px;line-height:1.1}
+.chip .n small{font-size:13px;padding:1px 6px;margin-left:4px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);vertical-align:2px}
+.chip .t{font-size:12px;color:var(--muted)}
+.chip.on .t{color:var(--ink)}
+.status{min-height:52px;padding:10px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-family:var(--display);font-size:18px;display:flex;align-items:center}
+.status.mine{background:var(--sun)}
+.status.no{background:var(--pink);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.boardwrap{padding:6px;background:var(--board);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.board{position:relative;width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr)}
+.board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cell{position:relative;z-index:1;border:0;padding:0;background:none;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.cell:focus-visible{outline-offset:-3px}
+.stone{width:88%;height:88%;border-radius:50%;border:2px solid var(--ink)}
+.stone.b{background:radial-gradient(circle at 35% 42%,#fff 0 10%,transparent 11%),radial-gradient(circle at 65% 42%,#fff 0 10%,transparent 11%),var(--ink)}
+.stone.w{background:radial-gradient(circle at 35% 42%,var(--ink) 0 10%,transparent 11%),radial-gradient(circle at 65% 42%,var(--ink) 0 10%,transparent 11%),var(--paper)}
+.stone.new{animation:drop .28s cubic-bezier(.3,1.6,.5,1)}
+.stone.last{box-shadow:0 0 0 3px var(--pink)}
+.stone.ghost{opacity:.55;animation:pulse .8s ease-in-out infinite alternate}
+.stone.win{animation:hop .5s ease-in-out infinite alternate;box-shadow:0 0 0 3px var(--sun)}
+@keyframes drop{from{transform:scale(1.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pulse{to{transform:scale(.8)}}
+@keyframes hop{to{transform:translateY(-18%)}}
+.banmark{color:var(--ban);font-weight:700;font-size:min(4.4vw,21px);line-height:1}
+.actions{display:flex;gap:10px}
+.actions .btn{flex:1}
+.actions .go{flex:1.6}
+.hint{margin:0;font-size:13px;color:var(--muted)}
+
+/* 겹침 창 */
+.veil{position:fixed;inset:0;z-index:10;background:rgba(29,27,38,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.veil[hidden]{display:none}
+.modal{width:100%;max-width:380px;max-height:90%;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;animation:drop .25s cubic-bezier(.3,1.4,.5,1)}
+.modal h3{margin:0;font-family:var(--display);font-weight:400;font-size:32px;line-height:1.15;text-wrap:balance}
+.modal p{margin:0}
+.modal ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.modal .actions{flex-wrap:wrap}
+#confetti{position:fixed;inset:0;z-index:11;pointer-events:none;width:100%;height:100%}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section class="view" id="home">
+  <div class="logo">
+    <div class="pair" aria-hidden="true"><div class="mini b"></div><div class="mini w"></div></div>
+    <h1>투지</h1>
+    <div class="tag" id="linkTag" role="status"><i></i><span id="linkText">연결 중</span></div>
+  </div>
+  <p class="sub">지원이랑 지우, 지 둘이라서 투지.</p>
+
+  <div class="sticker vs" aria-label="오목 전적">
+    <div class="who"><span class="name">지원</span><span class="score" id="score0">0</span></div>
+    <div class="mid">VS</div>
+    <div class="who"><span class="name">지우</span><span class="score" id="score1">0</span></div>
+  </div>
+
+  <div class="sticker me">
+    <span>이 폰은</span>
+    <div class="seg" role="group" aria-label="이 폰을 쓰는 사람">
+      <button type="button" data-seat="0" aria-pressed="false">지원</button>
+      <button type="button" data-seat="1" aria-pressed="false">지우</button>
+    </div>
+  </div>
+
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb" aria-hidden="true"><i></i><i></i></div>
+      <div>
+        <h2>오목</h2>
+        <p id="homeGame">렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.</p>
+      </div>
+    </div>
+    <button class="btn sun" id="startBtn" type="button">한 판 붙기</button>
+  </div>
+
+  <p class="note" id="homeNote" hidden></p>
+
+  <div class="slot">
+    <b>다음 기능 자리</b>
+    <span>여기에 하나씩 추가할 거예요.</span>
+  </div>
+</section>
+
+<section class="view" id="game" hidden>
+  <div class="top">
+    <button class="btn icon" id="backBtn" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>오목</h2>
+    <button class="btn small" id="rulesBtn" type="button">규칙</button>
+  </div>
+
+  <div class="players">
+    <div class="chip" id="chip0"><div class="mini" id="chipStone0"></div><div><div class="n">지원<small id="meTag0" hidden>나</small></div><div class="t" id="chipText0"></div></div></div>
+    <div class="chip" id="chip1"><div class="mini" id="chipStone1"></div><div><div class="n">지우<small id="meTag1" hidden>나</small></div><div class="t" id="chipText1"></div></div></div>
+  </div>
+
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <div class="boardwrap"><div class="board" id="board"></div></div>
+
+  <div class="actions">
+    <button class="btn" id="undoBtn" type="button">무르기</button>
+    <button class="btn sun go" id="goBtn" type="button">두기</button>
+    <button class="btn" id="quitBtn" type="button">기권</button>
+  </div>
+  <p class="hint" id="hint">자리를 누르고 한 번 더 누르면 놓여요. 상대가 두면 바로 보여요. 빨간 ✕는 흑이 못 두는 자리예요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</p>
+</section>
+
+</div>
+
+<div class="veil" id="veil" hidden>
+  <div class="sticker modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="actions" id="modalActions"></div>
+  </div>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+//RULES-START
+function Rules(N){
+  var b=[];for(var i=0;i<N*N;i++)b.push(0);
+  var D=[[1,0],[0,1],[1,1],[1,-1]];
+  function g(x,y){return (x<0||y<0||x>=N||y>=N)?-1:b[y*N+x];}
+  function s(x,y,v){b[y*N+x]=v;}
+  function run(x,y,d,c){
+    var l=0,r=0;
+    while(g(x-(l+1)*d[0],y-(l+1)*d[1])===c)l++;
+    while(g(x+(r+1)*d[0],y+(r+1)*d[1])===c)r++;
+    return [l,r];
+  }
+  // 놓인 돌 기준 승리 줄. 흑은 정확히 5, 백은 5 이상.
+  function winLine(x,y,c){
+    for(var i=0;i<4;i++){
+      var d=D[i],e=run(x,y,d,c),len=e[0]+e[1]+1;
+      if(c===1?len===5:len>=5){
+        var cells=[];
+        for(var k=-e[0];k<=e[1];k++)cells.push([x+k*d[0],y+k*d[1]]);
+        return cells;
+      }
+    }
+    return null;
+  }
+  function overline(x,y){
+    for(var i=0;i<4;i++){var e=run(x,y,D[i],1);if(e[0]+e[1]+1>=6)return true;}
+    return false;
+  }
+  // 이 줄에서 (x,y)를 포함하는 4의 개수 (0,1,2)
+  function fours(x,y,d,c){
+    var pts=[];
+    for(var k=-4;k<=4;k++){
+      if(!k)continue;
+      var px=x+k*d[0],py=y+k*d[1];
+      if(g(px,py)!==0)continue;
+      s(px,py,c);
+      var e=run(px,py,d,c),len=e[0]+e[1]+1;
+      s(px,py,0);
+      if((c===1?len===5:len>=5)&&k-e[0]<=0&&0<=k+e[1])pts.push(k);
+    }
+    if(pts.length<2)return pts.length;
+    if(pts.length===2&&pts[1]-pts[0]===5)return 1; // 열린 4
+    return 2;
+  }
+  function openFour(x,y,d){
+    var e=run(x,y,d,1);
+    if(e[0]+e[1]+1!==4)return false;
+    var l=e[0]+1,r=e[1]+1;
+    if(g(x-l*d[0],y-l*d[1])!==0||g(x+r*d[0],y+r*d[1])!==0)return false;
+    if(g(x-(l+1)*d[0],y-(l+1)*d[1])===1||g(x+(r+1)*d[0],y+(r+1)*d[1])===1)return false;
+    return true;
+  }
+  // 열린 3: 한 수 더 두면 열린 4가 되고, 그 수가 금수가 아닌 경우
+  function three(x,y,d,depth){
+    if(fours(x,y,d,1)>0)return false;
+    for(var k=-3;k<=3;k++){
+      if(!k)continue;
+      var px=x+k*d[0],py=y+k*d[1];
+      if(g(px,py)!==0)continue;
+      if(depth<2&&forbidden(px,py,depth+1))continue;
+      s(px,py,1);
+      var ok=openFour(x,y,d);
+      s(px,py,0);
+      if(ok)return true;
+    }
+    return false;
+  }
+  // 흑이 (x,y)에 둘 수 없으면 이유('33','44','6'), 둘 수 있으면 ''
+  function forbidden(x,y,depth){
+    depth=depth||0;
+    if(g(x,y)!==0)return '';
+    s(x,y,1);
+    var res='';
+    if(!winLine(x,y,1)){
+      if(overline(x,y))res='6';
+      else{
+        var f=0,t=0,i;
+        for(i=0;i<4;i++)f+=fours(x,y,D[i],1);
+        if(f>=2)res='44';
+        else{
+          for(i=0;i<4;i++)if(three(x,y,D[i],depth))t++;
+          if(t>=2)res='33';
+        }
+      }
+    }
+    s(x,y,0);
+    return res;
+  }
+  return {get:g,set:s,forbidden:forbidden,winLine:winLine,
+    reset:function(){for(var i=0;i<N*N;i++)b[i]=0;}};
+}
+//RULES-END
+
+(function(){
+  var N=15,R=Rules(N);
+  var NAMES=['지원','지우'];
+  var BAN_TEXT={'33':'3-3','44':'4-4','6':'6목 이상(장목)'};
+
+  // 연결 상태: 'wait'(연결 중) / 'live'(같이 두는 중) / 'off'(인터넷 끊김)
+  // 두 폰을 잇는 우편함(ntfy.sh). 이 이름을 아는 폰끼리만 같은 판을 봐요.
+  var NTFY='https://ntfy.sh/tuji-omok-p7x3k9w2qz5m';
+  var mode='wait',readOnly=false,seq=0,lastMsgId='',es=null;
+  var clientId=Math.random().toString(36).slice(2,10);
+  var me=null;            // 이 폰을 쓰는 사람 0=지원, 1=지우
+  var game=null;          // 공유되는 판 {gid,blackIdx,moves,over,winner,reason,win}
+  var sharedScores=[0,0]; // 공유 전적 [지원, 지우]
+  var turn=1,sel=null,bans={},fresh=null,shownGid=null,shownOver=false,loaded=false,busy=false;
+
+  try{var m0=localStorage.getItem('tuji-me');if(m0==='0'||m0==='1')me=+m0;}catch(e){}
+
+  var $=function(id){return document.getElementById(id);};
+  var boardEl=$('board'),statusEl=$('status'),cells=[];
+
+  (function(){
+    var svg='<svg viewBox="0 0 15 15" aria-hidden="true"><g stroke="#1D1B26" stroke-width="0.05" stroke-linecap="round">';
+    for(var i=0;i<N;i++){
+      svg+='<line x1="0.5" y1="'+(i+.5)+'" x2="14.5" y2="'+(i+.5)+'"></line>';
+      svg+='<line x1="'+(i+.5)+'" y1="0.5" x2="'+(i+.5)+'" y2="14.5"></line>';
+    }
+    svg+='</g>';
+    [[3,3],[11,3],[7,7],[3,11],[11,11]].forEach(function(p){svg+='<circle cx="'+(p[0]+.5)+'" cy="'+(p[1]+.5)+'" r="0.13" fill="#1D1B26"></circle>';});
+    svg+='</svg>';
+    boardEl.innerHTML=svg;
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='cell';
+      btn.dataset.x=x;btn.dataset.y=y;
+      boardEl.appendChild(btn);cells.push(btn);
+    }
+  })();
+
+  function newId(){return 'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function blankGame(blackIdx){return {gid:newId(),blackIdx:blackIdx,moves:[],over:false,winner:-1,reason:'',win:[]};}
+  function clone(g){return JSON.parse(JSON.stringify(g));}
+  function who(c){return c===1?game.blackIdx:1-game.blackIdx;}
+  function colorName(c){return c===1?'흑':'백';}
+  function coord(x,y){return 'ABCDEFGHIJKLMNO'.charAt(x)+(N-y);}
+  function live(){return mode==='live';}
+  function myColor(){return me===game.blackIdx?1:2;}
+  // 이 폰에서 지금 돌을 놓을 수 있나
+  function canPlay(){
+    if(!game||game.over||busy)return false;
+    return me!==null&&turn===myColor();
+  }
+  function scores(){
+    return sharedScores;
+  }
+  function say(msg,kind){
+    statusEl.textContent=msg;
+    statusEl.classList.remove('no','mine');
+    if(kind==='no'){void statusEl.offsetWidth;statusEl.classList.add('no');}
+    else if(kind==='mine')statusEl.classList.add('mine');
+  }
+
+  function computeBans(){
+    bans={};
+    if(!game||game.over||turn!==1||!game.moves.length)return;
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      if(R.get(x,y)!==0)continue;
+      var near=false;
+      for(var dy=-2;dy<=2&&!near;dy++)for(var dx=-2;dx<=2;dx++){if(R.get(x+dx,y+dy)===1){near=true;break;}}
+      if(!near)continue;
+      var r=R.forbidden(x,y);
+      if(r)bans[x+','+y]=r;
+    }
+  }
+
+  function turnMsg(){
+    if(!game)return '판 불러오는 중…';
+    var n=NAMES[who(turn)];
+    if(mode==='solo'){
+      if(!game.moves.length)return n+'부터! 흑이 먼저 둬요.';
+      return n+' 차례 ('+colorName(turn)+')';
+    }
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(readOnly)return n+' 차례 ('+colorName(turn)+') · 이 폰은 보기만 돼요';
+    if(turn===myColor())return game.moves.length?'내 차례! ('+colorName(turn)+')':'내가 흑이야, 먼저 둬요!';
+    return n+' 차례예요. 기다리는 중…';
+  }
+  function sayTurn(){say(turnMsg(),canPlay()?'mine':'');}
+
+  function render(){
+    var sc=scores();
+    $('score0').textContent=sc[0];$('score1').textContent=sc[1];
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.seat===me));});
+    var tag=$('linkTag');
+    tag.classList.toggle('ok',live());tag.classList.toggle('off',mode==='off');
+    $('linkText').textContent=live()?'같이 두는 중':mode==='off'?'연결 안 됨':'연결 중';
+    var hg='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.';
+    if(game&&live()&&!game.over&&game.moves.length)hg='지금 대국 중 · '+game.moves.length+'수째 · '+NAMES[who(turn)]+' 차례';
+    $('homeGame').textContent=hg;
+    $('homeGame').classList.toggle('now',hg!=='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.');
+    if(!game){$('goBtn').disabled=$('undoBtn').disabled=$('quitBtn').disabled=true;return;}
+
+    var last=game.moves.length?game.moves[game.moves.length-1]:null;
+    var winSet={};(game.win||[]).forEach(function(p){winSet[p[0]+','+p[1]]=1;});
+    for(var i=0;i<cells.length;i++){
+      var x=i%N,y=(i-x)/N,v=R.get(x,y),key=x+','+y,html='',label=coord(x,y);
+      if(v){
+        var cls='stone '+(v===1?'b':'w');
+        if(winSet[key])cls+=' win';
+        else if(last&&last[0]===x&&last[1]===y)cls+=' last';
+        if(fresh===key)cls+=' new';
+        html='<div class="'+cls+'"></div>';
+        label+=' '+colorName(v)+'돌';
+      }else if(sel&&sel[0]===x&&sel[1]===y){
+        html='<div class="stone ghost '+(turn===1?'b':'w')+'"></div>';
+        label+=' 고른 자리';
+      }else if(bans[key]){
+        html='<span class="banmark" aria-hidden="true">&#10005;</span>';
+        label+=' 흑 금수 '+BAN_TEXT[bans[key]];
+      }else label+=' 빈 자리';
+      cells[i].innerHTML=html;
+      cells[i].setAttribute('aria-label',label);
+    }
+    fresh=null;
+    for(var p=0;p<2;p++){
+      var c=(p===game.blackIdx)?1:2,on=!game.over&&who(turn)===p;
+      $('chip'+p).classList.toggle('on',on);
+      $('chipStone'+p).className='mini '+(c===1?'b':'w');
+      $('chipText'+p).textContent=colorName(c)+(on?' · 둘 차례':'');
+      $('meTag'+p).hidden=me!==p;
+    }
+    $('goBtn').disabled=!canPlay()||!sel;
+    $('undoBtn').disabled=!canUndo();
+    $('quitBtn').disabled=!canQuit();
+  }
+
+  function canUndo(){
+    if(!game||game.over||busy||!game.moves.length)return false;
+    return me!==null&&game.moves[game.moves.length-1][2]===myColor();
+  }
+  function canQuit(){
+    if(!game||game.over||busy)return false;
+    return me!==null;
+  }
+
+  // 공유된(또는 이 폰의) 판 상태를 화면에 반영
+  function apply(g){
+    var prev=game;
+    game=g;
+    R.reset();
+    g.moves.forEach(function(m){R.set(m[0],m[1],m[2]);});
+    turn=g.moves.length%2===0?1:2;
+    var newGame=!prev||prev.gid!==g.gid;
+    if(newGame){sel=null;closeModal();stopConfetti();}
+    if(!newGame&&g.moves.length>prev.moves.length){
+      var lm=g.moves[g.moves.length-1];fresh=lm[0]+','+lm[1];
+    }
+    if(sel&&(R.get(sel[0],sel[1])!==0||!canPlay()))sel=null;
+    computeBans();
+    if(g.over){bans={};sel=null;}
+    // 끝난 판은 처음 보는 순간 한 번만 축하
+    var justEnded=g.over&&!(shownGid===g.gid&&shownOver);
+    var firstLook=!loaded;
+    shownGid=g.gid;shownOver=g.over;loaded=true;
+    if(g.over){
+      var title=endTitle(g);
+      say(title);render();
+      if(justEnded&&!firstLook)celebrate(g);
+    }else{
+      if(prev&&prev.gid===g.gid&&prev.over){closeModal();stopConfetti();}
+      sayTurn();render();
+    }
+  }
+
+  function endTitle(g){return g.winner>=0?NAMES[g.winner]+' 승리!':'무승부!';}
+  function endBody(g){
+    if(g.reason==='resign')return NAMES[1-g.winner]+'의 기권으로 끝났어요.';
+    if(g.reason==='draw')return '판이 꽉 찼어요. 둘 다 대단해요.';
+    var c=g.winner===g.blackIdx?1:2;
+    return colorName(c)+'돌 '+(g.win||[]).length+'목 완성. '+NAMES[1-g.winner]+', 설욕전 가야죠?';
+  }
+  function celebrate(g){
+    if(g.winner>=0)startConfetti();
+    var gid=g.gid;
+    setTimeout(function(){
+      if(!game||game.gid!==gid||!game.over)return;
+      var sc=scores();
+      openModal(endTitle(game),'<p>'+endBody(game)+'</p><p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>',[
+        ['한 판 더 (흑백 바꿔서)','sun',rematch],
+        ['판 보기','',closeModal]
+      ]);
+    },g.winner>=0?900:200);
+  }
+
+  // 판을 짧은 글자로 바꿔 보내고 받기
+  var A='abcdefghijklmno';
+  function enc(g){
+    return {id:g.gid,b:g.blackIdx,m:g.moves.map(function(m){return A[m[0]]+A[m[1]];}).join(''),
+      o:g.over?1:0,w:g.winner,r:g.reason||'',l:(g.win||[]).map(function(p){return A[p[0]]+A[p[1]];}).join('')};
+  }
+  function pairs(str){var out=[];for(var i=0;i+1<str.length;i+=2)out.push([A.indexOf(str[i]),A.indexOf(str[i+1])]);return out;}
+  function dec(e){
+    return {gid:String(e.id),blackIdx:e.b===1?1:0,moves:pairs(e.m||'').map(function(p,i){return [p[0],p[1],i%2===0?1:2];}),
+      over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:e.r||'',win:pairs(e.l||'')};
+  }
+  function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),s:sharedScores});}
+  function saveLocal(){try{localStorage.setItem('tuji-state',packet());}catch(e){}}
+  // 받은 판 반영. 번호가 같거나 더 크면 따라가요(두 폰이 같은 순서로 받으니 결국 같은 판이 돼요).
+  function receive(text,id){
+    if(id)lastMsgId=id;
+    var o;try{o=JSON.parse(text);}catch(e){return;}
+    if(!o||o.v!==1||typeof o.n!=='number'||!o.g||o.n<seq)return;
+    seq=o.n;
+    if(Array.isArray(o.s)&&o.s.length===2)sharedScores=[+o.s[0]||0,+o.s[1]||0];
+    apply(dec(o.g));saveLocal();
+  }
+
+  // 바뀐 판을 저장하고 상대 폰으로 보내기
+  function commit(g,result){
+    var before={g:game,s:sharedScores.slice(),n:seq};
+    if(result&&result.winner>=0){sharedScores=sharedScores.slice();sharedScores[result.winner]++;}
+    seq++;apply(g);saveLocal();
+    busy=true;render();
+    fetch(NTFY,{method:'POST',body:packet()}).then(function(r){
+      if(!r.ok)throw new Error('send '+r.status);
+      if(mode!=='live'){mode='live';note('');}
+    }).catch(function(){
+      if(seq===before.n+1){seq=before.n;sharedScores=before.s;apply(before.g);saveLocal();}
+      say('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
+    }).then(function(){busy=false;render();});
+  }
+
+  function place(x,y){
+    if(!canPlay()||R.get(x,y)!==0)return;
+    var g=clone(game);
+    g.moves.push([x,y,turn]);
+    R.set(x,y,turn);
+    var line=R.winLine(x,y,turn);
+    R.set(x,y,0);
+    var result=null;
+    if(line){
+      g.over=true;g.winner=who(turn);g.reason='five';g.win=line;
+    }else if(g.moves.length===N*N){
+      g.over=true;g.winner=-1;g.reason='draw';
+    }
+    if(g.over)result={winner:g.winner,reason:g.reason,blackIdx:g.blackIdx,moves:g.moves.length,at:new Date().toISOString()};
+    sel=null;
+    commit(g,result);
+  }
+
+  function tap(x,y){
+    if(!game||game.over||R.get(x,y)!==0)return;
+    if(!canPlay()){
+      if(me!==null&&!busy)say(NAMES[who(turn)]+' 차례예요. 조금만 기다려요!','no');
+      else sayTurn();
+      return;
+    }
+    var ban=turn===1?bans[x+','+y]:'';
+    if(ban){sel=null;render();say('거긴 '+BAN_TEXT[ban]+' 금수! 흑은 못 둬요.','no');return;}
+    if(sel&&sel[0]===x&&sel[1]===y){place(x,y);return;}
+    sel=[x,y];
+    say(coord(x,y)+' 여기? 한 번 더 누르면 놓여요.','mine');
+    render();
+  }
+
+  function undo(){
+    if(!canUndo())return;
+    var g=clone(game);
+    g.moves.pop();
+    commit(g,null);
+    say('한 수 물렀어요. '+turnMsg(),canPlay()?'mine':'');
+  }
+
+  function rematch(){
+    if(!game||!game.over){closeModal();return;}
+    commit(blankGame(1-game.blackIdx),null);
+  }
+
+  // 겹침 창
+  var veil=$('veil');
+  function openModal(title,bodyHtml,actions){
+    $('modalTitle').textContent=title;
+    $('modalBody').innerHTML=bodyHtml;
+    var box=$('modalActions');box.innerHTML='';
+    actions.forEach(function(a){
+      var b=document.createElement('button');
+      b.type='button';b.className='btn '+a[1];b.textContent=a[0];
+      b.addEventListener('click',a[2]);box.appendChild(b);
+    });
+    veil.hidden=false;
+    box.firstChild.focus();
+  }
+  function closeModal(){veil.hidden=true;}
+  veil.addEventListener('click',function(e){if(e.target===veil)closeModal();});
+
+  // 색종이
+  var cv=$('confetti'),raf=0;
+  function stopConfetti(){cancelAnimationFrame(raf);cv.hidden=true;}
+  function startConfetti(){
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    var W=cv.width=innerWidth,H=cv.height=innerHeight,ctx=cv.getContext('2d');
+    var cols=['#FF5D8F','#FFD23F','#1D1B26','#FFFDF5','#3B6BFF'],ps=[];
+    for(var i=0;i<90;i++)ps.push({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,s:6+Math.random()*8,a:Math.random()*6,c:cols[i%cols.length]});
+    cv.hidden=false;
+    var t0=performance.now();
+    (function tick(t){
+      ctx.clearRect(0,0,W,H);
+      ps.forEach(function(p){
+        p.x+=p.vx;p.y+=p.vy;p.a+=.15;
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+        ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);ctx.restore();
+      });
+      if(t-t0<3200)raf=requestAnimationFrame(tick);else cv.hidden=true;
+    })(t0);
+  }
+
+  // 화면 전환과 버튼
+  function show(id){$('home').hidden=id!=='home';$('game').hidden=id!=='game';window.scrollTo(0,0);}
+  boardEl.addEventListener('click',function(e){
+    var c=e.target.closest('.cell');
+    if(c)tap(+c.dataset.x,+c.dataset.y);
+  });
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      me=+b.dataset.seat;
+      try{localStorage.setItem('tuji-me',String(me));}catch(e){}
+      sel=null;render();if(game&&!game.over)sayTurn();
+    });
+  });
+  $('startBtn').addEventListener('click',function(){
+    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return;}
+    show('game');
+    if(game&&game.over)celebrateAgain();
+  });
+  function celebrateAgain(){
+    var sc=scores();
+    openModal(endTitle(game),'<p>'+endBody(game)+'</p><p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>',[
+      ['한 판 더 (흑백 바꿔서)','sun',rematch],['판 보기','',closeModal]]);
+  }
+  $('backBtn').addEventListener('click',function(){render();show('home');});
+  $('goBtn').addEventListener('click',function(){if(sel)place(sel[0],sel[1]);});
+  $('undoBtn').addEventListener('click',undo);
+  $('quitBtn').addEventListener('click',function(){
+    if(!canQuit())return;
+    var p=me;
+    openModal(NAMES[p]+', 진짜 기권?','<p>기권하면 '+NAMES[1-p]+'의 승리로 끝나요.</p>',[
+      ['계속 둘래','sun',closeModal],
+      ['기권할게','pink',function(){
+        closeModal();
+        if(!game||game.over)return;
+        var g=clone(game);
+        g.over=true;g.winner=1-p;g.reason='resign';g.win=[];
+        commit(g,{winner:g.winner,reason:'resign',blackIdx:g.blackIdx,moves:g.moves.length,at:new Date().toISOString()});
+      }]
+    ]);
+  });
+  $('rulesBtn').addEventListener('click',function(){
+    openModal('렌주룰 한눈에','<ul>'
+      +'<li>흑이 먼저 두고, 가로·세로·대각선으로 5개를 먼저 이으면 이겨요.</li>'
+      +'<li>흑은 3-3, 4-4, 6목 이상(장목)을 둘 수 없어요. 판에 빨간 ✕로 보여요.</li>'
+      +'<li>3은 붙은 3뿐 아니라 한 칸 띈 열린 3도 포함해요.</li>'
+      +'<li>흑의 4-3은 괜찮아요. 5목이 되는 자리는 금수보다 먼저예요.</li>'
+      +'<li>백은 제한이 없고, 6목 이상을 만들어도 이겨요.</li>'
+      +'<li>각자 폰에서 자기 차례에만 둘 수 있어요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+  function note(t){var n=$('homeNote');n.textContent=t||'';n.hidden=!t;}
+
+  // 시작: 이 폰에 남은 판 → 우편함에 쌓인 판 → 실시간으로 듣기
+  try{var saved=localStorage.getItem('tuji-state');if(saved)receive(saved,'');}catch(e){}
+  render();if(!game)say('판 불러오는 중…');
+
+  function catchUp(){
+    return fetch(NTFY+'/json?poll=1&since='+(lastMsgId||'all')).then(function(r){
+      if(!r.ok)throw new Error('poll '+r.status);return r.text();
+    }).then(function(t){
+      t.split('\n').forEach(function(line){
+        if(!line)return;
+        try{var m=JSON.parse(line);if(m.event==='message')receive(m.message,m.id);}catch(e){}
+      });
+    });
+  }
+  function listen(){
+    if(es)es.close();
+    try{es=new EventSource(NTFY+'/sse?since='+(lastMsgId||'all'));}catch(e){return;}
+    es.onopen=function(){mode='live';note('');render();if(game&&!game.over)sayTurn();};
+    es.onmessage=function(e){
+      try{var m=JSON.parse(e.data);if(m.event==='message')receive(m.message,m.id);}catch(err){}
+    };
+    es.onerror=function(){if(mode==='live'){mode='wait';render();}};
+  }
+  var tries=0;
+  function connect(){
+    catchUp().then(function(){
+      tries=0;mode='live';note('');
+      if(!game){loaded=true;apply(blankGame(0));}
+      render();if(!game.over)sayTurn();
+      listen();
+    }).catch(function(){
+      mode='off';
+      if(!game){loaded=true;apply(blankGame(0));}
+      note('인터넷 연결이 안 돼서 상대 폰과 이어지지 않았어요. 잠시 뒤 다시 시도할게요.');
+      render();
+      setTimeout(connect,Math.min(30000,3000*(++tries)));
+    });
+  }
+  connect();
+  // 폰을 잠깐 껐다 켜면 놓친 수를 다시 받아요
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'&&mode!=='off')catchUp().then(listen).catch(function(){});
+  });
+})();
+</script>
+</body>
+</html>
