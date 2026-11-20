@@ -33,7 +33,7 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--ground);color:var(--ink);font-family:var(--body);font-weight:500;font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;color:inherit;cursor:pointer}
+button{touch-action:manipulation;font-family:inherit;color:inherit;cursor:pointer}
 button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .app{max-width:492px;margin:0 auto;padding:20px 16px 32px;display:flex;flex-direction:column;gap:16px}
 .view[hidden]{display:none}
@@ -103,7 +103,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .boardwrap{padding:6px;background:var(--board);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
 .board{position:relative;width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr)}
 .board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.cell{position:relative;z-index:1;border:0;padding:0;background:none;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.cell{touch-action:manipulation;position:relative;z-index:1;border:0;padding:0;background:none;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
 .cell:focus-visible{outline-offset:-3px}
 .stone{width:88%;height:88%;border-radius:50%;border:2px solid var(--ink)}
 .stone.b{background:radial-gradient(circle at 35% 42%,#fff 0 10%,transparent 11%),radial-gradient(circle at 65% 42%,#fff 0 10%,transparent 11%),var(--ink)}
@@ -343,12 +343,13 @@ function Rules(N){
   // 연결 상태: 'wait'(연결 중) / 'live'(같이 두는 중) / 'off'(인터넷 끊김)
   // 두 폰을 잇는 우편함(ntfy.sh). 이 이름을 아는 폰끼리만 같은 판을 봐요.
   var NTFY='';  // 암호로 정해지는 둘만의 우편함 주소
-  var mode='wait',readOnly=false,seq=0,lastMsgId='',es=null;
+  var mode='wait',readOnly=false,seq=0,serverMax=0,lastMsgId='',es=null;
   var clientId=Math.random().toString(36).slice(2,10);
   var me=null;            // 이 폰을 쓰는 사람 0=지원, 1=지우
   var game=null;          // 공유되는 판 {gid,blackIdx,moves,over,winner,reason,win}
-  var sharedScores=[0,0]; // 공유 전적 [지원, 지우]
-  var turn=1,sel=null,bans={},fresh=null,shownGid=null,shownOver=false,loaded=false,busy=false;
+  // 공유 전적: 판마다 승자를 적어 두고(합치기 쉬움), 오래된 건 base로 접어 둬요
+  var tally={b:[0,0],f:'',r:{}};
+  var quiet=true,turn=1,sel=null,bans={},fresh=null,shownGid=null,shownOver=false,loaded=false,busy=false;
 
   try{var m0=localStorage.getItem('tuji-me');if(m0==='0'||m0==='1')me=+m0;}catch(e){}
 
@@ -387,7 +388,9 @@ function Rules(N){
     return me!==null&&turn===myColor();
   }
   function scores(){
-    return sharedScores;
+    var s=tally.b.slice();
+    for(var k in tally.r){var w=tally.r[k];if(w===0||w===1)s[w]++;}
+    return s;
   }
   function say(msg,kind){
     statusEl.textContent=msg;
@@ -465,6 +468,7 @@ function Rules(N){
       $('chipText'+p).textContent=colorName(c)+(on?' · 둘 차례':'');
       $('meTag'+p).hidden=me!==p;
     }
+    if(!statusEl.classList.contains('no'))statusEl.classList.toggle('mine',canPlay());
     $('goBtn').disabled=!canPlay()||!sel;
     $('undoBtn').disabled=!canUndo();
     $('quitBtn').disabled=!canQuit();
@@ -482,6 +486,7 @@ function Rules(N){
   // 공유된(또는 이 폰의) 판 상태를 화면에 반영
   function apply(g){
     var prev=game;
+    var same=prev&&prev.gid===g.gid&&prev.over===g.over&&JSON.stringify(prev.moves)===JSON.stringify(g.moves);
     game=g;
     R.reset();
     g.moves.forEach(function(m){R.set(m[0],m[1],m[2]);});
@@ -496,7 +501,7 @@ function Rules(N){
     if(g.over){bans={};sel=null;}
     // 끝난 판은 처음 보는 순간 한 번만 축하
     var justEnded=g.over&&!(shownGid===g.gid&&shownOver);
-    var firstLook=!loaded;
+    var firstLook=!loaded||quiet;
     shownGid=g.gid;shownOver=g.over;loaded=true;
     if(g.over){
       var title=endTitle(g);
@@ -504,7 +509,8 @@ function Rules(N){
       if(justEnded&&!firstLook)celebrate(g);
     }else{
       if(prev&&prev.gid===g.gid&&prev.over){closeModal();stopConfetti();}
-      sayTurn();render();
+      if(!same)sayTurn();
+      render();
     }
   }
 
@@ -539,29 +545,54 @@ function Rules(N){
     return {gid:String(e.id),blackIdx:e.b===1?1:0,moves:pairs(e.m||'').map(function(p,i){return [p[0],p[1],i%2===0?1:2];}),
       over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:e.r||'',win:pairs(e.l||'')};
   }
-  function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),s:sharedScores});}
+  function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),t:tally});}
+  function fold(t){
+    var keys=Object.keys(t.r).sort();
+    if(keys.length<=100)return t;
+    var cut=keys[49];
+    keys.slice(0,50).forEach(function(k){var w=t.r[k];if(w===0||w===1)t.b[w]++;delete t.r[k];});
+    if(cut>t.f)t.f=cut;
+    return t;
+  }
+  // 지금 판의 승패는 언제나 '지금 판'을 따라가요 (동시 기권 같은 엇갈림 정리)
+  function syncTally(){
+    if(!game)return;
+    if(game.over)tally.r[game.gid]=game.winner;
+    else delete tally.r[game.gid];
+  }
+  // 두 전적 합치기: 같은 판은 한 번만 세요
+  function mergeTally(a,o){
+    if(!o||typeof o!=='object')return a;
+    var t={b:[Math.max(a.b[0],+(o.b&&o.b[0])||0),Math.max(a.b[1],+(o.b&&o.b[1])||0)],f:a.f>(o.f||'')?a.f:String(o.f||''),r:{}};
+    [a.r,o.r||{}].forEach(function(r){for(var k in r){if(k>t.f&&(r[k]===0||r[k]===1||r[k]===-1))t.r[k]=r[k];}});
+    return fold(t);
+  }
   function saveLocal(){try{localStorage.setItem('tuji-state-'+NTFY.slice(-12),packet());}catch(e){}}
   // 받은 판 반영. 번호가 같거나 더 크면 따라가요(두 폰이 같은 순서로 받으니 결국 같은 판이 돼요).
   function receive(text,id){
     if(id)lastMsgId=id;
     var o;try{o=JSON.parse(text);}catch(e){return;}
-    if(!o||o.v!==1||typeof o.n!=='number'||!o.g||o.n<seq)return;
-    seq=o.n;
-    if(Array.isArray(o.s)&&o.s.length===2)sharedScores=[+o.s[0]||0,+o.s[1]||0];
-    apply(dec(o.g));saveLocal();
+    // 새 폰이 "안녕" 하면, 판을 가진 폰이 지금 판을 다시 보내 줘요
+    if(o&&o.v===1&&o.hello){if(o.hello!==clientId&&seq>0&&game&&!quiet)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});return;}
+    if(!o||o.v!==1||typeof o.n!=='number'||!o.g)return;
+    if(id&&o.n>serverMax)serverMax=o.n;
+    tally=mergeTally(tally,o.t);
+    if(o.n>=seq){seq=o.n;apply(dec(o.g));}
+    syncTally();render();saveLocal();
   }
 
   // 바뀐 판을 저장하고 상대 폰으로 보내기
   function commit(g,result){
-    var before={g:game,s:sharedScores.slice(),n:seq};
-    if(result&&result.winner>=0){sharedScores=sharedScores.slice();sharedScores[result.winner]++;}
-    seq++;apply(g);saveLocal();
+    var before={g:game,t:JSON.parse(JSON.stringify(tally)),n:seq};
+    if(result){tally=JSON.parse(JSON.stringify(tally));tally.r[g.gid]=result.winner;tally=fold(tally);}
+    // 번호는 시계 기준이라, 오래 쉬었다 새 폰으로 와도 늘 앞으로 가요
+    seq=Math.max(seq+1,Date.now());apply(g);saveLocal();
     busy=true;render();
     fetch(NTFY,{method:'POST',body:packet()}).then(function(r){
       if(!r.ok)throw new Error('send '+r.status);
       if(mode!=='live'){mode='live';note('');}
     }).catch(function(){
-      if(seq===before.n+1){seq=before.n;sharedScores=before.s;apply(before.g);saveLocal();}
+      if(game===g){seq=before.n;tally=before.t;apply(before.g);saveLocal();}
       say('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
     }).then(function(){busy=false;render();});
   }
@@ -724,14 +755,22 @@ function Rules(N){
     };
     es.onerror=function(){if(mode==='live'){mode='wait';render();}};
   }
+  // 우편함이 비었거나(12시간 지남) 이 폰 판이 더 최신이면 다시 올리고, 판이 없는 새 폰이면 "안녕"을 보내요
+  function heal(){
+    if(seq>0&&seq>serverMax)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
+    else if(seq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
+  }
   var tries=0;
   function connect(){
     catchUp().then(function(){
+      quiet=false;
       tries=0;mode='live';note('');
       if(!game){loaded=true;apply(blankGame(0));}
       render();if(!game.over)sayTurn();
       listen();
+      heal();
     }).catch(function(){
+      quiet=false;
       mode='off';
       if(!game){loaded=true;apply(blankGame(0));}
       note('인터넷 연결이 안 돼서 상대 폰과 이어지지 않았어요. 잠시 뒤 다시 시도할게요.');
@@ -798,7 +837,7 @@ function Rules(N){
   })();
   // 폰을 잠깐 껐다 켜면 놓친 수를 다시 받아요
   document.addEventListener('visibilitychange',function(){
-    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(listen).catch(function(){});
+    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(function(){heal();listen();}).catch(function(){});
   });
 })();
 </script>
