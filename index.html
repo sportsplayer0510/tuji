@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>투지</title>
+<meta name="theme-color" content="#C9F2DC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="투지">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap">
 <style>
 :root{
@@ -120,6 +129,17 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .modal p{margin:0}
 .modal ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 .modal .actions{flex-wrap:wrap}
+.lock{position:fixed;inset:0;z-index:20;background:var(--ground);display:flex;align-items:center;justify-content:center;padding:20px}
+.lock[hidden]{display:none}
+.lock .modal{animation:none}
+.lock input{width:100%;min-height:52px;padding:0 14px;border:3px solid var(--ink);border-radius:16px;background:#fff;font-family:var(--display);font-size:22px;color:var(--ink)}
+.lock input:focus{outline:3px solid var(--pink);outline-offset:2px}
+.err{color:var(--ban);font-weight:700;font-size:14px;min-height:21px}
+.install{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.install[hidden]{display:none}
+.install b{font-family:var(--display);font-weight:400;font-size:20px}
+.install p{margin:0;color:var(--muted);font-size:14px}
+.linkbtn{align-self:center;border:0;background:none;padding:8px;font-size:13px;color:var(--muted);text-decoration:underline}
 #confetti{position:fixed;inset:0;z-index:11;pointer-events:none;width:100%;height:100%}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -162,10 +182,17 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 
   <p class="note" id="homeNote" hidden></p>
 
+  <div class="sticker install" id="installCard" hidden>
+    <b>폰에 앱으로 깔기</b>
+    <p id="installText">홈 화면에 투지 아이콘을 만들어 두면 앱처럼 바로 열 수 있어요.</p>
+    <button class="btn" id="installBtn" type="button" hidden>홈 화면에 추가</button>
+  </div>
+
   <div class="slot">
     <b>다음 기능 자리</b>
     <span>여기에 하나씩 추가할 거예요.</span>
   </div>
+  <button class="linkbtn" id="relockBtn" type="button">다른 암호로 들어가기</button>
 </section>
 
 <section class="view" id="game" hidden>
@@ -202,6 +229,17 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   </div>
 </div>
 <canvas id="confetti" hidden></canvas>
+
+<div class="lock" id="lock" hidden>
+  <form class="sticker modal" id="lockForm" autocomplete="off">
+    <div class="pair" aria-hidden="true"><div class="mini b"></div><div class="mini w"></div></div>
+    <h3>둘만 아는 암호</h3>
+    <p>지원이랑 지우가 같은 암호를 넣어야 같은 판에서 만나요. 암호를 모르면 판도 전적도 볼 수 없어요.</p>
+    <input id="lockInput" type="password" inputmode="text" aria-label="암호" placeholder="암호 (4글자 이상)" autocomplete="off">
+    <div class="err" id="lockErr" role="alert"></div>
+    <button class="btn sun" type="submit">들어가기</button>
+  </form>
+</div>
 
 <script>
 //RULES-START
@@ -304,7 +342,7 @@ function Rules(N){
 
   // 연결 상태: 'wait'(연결 중) / 'live'(같이 두는 중) / 'off'(인터넷 끊김)
   // 두 폰을 잇는 우편함(ntfy.sh). 이 이름을 아는 폰끼리만 같은 판을 봐요.
-  var NTFY='https://ntfy.sh/tuji-omok-p7x3k9w2qz5m';
+  var NTFY='';  // 암호로 정해지는 둘만의 우편함 주소
   var mode='wait',readOnly=false,seq=0,lastMsgId='',es=null;
   var clientId=Math.random().toString(36).slice(2,10);
   var me=null;            // 이 폰을 쓰는 사람 0=지원, 1=지우
@@ -502,7 +540,7 @@ function Rules(N){
       over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:e.r||'',win:pairs(e.l||'')};
   }
   function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),s:sharedScores});}
-  function saveLocal(){try{localStorage.setItem('tuji-state',packet());}catch(e){}}
+  function saveLocal(){try{localStorage.setItem('tuji-state-'+NTFY.slice(-12),packet());}catch(e){}}
   // 받은 판 반영. 번호가 같거나 더 크면 따라가요(두 폰이 같은 순서로 받으니 결국 같은 판이 돼요).
   function receive(text,id){
     if(id)lastMsgId=id;
@@ -665,7 +703,6 @@ function Rules(N){
   function note(t){var n=$('homeNote');n.textContent=t||'';n.hidden=!t;}
 
   // 시작: 이 폰에 남은 판 → 우편함에 쌓인 판 → 실시간으로 듣기
-  try{var saved=localStorage.getItem('tuji-state');if(saved)receive(saved,'');}catch(e){}
   render();if(!game)say('판 불러오는 중…');
 
   function catchUp(){
@@ -702,10 +739,66 @@ function Rules(N){
       setTimeout(connect,Math.min(30000,3000*(++tries)));
     });
   }
-  connect();
+  // 암호 → 우편함 주소 (암호 자체는 어디에도 보내지 않아요)
+  function topicFor(code){
+    var data=new TextEncoder().encode('tuji-omok:'+code);
+    return crypto.subtle.digest('SHA-256',data).then(function(h){
+      return 'tuji-'+Array.prototype.map.call(new Uint8Array(h),function(x){return ('0'+x.toString(16)).slice(-2);}).join('').slice(0,32);
+    });
+  }
+  function unlock(code){
+    return topicFor(code).then(function(t){
+      NTFY='https://ntfy.sh/'+t;
+      try{localStorage.setItem('tuji-key',code);}catch(e){}
+      $('lock').hidden=true;
+      try{var saved=localStorage.getItem('tuji-state-'+NTFY.slice(-12));if(saved)receive(saved,'');}catch(e){}
+      render();if(!game)say('판 불러오는 중…');
+      connect();
+    });
+  }
+  var savedKey='';try{savedKey=localStorage.getItem('tuji-key')||'';}catch(e){}
+  if(savedKey)unlock(savedKey);
+  else{$('lock').hidden=false;setTimeout(function(){$('lockInput').focus();},50);}
+  $('lockForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=$('lockInput').value.trim();
+    if(v.length<4){$('lockErr').textContent='4글자 이상으로 넣어 주세요.';return;}
+    $('lockErr').textContent='';
+    unlock(v).catch(function(){$('lockErr').textContent='이 브라우저에서는 열 수 없어요. 크롬이나 사파리로 열어 주세요.';});
+  });
+  $('relockBtn').addEventListener('click',function(){
+    try{localStorage.removeItem('tuji-key');}catch(e){}
+    location.reload();
+  });
+
+  // 폰에 앱으로 깔기
+  (function(){
+    var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+    if(standalone)return;
+    var card=$('installCard'),btn=$('installBtn'),txt=$('installText'),deferred=null;
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(ios){
+      txt.textContent='사파리 아래쪽 공유 버튼(네모에 화살표)을 누르고 "홈 화면에 추가"를 고르면 투지 아이콘이 생겨요.';
+      card.hidden=false;
+    }else if(/android/i.test(navigator.userAgent)){
+      txt.textContent='크롬 오른쪽 위 점 세 개 메뉴에서 "홈 화면에 추가"나 "앱 설치"를 누르면 투지 아이콘이 생겨요.';
+      card.hidden=false;
+    }
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();deferred=e;
+      txt.textContent='아래 버튼을 누르면 홈 화면에 투지 아이콘이 생겨요.';
+      btn.hidden=false;card.hidden=false;
+    });
+    btn.addEventListener('click',function(){
+      if(!deferred)return;
+      deferred.prompt();
+      deferred.userChoice.then(function(){deferred=null;btn.hidden=true;});
+    });
+    window.addEventListener('appinstalled',function(){card.hidden=true;});
+  })();
   // 폰을 잠깐 껐다 켜면 놓친 수를 다시 받아요
   document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='visible'&&mode!=='off')catchUp().then(listen).catch(function(){});
+    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(listen).catch(function(){});
   });
 })();
 </script>
