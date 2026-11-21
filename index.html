@@ -545,6 +545,15 @@ function Rules(N){
     return {gid:String(e.id),blackIdx:e.b===1?1:0,moves:pairs(e.m||'').map(function(p,i){return [p[0],p[1],i%2===0?1:2];}),
       over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:e.r||'',win:pairs(e.l||'')};
   }
+  // 이상한 메시지(깨진 판, 겹친 돌, 판 밖 좌표)는 무시해요
+  function valid(e){
+    if(typeof e!=='object'||typeof e.id!=='string'||!e.id||typeof (e.m||'')!=='string'||typeof (e.l||'')!=='string')return false;
+    var m=e.m||'';if(m.length%2||m.length>N*N*2)return false;
+    var seen={};
+    for(var i=0;i<m.length;i+=2){var k=m.substr(i,2);if(A.indexOf(k[0])<0||A.indexOf(k[1])<0||seen[k])return false;seen[k]=1;}
+    var l=e.l||'';for(var j=0;j<l.length;j++)if(A.indexOf(l[j])<0)return false;
+    return true;
+  }
   function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),t:tally});}
   function fold(t){
     var keys=Object.keys(t.r).sort();
@@ -574,7 +583,7 @@ function Rules(N){
     var o;try{o=JSON.parse(text);}catch(e){return;}
     // 새 폰이 "안녕" 하면, 판을 가진 폰이 지금 판을 다시 보내 줘요
     if(o&&o.v===1&&o.hello){if(o.hello!==clientId&&seq>0&&game&&!quiet)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});return;}
-    if(!o||o.v!==1||typeof o.n!=='number'||!o.g)return;
+    if(!o||o.v!==1||typeof o.n!=='number'||!isFinite(o.n)||!o.g||!valid(o.g))return;
     if(id&&o.n>serverMax)serverMax=o.n;
     tally=mergeTally(tally,o.t);
     if(o.n>=seq){seq=o.n;apply(dec(o.g));}
