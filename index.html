@@ -267,6 +267,50 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .gamerow .thumb i{width:16px;height:16px}
 .gamerow .thumb i:nth-child(1){left:5px;top:5px}
 .gamerow .thumb i:nth-child(2){right:5px;bottom:5px}
+
+/* 음악 나눔 */
+.ticon.mus{background:#8FD3FF;transform:rotate(-3deg)}
+.tile.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:12px}
+.tile.wide .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.song{padding:14px;display:flex;flex-direction:column;gap:10px}
+.song.wait{background:#FFF6CF}
+.shd{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.shd .mini{flex:none;width:24px;height:24px;border-width:2px;margin:0}
+.shd b{color:var(--ink)}
+.shd .when{margin-left:auto;white-space:nowrap}
+.shd .sdel{border:0;background:none;padding:2px 4px;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.srow{display:flex;gap:12px;align-items:center}
+.disc{flex:none;width:62px;height:62px;border:3px solid var(--ink);border-radius:50%;background:radial-gradient(circle,var(--paper) 0 12%,var(--ink) 13% 17%,var(--c,#FF5D8F) 18% 100%);transform:rotate(-8deg);box-shadow:3px 3px 0 var(--ink)}
+.sinfo{flex:1;min-width:0}
+.sinfo .t{font-family:var(--display);font-size:21px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.sinfo .a{font-size:13px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.site{display:inline-block;margin-top:4px;padding:0 8px;border:2px solid var(--ink);border-radius:999px;font-size:12px;background:#fff}
+.say{margin:0;padding:8px 12px;border:2px dashed var(--ink);border-radius:14px;background:#fff;font-size:14px;word-break:keep-all;overflow-wrap:anywhere}
+.btn.play{min-height:44px;font-size:16px;padding:0 14px;box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink)}
+.rv{padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:var(--ground);display:flex;flex-direction:column;gap:4px}
+.rv .h{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px;flex-wrap:wrap}
+.rv .h .mini{width:22px;height:22px;border-width:2px;margin:0}
+.rv p{margin:0;font-size:15px;word-break:keep-all;overflow-wrap:anywhere}
+.rv .emo{font-size:20px;margin-left:auto}
+.rv .ed{border:0;background:none;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer;align-self:flex-end}
+.stars{color:#E8A100;letter-spacing:1px;font-size:17px;-webkit-text-stroke:.6px var(--ink)}
+.stars .off{color:#fff}
+.btns{display:flex;gap:10px}
+.btns .btn{flex:1}
+.filt{display:flex;gap:8px;flex-wrap:wrap}
+.filt button{min-height:38px;padding:0 14px;border:3px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:14px;color:var(--ink)}
+.filt button[aria-pressed="true"]{background:var(--sun)}
+.linkok{font-size:13px;color:var(--live);font-family:var(--display);margin-top:-4px}
+.linkok.bad{color:var(--ban)}
+.lbl{font-family:var(--display);font-size:16px;margin-bottom:-4px}
+.bigstars{display:flex;justify-content:center;gap:6px}
+.bigstars button{border:0;background:none;padding:0;font-size:44px;line-height:1;color:#fff;-webkit-text-stroke:2px var(--ink);cursor:pointer}
+.bigstars button.on{color:#E8A100}
+.emos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.emos button{width:52px;height:52px;border:3px solid var(--ink);border-radius:14px;background:#fff;font-size:26px;padding:0}
+.emos button[aria-pressed="true"]{background:var(--sun);transform:rotate(-6deg);box-shadow:3px 3px 0 var(--ink)}
+.cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:-6px}
+.formerr{margin:0;color:var(--ban);font-size:14px;font-family:var(--display)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -317,6 +361,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <div class="duo">
     <button class="sticker tile" id="chatTile" type="button"><span class="badge" id="chatBadge" hidden></span><span class="ticon talk" aria-hidden="true">💬</span><h2>대화방</h2><p id="chatPreview">둘만 보는 대화방</p></button>
     <button class="sticker tile" id="calTile" type="button"><span class="ticon cal" aria-hidden="true">📅</span><h2>공유 달력</h2><p id="calPreview">약속을 같이 적어요</p></button>
+    <button class="sticker tile wide" id="musicTile" type="button"><span class="badge" id="musicBadge" hidden></span><span class="ticon mus" aria-hidden="true">🎵</span><span class="tx"><h2>음악 나눔</h2><p id="musicPreview">노래를 서로 추천하고 감상평을 남겨요</p></span></button>
   </div>
 
   <p class="note" id="homeNote" hidden></p>
@@ -400,6 +445,52 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <div class="sticker daycard" id="wordToday"></div>
   <p class="sec">지난 한마디</p>
   <div class="plans" id="wordPast"></div>
+</section>
+
+
+<section class="view" id="music" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>음악 나눔</h2></div>
+  <button class="btn sun" id="songNew" type="button">🎵 노래 추천하기</button>
+  <div class="filt" id="musicFilt" role="group" aria-label="누가 추천한 노래만 볼지">
+    <button type="button" data-f="-1" aria-pressed="true">모두</button><button type="button" data-f="0" aria-pressed="false">지원 추천</button><button type="button" data-f="1" aria-pressed="false">지우 추천</button>
+  </div>
+  <div class="plans" id="songList"></div>
+</section>
+
+<section class="view" id="song" hidden>
+  <div class="top"><button class="btn icon toMusic" type="button" aria-label="음악 나눔으로">&#8592;</button><h2>노래 추천하기</h2></div>
+  <form class="sticker addplan" id="songForm" autocomplete="off" novalidate>
+    <label class="lbl" for="songLink">🔗 노래 링크</label>
+    <input class="field" id="songLink" type="url" inputmode="url" maxlength="500" placeholder="여기에 붙여 넣기">
+    <span class="linkok" id="songLinkOk" hidden></span>
+    <p class="hint" style="margin:0">유튜브·멜론·스포티파이 등에서 '공유 → 링크 복사' 한 걸 붙여 넣어요. 링크가 없으면 비워 둬도 돼요(유튜브 검색으로 연결해 드려요).</p>
+    <label class="lbl" for="songTitle">🎵 노래 제목</label>
+    <input class="field" id="songTitle" maxlength="60" placeholder="예: 밤양갱">
+    <label class="lbl" for="songArtist">🎤 가수</label>
+    <input class="field" id="songArtist" maxlength="60" placeholder="예: 비비">
+    <label class="lbl" for="songNote">💬 한마디 (안 써도 돼요)</label>
+    <input class="field" id="songNote" maxlength="100" placeholder="예: 퇴근길에 들어 봐">
+    <p class="formerr" id="songErr" hidden></p>
+    <button class="btn sun" id="songSend" type="submit">보내기</button>
+  </form>
+  <p class="hint" id="songHint"></p>
+</section>
+
+<section class="view" id="review" hidden>
+  <div class="top"><button class="btn icon toMusic" type="button" aria-label="음악 나눔으로">&#8592;</button><h2>감상평 쓰기</h2></div>
+  <div class="sticker song" id="revSong"></div>
+  <form class="sticker addplan" id="revForm" autocomplete="off">
+    <span class="lbl">⭐ 몇 점?</span>
+    <div class="bigstars" id="revStars" role="group" aria-label="별점"></div>
+    <span class="lbl">😀 들은 기분</span>
+    <div class="emos" id="revEmos" role="group" aria-label="들은 기분"></div>
+    <label class="lbl" for="revInput">✍️ 한 줄 감상</label>
+    <input class="field" id="revInput" maxlength="60" placeholder="예: 후렴 중독성 미쳤다">
+    <div class="cnt" id="revCnt">0 / 60</div>
+    <p class="formerr" id="revErr" hidden></p>
+    <button class="btn sun" type="submit" id="revSend">감상평 남기기</button>
+  </form>
+  <p class="hint" id="revHint"></p>
 </section>
 
 <section class="view" id="stats" hidden>
@@ -907,7 +998,7 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review'];
   function show(id){
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
@@ -999,6 +1090,7 @@ function Rules(N){
   function okStr(s,max){return typeof s==='string'&&s.length<=max;}
   function okNum(n){return typeof n==='number'&&isFinite(n)&&n>=0;}
   var DRE=/^\d{4}-\d{2}-\d{2}$/;
+  var EMOS=['😍','🔥','🥰','😢','🕺','😴','🤔'];
   function validItem(it){
     if(!it||typeof it!=='object'||Array.isArray(it)||!okStr(it.id,80)||!it.id||!okNum(it.u)||(it.w!==0&&it.w!==1))return false;
     if(it.x!==undefined&&it.x!==1)return false;
@@ -1009,6 +1101,8 @@ function Rules(N){
       case 'w':return DRE.test(it.d)&&it.id==='w'+it.d+'-'+it.w&&okStr(it.s,100);
       case 'r':return it.id==='r'+it.w&&okNum(it.t);
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
+      case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
+      case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
       case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
     }
     return false;
@@ -1345,6 +1439,130 @@ function Rules(N){
     put({id:b.id,k:'b',w:b.w,g:b.g,s:b.s,pd:1});
   }
 
+
+  // ----- 음악 나눔 -----
+  // 노래(m): 링크 l, 제목 t, 가수 a, 한마디 s, 올린 시각 at. 감상평(v): 노래 하나에 상대가 하나, 별 st, 기분 e, 한 줄 s
+  var mf=-1,revId='',revSt=0,revE='',DISC=['#FF5D8F','#8FD3FF','#FFD23F','#B9A6FF','#7BE0AD','#FFA86B'];
+  function songs(){return items('m').filter(function(m){return !m.x;}).sort(function(a,b){return b.at-a.at||(a.id<b.id?1:-1);});}
+  function reviewOf(m){var v=store['v'+m.id];return v&&!v.x&&v.w===1-m.w?v:null;}
+  function waiting(){if(me===null)return [];return songs().filter(function(m){return m.w!==me&&!reviewOf(m);});}
+  function siteOf(l){
+    if(!l)return '';
+    var h='';try{h=new URL(l).hostname.toLowerCase();}catch(e){return '';}
+    var list=[['youtu','유튜브'],['melon','멜론'],['spotify','스포티파이'],['music.apple','애플뮤직'],['genie','지니'],['flo','플로'],['vibe.naver','바이브'],['bugs','벅스'],['soundcloud','사운드클라우드']];
+    for(var i=0;i<list.length;i++)if(h.indexOf(list[i][0])>=0)return list[i][1];
+    return '링크';
+  }
+  function cleanLink(v){
+    v=(v||'').trim();if(!v)return '';
+    var m=v.match(/https?:\/\/\S+/i);if(m)v=m[0];
+    else if(/^[\w.-]+\.[a-z]{2,}(\/\S*)?$/i.test(v))v='https://'+v;
+    else return null;
+    try{var u=new URL(v);if(u.protocol!=='http:'&&u.protocol!=='https:')return null;return u.href.slice(0,500);}catch(e){return null;}
+  }
+  function playUrl(m){return m.l||'https://www.youtube.com/results?search_query='+encodeURIComponent((m.t+' '+m.a).trim());}
+  function discColor(m){var h=0;for(var i=0;i<m.id.length;i++)h=(h*31+m.id.charCodeAt(i))%9973;return DISC[h%DISC.length];}
+  function whenLabel(t){
+    var d=new Date(t),td=today(),dd=ymd(d),diff=dnum(td)-dnum(dd);
+    if(diff===0)return '오늘 '+clock(t);if(diff===1)return '어제';
+    var p=dpart(dd);return p.m+'월 '+p.d+'일';
+  }
+  function starsHtml(n){var h='';for(var i=1;i<=5;i++)h+=i<=n?'★':'<span class="off">★</span>';return '<span class="stars" aria-label="별 '+n+'개">'+h+'</span>';}
+  function songHead(m){
+    return '<div class="shd"><span class="mini '+(m.w?'w':'b')+'"></span><span><b>'+NAMES[m.w]+'</b>'+(m.w?'가':'이')+' 추천</span><span class="when">'+whenLabel(m.at)+'</span>'
+      +(m.w===me?'<button class="sdel" type="button" data-sdel="'+esc(m.id)+'">지우기</button>':'')+'</div>'
+      +'<div class="srow"><div class="disc" style="--c:'+discColor(m)+'" aria-hidden="true"></div><div class="sinfo"><div class="t">'+esc(m.t)+'</div>'
+      +(m.a?'<div class="a">'+esc(m.a)+'</div>':'')+'<span class="site">▶ '+(m.l?siteOf(m.l):'유튜브 검색')+'</span></div></div>'
+      +(m.s?'<p class="say">“'+esc(m.s)+'”</p>':'');
+  }
+  function playBtn(m,txt,cls){return '<a class="btn play'+(cls||'')+'" href="'+esc(playUrl(m))+'" target="_blank" rel="noopener noreferrer">'+txt+'</a>';}
+  function renderMusic(){
+    var all=songs(),list=all.filter(function(m){return mf<0||m.w===mf;}),h='';
+    $('musicFilt').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.f===mf));});
+    list.forEach(function(m){
+      var v=reviewOf(m),wait=m.w!==me&&!v;
+      h+='<div class="sticker song'+(wait?' wait':'')+'">'+songHead(m);
+      if(v){
+        h+='<div class="rv"><div class="h"><span class="mini '+(v.w?'w':'b')+'"></span>'+NAMES[v.w]+'의 감상평 '+starsHtml(v.st)+(v.e?'<span class="emo">'+v.e+'</span>':'')+'</div>'
+          +(v.s?'<p>'+esc(v.s)+'</p>':'')+(v.w===me?'<button class="ed" type="button" data-rev="'+esc(m.id)+'">감상평 고치기</button>':'')+'</div>';
+        h+=playBtn(m,'▶ 들으러 가기','');
+      }else if(wait){
+        h+='<div class="btns">'+playBtn(m,'▶ 들으러 가기','')+'<button class="btn sun play" type="button" data-rev="'+esc(m.id)+'">✍️ 감상평 쓰기</button></div>';
+      }else{
+        h+='<p class="hint" style="margin:0">'+NAMES[1-m.w]+'의 감상평을 기다리는 중…</p>'+playBtn(m,'▶ 들으러 가기','');
+      }
+      h+='</div>';
+    });
+    if(!list.length)h='<p class="none">'+(all.length?'이 사람이 추천한 노래는 아직 없어요.':'아직 추천한 노래가 없어요. 첫 노래를 보내 보세요!')+'</p>';
+    $('songList').innerHTML=h;
+  }
+  function renderMusicTile(){
+    var w=waiting(),bd=$('musicBadge'),pv=$('musicPreview');
+    bd.hidden=!w.length;bd.textContent=w.length>99?'99+':w.length;
+    var all=songs(),last=null;
+    if(me!==null)all.forEach(function(m){var v=reviewOf(m);if(m.w===me&&v&&(!last||v.u>last.u))last=v;});
+    if(w.length)pv.innerHTML='<b>'+NAMES[1-me]+'</b>'+(me===0?'가':'이')+' 추천한 노래가 왔어요. 들어 보고 감상평 남겨 주세요!';
+    else if(last&&store[last.m]&&Date.now()-last.u<3*DAY)pv.innerHTML='<b>'+NAMES[last.w]+'</b>의 감상평: “'+esc(store[last.m].t)+'” '+'★'.repeat(last.st)+(last.s?' '+esc(last.s):'');
+    else if(all.length)pv.innerHTML='최근 노래: <b>'+esc(all[0].t)+'</b>'+(all[0].a?' · '+esc(all[0].a):'');
+    else pv.textContent='노래를 서로 추천하고 감상평을 남겨요';
+    $('musicTile').setAttribute('aria-label','음악 나눔'+(w.length?', 감상평 기다리는 노래 '+w.length+'개':''));
+  }
+  function openSongForm(){
+    ['songLink','songTitle','songArtist','songNote'].forEach(function(id){$(id).value='';});
+    $('songErr').hidden=true;checkLink();
+    $('songSend').textContent=NAMES[1-me]+'에게 보내기';
+    $('songHint').textContent='보내면 '+NAMES[1-me]+' 폰 홈 화면에 빨간 숫자가 떠요.';
+    go('song');
+  }
+  function checkLink(){
+    var v=$('songLink').value,c=cleanLink(v),ok=$('songLinkOk');
+    if(!v.trim()){ok.hidden=true;return;}
+    ok.hidden=false;ok.classList.toggle('bad',c===null);
+    ok.textContent=c===null?'✗ 링크 모양이 아니에요. 다시 복사해 붙여 주세요':'✓ '+(siteOf(c)==='링크'?'링크':siteOf(c)+' 링크')+'예요';
+  }
+  function sendSong(){
+    if(!needMe())return;
+    var l=cleanLink($('songLink').value),t=$('songTitle').value.trim().slice(0,60),a=$('songArtist').value.trim().slice(0,60),s=$('songNote').value.trim().slice(0,100),err=$('songErr');
+    if(l===null){err.textContent='링크 모양이 이상해요. 다시 복사해 붙이거나 비워 주세요.';err.hidden=false;return;}
+    if(!t){err.textContent='노래 제목을 적어 주세요.';err.hidden=false;$('songTitle').focus();return;}
+    err.hidden=true;
+    put({id:uid('m'),k:'m',w:me,at:Date.now(),l:l,t:t,a:a,s:s});
+    mf=-1;go('music');renderMusic();
+  }
+  function askDelSong(id){
+    var m=store[id];if(!m||m.x||m.w!==me)return;
+    openModal('이 노래 지울까요?','<p>“'+esc(m.t)+'”와 감상평이 두 폰에서 모두 사라져요.</p>',[
+      ['그대로 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[id];if(c&&!c.x&&c.w===me)put({id:c.id,k:'m',w:c.w,at:c.at,l:'',t:'',a:'',s:'',x:1});}]
+    ]);
+  }
+  function openReview(id){
+    var m=store[id];if(!m||m.x||me===null||m.w===me)return;
+    revId=id;var v=reviewOf(m);
+    revSt=v?v.st:0;revE=v?v.e:'';$('revInput').value=v?v.s:'';$('revErr').hidden=true;
+    $('revSend').textContent=v?'감상평 고치기':'감상평 남기기';
+    $('revHint').textContent='남긴 뒤에도 고칠 수 있어요. '+NAMES[m.w]+' 폰에 바로 보여요.';
+    go('review');renderRevSong();renderRevForm();
+  }
+  function renderRevSong(){
+    var m=store[revId];
+    if(!m||m.x){$('revSong').innerHTML='<p class="none">이 노래는 지워졌어요.</p>';$('revForm').hidden=true;return;}
+    $('revForm').hidden=false;
+    $('revSong').innerHTML=songHead(m)+'<div class="btns">'+playBtn(m,'▶ 듣기','')+'</div>';
+  }
+  function renderRevForm(){
+    var h='';for(var i=1;i<=5;i++)h+='<button type="button" class="'+(i<=revSt?'on':'')+'" data-st="'+i+'" aria-label="별 '+i+'개" aria-pressed="'+(i===revSt)+'">★</button>';
+    $('revStars').innerHTML=h;
+    $('revEmos').innerHTML=EMOS.map(function(e){return '<button type="button" data-e="'+e+'" aria-pressed="'+(e===revE)+'">'+e+'</button>';}).join('');
+    $('revCnt').textContent=$('revInput').value.length+' / 60';
+  }
+  function sendReview(){
+    var m=store[revId];if(!m||m.x||me===null||m.w===me)return;
+    if(!revSt){$('revErr').textContent='별점을 골라 주세요.';$('revErr').hidden=false;return;}
+    put({id:'v'+m.id,k:'v',w:me,m:m.id,st:revSt,e:revE,s:$('revInput').value.trim().slice(0,60)});
+    go('music');renderMusic();
+  }
+
   // ----- 홈 카드 -----
   function renderHomeStore(){
     var td=today();
@@ -1360,6 +1578,7 @@ function Rules(N){
     var up=plans().filter(function(p){return p.d>=td;})[0],cp=$('calPreview');
     if(up){var diff=dnum(up.d)-dnum(td);cp.innerHTML='<b>'+(diff?'D-'+diff:'오늘')+'</b> '+esc(up.s);}
     else cp.textContent='약속을 같이 적어요';
+    renderMusicTile();
   }
   function renderStore(){
     renderHomeStore();renderBet();
@@ -1367,6 +1586,8 @@ function Rules(N){
     if(!$('cal').hidden)renderCal();
     if(!$('word').hidden)renderWord();
     if(!$('stats').hidden)renderStats();
+    if(!$('music').hidden)renderMusic();
+    if(!$('review').hidden)renderRevSong();
   }
 
   // ----- 버튼 -----
@@ -1378,6 +1599,21 @@ function Rules(N){
   $('calTile').addEventListener('click',function(){if(!needMe())return;selD='';go('cal');renderCal();});
   $('wordCard').addEventListener('click',function(){if(!needMe())return;go('word');renderWord();});
   $('vsCard').addEventListener('click',function(){go('stats');renderStats();});
+  $('musicTile').addEventListener('click',function(){if(!needMe())return;go('music');renderMusic();});
+  $('songNew').addEventListener('click',function(){if(needMe())openSongForm();});
+  $('musicFilt').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;mf=+b.dataset.f;renderMusic();});
+  $('songList').addEventListener('click',function(e){
+    var b=e.target.closest('[data-rev]');if(b){openReview(b.dataset.rev);return;}
+    b=e.target.closest('[data-sdel]');if(b)askDelSong(b.dataset.sdel);
+  });
+  $('revSong').addEventListener('click',function(e){var b=e.target.closest('[data-sdel]');if(b)askDelSong(b.dataset.sdel);});
+  $('songForm').addEventListener('submit',function(e){e.preventDefault();sendSong();});
+  $('songLink').addEventListener('input',checkLink);
+  $('revStars').addEventListener('click',function(e){var b=e.target.closest('[data-st]');if(!b)return;revSt=+b.dataset.st;$('revErr').hidden=true;renderRevForm();});
+  $('revEmos').addEventListener('click',function(e){var b=e.target.closest('[data-e]');if(!b)return;revE=revE===b.dataset.e?'':b.dataset.e;renderRevForm();});
+  $('revInput').addEventListener('input',function(){$('revCnt').textContent=$('revInput').value.length+' / 60';});
+  $('revForm').addEventListener('submit',function(e){e.preventDefault();sendReview();});
+  document.querySelectorAll('.toMusic').forEach(function(b){b.addEventListener('click',function(){go('music');renderMusic();});});
   $('chatForm').addEventListener('submit',function(e){e.preventDefault();sendChat();$('chatInput').focus();});
   $('calPrev').addEventListener('click',function(){calM--;if(calM<0){calM=11;calY--;}renderCal();});
   $('calNext').addEventListener('click',function(){calM++;if(calM>11){calM=0;calY++;}renderCal();});
