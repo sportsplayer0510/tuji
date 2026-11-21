@@ -2,3 +2,9 @@
 [build]
   publish = "."
   command = ""
+
+# 폰이 앱 설치 정보를 정확히 알아보도록 형식 지정
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
