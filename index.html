@@ -365,7 +365,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <div class="betline" id="betLine" hidden>🎯 <b>내기</b><span class="sp" id="betLineText"></span><button class="btn" id="betEditBtn" type="button" hidden>바꾸기</button></div>
   <form class="sticker addplan betbox" id="betBox" hidden autocomplete="off">
     <b>🎯 이번 판 내기 걸기</b>
-    <p class="hint">지는 사람이 할 일을 적어요. 안 걸어도 그냥 둘 수 있어요.</p>
+    <p class="hint">지는 사람이 할 일을 적어요. 판이 끝나기 전엔 언제든 걸고 바꿀 수 있어요.</p>
     <input class="field" id="betInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
     <div class="chips" id="betChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
     <div class="actions"><button class="btn" id="betCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
@@ -1048,7 +1048,7 @@ function Rules(N){
   var store={},seen={},postQ=Promise.resolve(),saveT=0,retryT=0,readT=0;
   var DAY=86400000,FRESH=11*3600000,KEEP=45*DAY;
   var SUBJ=['지원이','지우가'],WD='일월화수목금토';
-  var betEditing=false,calY=0,calM=0,selD='';
+  var betNote='',betEditing=false,calY=0,calM=0,selD='';
   var enc8=window.TextEncoder?new TextEncoder():null;
   function bytes(str){return enc8?enc8.encode(str).length:str.length*3;}
   function pad(n){return (n<10?'0':'')+n;}
@@ -1087,10 +1087,17 @@ function Rules(N){
     list.forEach(function(it){
       if(!validItem(it))return;
       var cur=store[it.id];
-      if(!cur||newer(it,cur)){store[it.id]=it;cur=it;changed=true;}
+      if(!cur||newer(it,cur)){
+        var was=cur;store[it.id]=it;cur=it;changed=true;
+        // 상대가 지금 판에 내기를 걸거나 바꾸거나 빼면 알려 줘요
+        if(it.k==='b'&&game&&!game.over&&it.g===game.gid&&me!==null&&it.w!==me&&!quiet){
+          betNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
+        }
+      }
       if(t&&!newer(cur,it)){var s=seen[it.id];if(!s||s.u!==cur.u||s.t<t){seen[it.id]={u:cur.u,t:t};changed=true;}}
     });
     if(changed){prune();saveStore();renderStore();}
+    if(betNote){var n=betNote;betNote='';say(n,canPlay()?'mine':'');}
   }
   // 대화는 이 폰에 최근 2000개까지만 남겨요
   function prune(){
@@ -1304,7 +1311,7 @@ function Rules(N){
   function betOf(gid){var b=store['b'+gid];return b&&!b.x&&b.s?b:null;}
   function betResult(g){var b=g&&betOf(g.gid);return b&&g.over&&g.winner>=0?SUBJ[1-g.winner]+' '+b.s:'';}
   function renderBet(){
-    var g=game,b=g&&betOf(g.gid),fresh0=g&&!g.over&&!g.moves.length;
+    var g=game,b=g&&betOf(g.gid),fresh0=!!(g&&!g.over); // 판이 안 끝났으면 언제든 걸고 바꿀 수 있어요
     if(!fresh0)betEditing=false;
     var line=$('betLine'),box=$('betBox'),open=$('betOpen');
     box.hidden=!(fresh0&&betEditing&&me!==null);
@@ -1323,7 +1330,7 @@ function Rules(N){
     if(hb)$('homeBetText').textContent='지는 사람이 '+b.s;
   }
   function openBet(){
-    if(!game||game.over||game.moves.length||me===null)return;
+    if(!game||game.over||me===null)return;
     var b=betOf(game.gid);
     $('betInput').value=b?b.s:'';
     betEditing=true;renderBet();
@@ -1331,7 +1338,6 @@ function Rules(N){
   }
   function saveBet(){
     if(!game||game.over||me===null)return;
-    if(game.moves.length){betEditing=false;renderBet();say('벌써 첫 수를 둬서 내기는 못 바꿔요.','no');return;}
     var text=$('betInput').value.trim().slice(0,40);
     if(!text){$('betInput').focus();return;}
     betEditing=false;
@@ -1343,7 +1349,7 @@ function Rules(N){
   function cancelBet(){
     betEditing=false;
     var b=game&&betOf(game.gid);
-    if(b&&!game.moves.length&&!game.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    if(b&&!game.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
     else renderBet();
   }
 
