@@ -32,7 +32,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--ground);color:var(--ink);font-family:var(--body);font-weight:500;font-size:15px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-weight:500;font-size:15px;line-height:1.5;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
 button{touch-action:manipulation;font-family:inherit;color:inherit;cursor:pointer}
 button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .app{max-width:492px;margin:0 auto;padding:20px 16px 32px;display:flex;flex-direction:column;gap:16px}
@@ -117,7 +117,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 @keyframes hop{to{transform:translateY(-18%)}}
 .banmark{color:var(--ban);font-weight:700;font-size:min(4.4vw,21px);line-height:1}
 .actions{display:flex;gap:10px}
-.actions .btn{flex:1}
+.actions .btn{flex:1;white-space:nowrap;padding:0 10px}
 .actions .go{flex:1.6}
 .hint{margin:0;font-size:13px;color:var(--muted)}
 
@@ -141,6 +141,132 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .install p{margin:0;color:var(--muted);font-size:14px}
 .linkbtn{align-self:center;border:0;background:none;padding:8px;font-size:13px;color:var(--muted);text-decoration:underline}
 #confetti{position:fixed;inset:0;z-index:11;pointer-events:none;width:100%;height:100%}
+
+/* 오늘의 한마디 · 홈 카드 */
+.vs{cursor:pointer;position:relative;padding-bottom:28px;font:inherit;color:inherit;width:100%;text-align:center}
+.vs:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.vs .more{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:var(--muted)}
+.word{padding:14px 16px;display:flex;flex-direction:column;gap:8px;font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer}
+.word:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.word .hd{display:flex;align-items:center;gap:8px}
+.word .hd b{font-family:var(--display);font-weight:400;font-size:20px}
+.word .hd span{margin-left:auto;font-size:12px;color:var(--muted)}
+.line{display:flex;gap:10px;align-items:baseline;min-width:0}
+.line .nm{flex:none;padding:0 10px;border:2px solid var(--ink);border-radius:999px;background:var(--sun);font-family:var(--display);font-size:14px}
+.line .nm.u{background:var(--pink)}
+.line .q{font-size:15px;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.line .q.empty{color:var(--muted)}
+.betline{display:flex;align-items:center;gap:8px;padding:8px 12px;border:3px dashed var(--ink);border-radius:14px;background:#fff;font-size:14px;flex-wrap:wrap}
+.betline[hidden]{display:none}
+.betline b{font-family:var(--display);font-weight:400;font-size:16px}
+.betline .sp{flex:1;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.betline .btn{min-height:38px;font-size:15px;padding:0 12px;box-shadow:2px 2px 0 var(--ink)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{position:relative;padding:14px;display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-width:0}
+.tile:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.tile h2{margin:0;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.1}
+.tile p{margin:0;color:var(--muted);font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+.tile p b{color:var(--ink)}
+.ticon{width:48px;height:48px;border:3px solid var(--ink);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;transform:rotate(-5deg)}
+.ticon.talk{background:var(--pink)}
+.ticon.cal{background:var(--sun);transform:rotate(4deg)}
+.badge{position:absolute;top:-10px;right:-8px;min-width:30px;height:30px;padding:0 8px;border:3px solid var(--ink);border-radius:999px;background:var(--pink);font-family:var(--display);font-size:16px;display:flex;align-items:center;justify-content:center;transform:rotate(6deg)}
+.badge[hidden]{display:none}
+.chatempty{margin:auto;padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* 대화방 */
+.chatbox{padding:14px 12px;display:flex;flex-direction:column;gap:8px;min-height:50vh}
+.day{align-self:center;padding:2px 12px;border:2px solid var(--ink);border-radius:999px;background:var(--ground);font-size:12px;margin:6px 0}
+.msg{display:flex;flex-direction:column;max-width:80%;gap:2px}
+.msg.them{align-self:flex-start}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg .who{font-family:var(--display);font-size:14px;margin-left:4px}
+.bubble{padding:9px 13px;border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:3px 3px 0 var(--ink);word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg.them .bubble{border-top-left-radius:6px}
+.msg.mine .bubble{background:var(--sun);border-top-right-radius:6px}
+.meta{font-size:11px;color:var(--muted);margin:0 4px}
+.meta b{color:var(--pink);font-weight:700}
+.composer{position:sticky;bottom:12px;display:flex;gap:8px;padding:8px;align-items:center;margin:0}
+.composer .field{flex:1}
+.composer .btn{min-height:48px;flex:none}
+
+/* 달력 · 일정 · 한마디 입력 */
+.addplan{padding:16px;display:flex;flex-direction:column;gap:10px;margin:0}
+.addplan b{font-family:var(--display);font-weight:400;font-size:20px}
+.field{width:100%;min-height:48px;padding:0 12px;border:3px solid var(--ink);border-radius:14px;background:#fff;font:inherit;font-size:16px;color:var(--ink);min-width:0}
+.field:focus{outline:3px solid var(--pink);outline-offset:2px}
+.addrow{display:flex;gap:8px}
+.addrow .field{flex:1}
+.addrow .btn{flex:none}
+.sec{margin:4px 2px -6px;font-family:var(--display);font-size:18px}
+.plans{display:flex;flex-direction:column;gap:12px}
+.none{margin:0;padding:4px 2px;color:var(--muted);font-size:14px}
+.plan{padding:12px 12px 12px 14px;display:flex;align-items:center;gap:12px}
+.dday{flex:none;width:64px;padding:6px 0;border:3px solid var(--ink);border-radius:14px;background:var(--sun);text-align:center;font-family:var(--display);font-size:18px;line-height:1.1;transform:rotate(-3deg)}
+.dday small{display:block;font-family:var(--body);font-size:11px}
+.dday.today{background:var(--pink)}
+.plan .txt{flex:1;min-width:0}
+.plan .t{font-family:var(--display);font-size:19px;line-height:1.25;word-break:keep-all;overflow-wrap:anywhere}
+.plan .s{font-size:12px;color:var(--muted)}
+.del{flex:none;width:42px;min-height:42px;padding:0;font-size:18px;box-shadow:2px 2px 0 var(--ink)}
+.plan.past{opacity:.6;box-shadow:2px 2px 0 var(--ink)}
+.plan.past .dday{background:var(--paper)}
+.cal{padding:14px}
+.calhd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.calhd b{flex:1;text-align:center;font-family:var(--display);font-weight:400;font-size:24px}
+.calhd .btn{width:44px;min-height:44px;padding:0;font-size:18px;box-shadow:2px 2px 0 var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.grid .wd{font-size:12px;color:var(--muted);padding-bottom:2px}
+.grid .wd:first-child{color:var(--ban)}
+.d{aspect-ratio:1;border:2px solid transparent;border-radius:12px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 0 0;font-family:var(--display);font-size:16px;gap:2px;min-width:0}
+.d.o{color:#9a98a3}
+.d.sun{color:var(--ban)}
+.d.o.sun{color:#e08a9c}
+.d.today{border-color:var(--ink);background:var(--ground)}
+.d.sel{border-color:var(--ink);background:var(--sun);box-shadow:2px 2px 0 var(--ink)}
+.dots{display:flex;gap:3px;min-height:7px}
+.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink);background:var(--sun)}
+.dots i.u{background:var(--pink)}
+.d.sel .dots i:not(.u){background:#fff}
+.legend{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink);background:var(--sun);margin-right:4px;vertical-align:0}
+.legend i.u{background:var(--pink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:40px;padding:0 14px;border:3px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:14px}
+.chips button.on{background:var(--sun)}
+.betbox[hidden]{display:none}
+.daycard{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.daycard .dt{font-family:var(--display);font-size:17px}
+
+/* 전적판 */
+.big{padding:18px;display:flex;flex-direction:column;gap:14px}
+.big .vs{padding:0;cursor:default}
+.big .vs:active{transform:none;box-shadow:none}
+.bar{display:flex;height:26px;border:3px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.bar i{display:block;height:100%}
+.bar i.a{background:var(--sun)}
+.bar i.b{background:var(--pink)}
+.bar i.a+i.b{border-left:3px solid var(--ink)}
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.stat div{padding:8px 4px;border:3px solid var(--ink);border-radius:14px;background:#fff}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:18px;line-height:1.2}
+.stat span{font-size:12px;color:var(--muted)}
+.rec{padding:12px 14px;display:flex;align-items:center;gap:12px}
+.rec .wl{flex:none;width:56px;padding:4px 0;border:3px solid var(--ink);border-radius:12px;text-align:center;font-family:var(--display);font-size:15px;background:var(--sun);transform:rotate(-3deg)}
+.rec .wl.u{background:var(--pink)}
+.rec .wl.dr{background:var(--paper)}
+.rec .txt{flex:1;min-width:0}
+.rec .t{font-family:var(--display);font-size:17px}
+.rec .s{font-size:12px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.paid{flex:none;min-height:36px;font-size:12px;padding:3px 10px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-family:var(--body)}
+.paid.no{background:var(--sun);font-weight:700;box-shadow:2px 2px 0 var(--ink)}
+.gamerow{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.gamerow .nm{flex:1;font-family:var(--display);font-size:20px}
+.gamerow .sc{font-family:var(--display);font-size:22px}
+.gamerow .thumb{width:44px;height:44px}
+.gamerow .thumb i{width:16px;height:16px}
+.gamerow .thumb i:nth-child(1){left:5px;top:5px}
+.gamerow .thumb i:nth-child(2){right:5px;bottom:5px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -155,11 +281,18 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   </div>
   <p class="sub">지원이랑 지우, 지 둘이라서 투지.</p>
 
-  <div class="sticker vs" aria-label="오목 전적">
-    <div class="who"><span class="name">지원</span><span class="score" id="score0">0</span></div>
-    <div class="mid">VS</div>
-    <div class="who"><span class="name">지우</span><span class="score" id="score1">0</span></div>
-  </div>
+  <button class="sticker word" id="wordCard" type="button">
+    <span class="hd"><b>오늘의 한마디</b><span id="wordDate"></span></span>
+    <span class="line"><span class="nm">지원</span><span class="q" id="wordHome0"></span></span>
+    <span class="line"><span class="nm u">지우</span><span class="q" id="wordHome1"></span></span>
+  </button>
+
+  <button class="sticker vs" id="vsCard" type="button" aria-label="전적판 보기">
+    <span class="who"><span class="name">지원</span><span class="score" id="score0">0</span></span>
+    <span class="mid">VS</span>
+    <span class="who"><span class="name">지우</span><span class="score" id="score1">0</span></span>
+    <span class="more">전적판 보기 ›</span>
+  </button>
 
   <div class="sticker me">
     <span>이 폰은</span>
@@ -177,7 +310,13 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
         <p id="homeGame">렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.</p>
       </div>
     </div>
+    <div class="betline" id="homeBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeBetText"></span></div>
     <button class="btn sun" id="startBtn" type="button">한 판 붙기</button>
+  </div>
+
+  <div class="duo">
+    <button class="sticker tile" id="chatTile" type="button"><span class="badge" id="chatBadge" hidden></span><span class="ticon talk" aria-hidden="true">💬</span><h2>대화방</h2><p id="chatPreview">둘만 보는 대화방</p></button>
+    <button class="sticker tile" id="calTile" type="button"><span class="ticon cal" aria-hidden="true">📅</span><h2>공유 달력</h2><p id="calPreview">약속을 같이 적어요</p></button>
   </div>
 
   <p class="note" id="homeNote" hidden></p>
@@ -188,10 +327,6 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="btn" id="installBtn" type="button" hidden>홈 화면에 추가</button>
   </div>
 
-  <div class="slot">
-    <b>다음 기능 자리</b>
-    <span>여기에 하나씩 추가할 거예요.</span>
-  </div>
   <button class="linkbtn" id="relockBtn" type="button">다른 암호로 들어가기</button>
 </section>
 
@@ -207,6 +342,16 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <div class="chip" id="chip1"><div class="mini" id="chipStone1"></div><div><div class="n">지우<small id="meTag1" hidden>나</small></div><div class="t" id="chipText1"></div></div></div>
   </div>
 
+  <div class="betline" id="betLine" hidden>🎯 <b>내기</b><span class="sp" id="betLineText"></span><button class="btn" id="betEditBtn" type="button" hidden>바꾸기</button></div>
+  <form class="sticker addplan betbox" id="betBox" hidden autocomplete="off">
+    <b>🎯 이번 판 내기 걸기</b>
+    <p class="hint">지는 사람이 할 일을 적어요. 안 걸어도 그냥 둘 수 있어요.</p>
+    <input class="field" id="betInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
+    <div class="chips" id="betChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
+    <div class="actions"><button class="btn" id="betCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
+  </form>
+  <button class="btn" id="betOpen" type="button" hidden>🎯 이번 판 내기 걸기</button>
+
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
   <div class="boardwrap"><div class="board" id="board"></div></div>
@@ -217,6 +362,58 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="btn" id="quitBtn" type="button">기권</button>
   </div>
   <p class="hint" id="hint">자리를 누르고 한 번 더 누르면 놓여요. 상대가 두면 바로 보여요. 빨간 ✕는 흑이 못 두는 자리예요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</p>
+</section>
+
+<section class="view" id="chat" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>대화방</h2></div>
+  <div class="sticker chatbox" id="chatList" aria-live="polite"></div>
+  <form class="sticker composer" id="chatForm" autocomplete="off">
+    <input class="field" id="chatInput" maxlength="1000" enterkeyhint="send" aria-label="보낼 말">
+    <button class="btn sun" type="submit">보내기</button>
+  </form>
+</section>
+
+<section class="view" id="cal" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>공유 달력</h2></div>
+  <div class="sticker cal">
+    <div class="calhd"><button class="btn" id="calPrev" type="button" aria-label="이전 달">‹</button><b id="calTitle"></b><button class="btn" id="calNext" type="button" aria-label="다음 달">›</button></div>
+    <div class="grid" id="calGrid"></div>
+    <div class="legend"><span><i></i>지원이 적음</span><span><i class="u"></i>지우가 적음</span></div>
+  </div>
+  <p class="sec" id="selTitle"></p>
+  <div class="plans" id="selPlans"></div>
+  <form class="sticker addplan" id="planForm" autocomplete="off">
+    <b>이날 일정 추가</b>
+    <div class="addrow"><input class="field" id="planInput" maxlength="60" placeholder="예: 영화 보기" aria-label="일정 내용"><button class="btn sun" type="submit">추가</button></div>
+  </form>
+  <p class="sec">다가오는 일정</p>
+  <div class="plans" id="upPlans"></div>
+</section>
+
+<section class="view" id="word" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘의 한마디</h2></div>
+  <form class="sticker addplan" id="wordForm" autocomplete="off">
+    <b id="wordFormTitle">오늘 내 한마디</b>
+    <div class="addrow"><input class="field" id="wordInput" maxlength="80" placeholder="오늘의 한 줄" aria-label="오늘의 한마디"><button class="btn sun" type="submit">저장</button></div>
+    <p class="hint">하루에 한 줄. 그날 안에는 몇 번이든 고칠 수 있어요.</p>
+  </form>
+  <div class="sticker daycard" id="wordToday"></div>
+  <p class="sec">지난 한마디</p>
+  <div class="plans" id="wordPast"></div>
+</section>
+
+<section class="view" id="stats" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>전적판</h2></div>
+  <div class="sticker big">
+    <div class="vs"><span class="who"><span class="name">지원</span><span class="score" id="stScore0">0</span></span><span class="mid">VS</span><span class="who"><span class="name">지우</span><span class="score" id="stScore1">0</span></span></div>
+    <div class="bar" id="stBar"></div>
+    <div class="stat"><div><b id="stTotal">0판</b><span>모두</span></div><div><b id="stStreak">–</b><span>지금 기세</span></div><div><b id="stUnpaid">0개</b><span>아직 안 한 내기</span></div></div>
+  </div>
+  <p class="sec">게임별</p>
+  <div class="sticker gamerow"><div class="thumb" aria-hidden="true"><i></i><i></i></div><span class="nm">오목</span><span class="sc" id="stOmok">0 : 0</span></div>
+  <div class="slot"><b>새 게임 자리</b><span>게임이 늘어나면 여기에 같이 쌓여요.</span></div>
+  <p class="sec">최근 판</p>
+  <div class="plans" id="stRecent"></div>
 </section>
 
 </div>
@@ -234,7 +431,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <form class="sticker modal" id="lockForm" autocomplete="off">
     <div class="pair" aria-hidden="true"><div class="mini b"></div><div class="mini w"></div></div>
     <h3>둘만 아는 암호</h3>
-    <p>지원이랑 지우가 같은 암호를 넣어야 같은 판에서 만나요. 암호를 모르면 판도 전적도 볼 수 없어요.</p>
+    <p>지원이랑 지우가 같은 암호를 넣어야 같은 판에서 만나요. 암호를 모르면 판도 대화도 볼 수 없어요.</p>
     <input id="lockInput" type="password" inputmode="text" aria-label="암호" placeholder="암호 (4글자 이상)" autocomplete="off">
     <div class="err" id="lockErr" role="alert"></div>
     <button class="btn sun" type="submit">들어가기</button>
@@ -432,11 +629,12 @@ function Rules(N){
     document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.seat===me));});
     var tag=$('linkTag');
     tag.classList.toggle('ok',live());tag.classList.toggle('off',mode==='off');
-    $('linkText').textContent=live()?'같이 두는 중':mode==='off'?'연결 안 됨':'연결 중';
+    $('linkText').textContent=live()?'연결됨':mode==='off'?'연결 안 됨':'연결 중';
     var hg='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.';
     if(game&&live()&&!game.over&&game.moves.length)hg='지금 대국 중 · '+game.moves.length+'수째 · '+NAMES[who(turn)]+' 차례';
     $('homeGame').textContent=hg;
     $('homeGame').classList.toggle('now',hg!=='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.');
+    if(store)renderHomeStore();
     if(!game){$('goBtn').disabled=$('undoBtn').disabled=$('quitBtn').disabled=true;return;}
 
     var last=game.moves.length?game.moves[game.moves.length-1]:null;
@@ -472,6 +670,7 @@ function Rules(N){
     $('goBtn').disabled=!canPlay()||!sel;
     $('undoBtn').disabled=!canUndo();
     $('quitBtn').disabled=!canQuit();
+    if(typeof renderBet==='function'&&store)renderBet();
   }
 
   function canUndo(){
@@ -492,7 +691,7 @@ function Rules(N){
     g.moves.forEach(function(m){R.set(m[0],m[1],m[2]);});
     turn=g.moves.length%2===0?1:2;
     var newGame=!prev||prev.gid!==g.gid;
-    if(newGame){sel=null;closeModal();stopConfetti();}
+    if(newGame){sel=null;betEditing=false;closeModal();stopConfetti();}
     if(!newGame&&g.moves.length>prev.moves.length){
       var lm=g.moves[g.moves.length-1];fresh=lm[0]+','+lm[1];
     }
@@ -521,13 +720,17 @@ function Rules(N){
     var c=g.winner===g.blackIdx?1:2;
     return colorName(c)+'돌 '+(g.win||[]).length+'목 완성. '+NAMES[1-g.winner]+', 설욕전 가야죠?';
   }
+  function endHtml(g,sc){
+    var br=betResult(g);
+    return '<p>'+endBody(g)+'</p>'+(br?'<div class="betline">🎯 <b>내기</b><span class="sp">'+esc(br)+'</span></div>':'')+'<p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>';
+  }
   function celebrate(g){
     if(g.winner>=0)startConfetti();
     var gid=g.gid;
     setTimeout(function(){
       if(!game||game.gid!==gid||!game.over)return;
       var sc=scores();
-      openModal(endTitle(game),'<p>'+endBody(game)+'</p><p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>',[
+      openModal(endTitle(game),endHtml(game,sc),[
         ['한 판 더 (흑백 바꿔서)','sun',rematch],
         ['판 보기','',closeModal]
       ]);
@@ -578,16 +781,28 @@ function Rules(N){
   }
   function saveLocal(){try{localStorage.setItem('tuji-state-'+NTFY.slice(-12),packet());}catch(e){}}
   // 받은 판 반영. 번호가 같거나 더 크면 따라가요(두 폰이 같은 순서로 받으니 결국 같은 판이 돼요).
-  function receive(text,id){
+  function receive(text,id,time){
     if(id)lastMsgId=id;
     var o;try{o=JSON.parse(text);}catch(e){return;}
+    // 대화·달력·한마디·내기 같은 기록 묶음
+    if(o&&o.v===1&&Array.isArray(o.s)){
+      var t=id&&okNum(time)?(time<1e11?time*1000:time):0;
+      storeIn(o.s,t);return;
+    }
     // 새 폰이 "안녕" 하면, 판을 가진 폰이 지금 판을 다시 보내 줘요
-    if(o&&o.v===1&&o.hello){if(o.hello!==clientId&&seq>0&&game&&!quiet)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});return;}
+    if(o&&o.v===1&&o.hello){
+      if(o.hello!==clientId&&!quiet){
+        if(seq>0&&game)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
+        healStore(true);
+      }
+      return;
+    }
     if(!o||o.v!==1||typeof o.n!=='number'||!isFinite(o.n)||!o.g||!valid(o.g))return;
     if(id&&o.n>serverMax)serverMax=o.n;
     tally=mergeTally(tally,o.t);
     if(o.n>=seq){seq=o.n;apply(dec(o.g));}
-    syncTally();render();saveLocal();
+    syncTally();
+    render();saveLocal();
   }
 
   // 바뀐 판을 저장하고 상대 폰으로 보내기
@@ -600,6 +815,7 @@ function Rules(N){
     fetch(NTFY,{method:'POST',body:packet()}).then(function(r){
       if(!r.ok)throw new Error('send '+r.status);
       if(mode!=='live'){mode='live';note('');}
+      if(g.over&&game&&game.gid===g.gid)ensureRecord(game);
     }).catch(function(){
       if(game===g){seq=before.n;tally=before.t;apply(before.g);saveLocal();}
       say('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
@@ -691,7 +907,27 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  function show(id){$('home').hidden=id!=='home';$('game').hidden=id!=='game';window.scrollTo(0,0);}
+  var VIEWS=['home','game','chat','cal','word','stats'];
+  function show(id){
+    VIEWS.forEach(function(v){$(v).hidden=v!==id;});
+    window.scrollTo(0,0);
+    if(id==='home')render();
+  }
+  // 폰의 '뒤로' 버튼으로도 홈에 돌아오게 기록을 남겨요
+  function go(id){
+    try{if(history.state&&history.state.v)history.replaceState({v:id},'');else history.pushState({v:id},'');}catch(e){}
+    show(id);
+  }
+  function goHome(){
+    if(history.state&&history.state.v){try{history.back();return;}catch(e){}}
+    show('home');
+  }
+  window.addEventListener('popstate',function(){
+    var v=history.state&&history.state.v;
+    if(v&&VIEWS.indexOf(v)>0&&!(v!=='stats'&&me===null)){show(v);if(v==='chat'){renderChat(true);markRead();}else renderStore();}
+    else{closeModal();show('home');}
+  });
+  try{if(history.state&&history.state.v)history.replaceState(null,'');}catch(e){}
   boardEl.addEventListener('click',function(e){
     var c=e.target.closest('.cell');
     if(c)tap(+c.dataset.x,+c.dataset.y);
@@ -700,20 +936,20 @@ function Rules(N){
     b.addEventListener('click',function(){
       me=+b.dataset.seat;
       try{localStorage.setItem('tuji-me',String(me));}catch(e){}
-      sel=null;render();if(game&&!game.over)sayTurn();
+      sel=null;render();renderStore();if(game&&!game.over)sayTurn();
     });
   });
   $('startBtn').addEventListener('click',function(){
     if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return;}
-    show('game');
+    go('game');
     if(game&&game.over)celebrateAgain();
   });
   function celebrateAgain(){
     var sc=scores();
-    openModal(endTitle(game),'<p>'+endBody(game)+'</p><p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>',[
+    openModal(endTitle(game),endHtml(game,sc),[
       ['한 판 더 (흑백 바꿔서)','sun',rematch],['판 보기','',closeModal]]);
   }
-  $('backBtn').addEventListener('click',function(){render();show('home');});
+  $('backBtn').addEventListener('click',goHome);
   $('goBtn').addEventListener('click',function(){if(sel)place(sel[0],sel[1]);});
   $('undoBtn').addEventListener('click',undo);
   $('quitBtn').addEventListener('click',function(){
@@ -742,6 +978,422 @@ function Rules(N){
   });
   function note(t){var n=$('homeNote');n.textContent=t||'';n.hidden=!t;}
 
+  // ===== 같이 쓰는 기록: 대화 · 달력 · 한마디 · 내기 · 판 기록 =====
+  // 기록 하나하나에 이름표(id)와 고친 시각(u)이 있어서, 두 폰이 서로 받은 걸 합치면 늘 같은 모양이 돼요.
+  // 우편함은 12시간만 보관하니까, 폰을 열 때마다 우편함에서 사라진 최근 기록은 다시 올려 줘요.
+  var store={},seen={},postQ=Promise.resolve(),saveT=0,retryT=0,readT=0;
+  var DAY=86400000,FRESH=11*3600000,KEEP=45*DAY;
+  var SUBJ=['지원이','지우가'],WD='일월화수목금토';
+  var betEditing=false,calY=0,calM=0,selD='';
+  var enc8=window.TextEncoder?new TextEncoder():null;
+  function bytes(str){return enc8?enc8.encode(str).length:str.length*3;}
+  function pad(n){return (n<10?'0':'')+n;}
+  function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function today(){return ymd(new Date());}
+  function dnum(s){var p=s.split('-');return Math.round(Date.UTC(+p[0],+p[1]-1,+p[2])/DAY);}
+  function dpart(s){var p=s.split('-');return {y:+p[0],m:+p[1],d:+p[2],w:WD.charAt(new Date(+p[0],+p[1]-1,+p[2]).getDay())};}
+  function dlabel(s){var p=dpart(s);return p.m+'월 '+p.d+'일 ('+p.w+')';}
+  function clock(t){var d=new Date(t),h=d.getHours();return (h<12?'오전 ':'오후 ')+((h%12)||12)+':'+pad(d.getMinutes());}
+  function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function okStr(s,max){return typeof s==='string'&&s.length<=max;}
+  function okNum(n){return typeof n==='number'&&isFinite(n)&&n>=0;}
+  var DRE=/^\d{4}-\d{2}-\d{2}$/;
+  function validItem(it){
+    if(!it||typeof it!=='object'||Array.isArray(it)||!okStr(it.id,80)||!it.id||!okNum(it.u)||(it.w!==0&&it.w!==1))return false;
+    if(it.x!==undefined&&it.x!==1)return false;
+    var x=it.x===1;
+    switch(it.k){
+      case 'c':return it.id.charAt(0)==='c'&&okStr(it.s,1000)&&!!it.s&&okNum(it.at);
+      case 'p':return it.id.charAt(0)==='p'&&okStr(it.s,100)&&(x||!!it.s)&&DRE.test(it.d);
+      case 'w':return DRE.test(it.d)&&it.id==='w'+it.d+'-'+it.w&&okStr(it.s,100);
+      case 'r':return it.id==='r'+it.w&&okNum(it.t);
+      case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
+      case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
+    }
+    return false;
+  }
+  function newer(a,b){if(a.u!==b.u)return a.u>b.u;return JSON.stringify(a)>JSON.stringify(b);}
+  function items(k){var out=[];for(var id in store)if(store[id].k===k)out.push(store[id]);return out;}
+  function byAt(a,b){return a.at-b.at||(a.id<b.id?-1:a.id>b.id?1:0);}
+  function delivered(it){var s=seen[it.id];return !!(s&&s.u===it.u);}
+  // 받은 기록 합치기. t = 우편함에 올라간 시각(우편함에서 받은 경우)
+  function storeIn(list,t){
+    var changed=false;
+    list.forEach(function(it){
+      if(!validItem(it))return;
+      var cur=store[it.id];
+      if(!cur||newer(it,cur)){store[it.id]=it;cur=it;changed=true;}
+      if(t&&!newer(cur,it)){var s=seen[it.id];if(!s||s.u!==cur.u||s.t<t){seen[it.id]={u:cur.u,t:t};changed=true;}}
+    });
+    if(changed){prune();saveStore();renderStore();}
+  }
+  // 대화는 이 폰에 최근 2000개까지만 남겨요
+  function prune(){
+    var cs=items('c');
+    if(cs.length>2000){cs.sort(byAt).slice(0,cs.length-2000).forEach(function(c){delete store[c.id];delete seen[c.id];});}
+  }
+  function storeKey(){return 'tuji-store-'+NTFY.slice(-12);}
+  function flushStore(){
+    clearTimeout(saveT);saveT=0;
+    if(NTFY)try{localStorage.setItem(storeKey(),JSON.stringify({s:store,seen:seen}));}catch(e){}
+  }
+  function saveStore(){
+    clearTimeout(saveT);
+    saveT=setTimeout(flushStore,200);
+  }
+  // 앱을 닫거나 다른 앱으로 넘어갈 때는 바로 저장해요
+  window.addEventListener('pagehide',function(){if(saveT)flushStore();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&saveT)flushStore();});
+  function loadStore(){
+    try{
+      var o=JSON.parse(localStorage.getItem(storeKey())||'null');
+      if(o&&o.s&&typeof o.s==='object'){
+        for(var id in o.s){var it=o.s[id];if(validItem(it)&&it.id===id)store[id]=it;}
+        if(o.seen&&typeof o.seen==='object')for(var k in o.seen){var s=o.seen[k];if(store[k]&&s&&okNum(s.u)&&okNum(s.t))seen[k]={u:s.u,t:s.t};}
+      }
+    }catch(e){}
+  }
+  // 새 기록을 이 폰에 적고 상대 폰으로 보내기
+  function put(it){
+    var cur=store[it.id];
+    it.u=Math.max(Date.now(),cur?cur.u+1:0);
+    store[it.id]=it;
+    prune();saveStore();renderStore();
+    send([it]);
+  }
+  // 우편함 한 통에 4KB 넘게 못 넣으니 나눠서 차례로 보내요
+  function send(list){
+    if(!NTFY||!list.length)return;
+    var batch=[],size=0;
+    function flush(){
+      if(!batch.length)return;
+      var sent=batch.slice(),body=JSON.stringify({v:1,k:clientId,s:sent});
+      batch=[];size=0;
+      postQ=postQ.then(function(){
+        return fetch(NTFY,{method:'POST',body:body}).then(function(r){
+          if(!r.ok)throw new Error('send '+r.status);
+          var t=Date.now();
+          sent.forEach(function(it){var c=store[it.id];if(c&&c.u===it.u){var s=seen[it.id];if(!s||s.u!==c.u||s.t<t)seen[it.id]={u:c.u,t:t};}});
+          saveStore();renderStore();
+        }).catch(function(){
+          // 인터넷이 불안하면 조금 뒤 못 보낸 것만 다시 보내요
+          clearTimeout(retryT);retryT=setTimeout(function(){healStore(false);},8000);
+        });
+      });
+    }
+    list.forEach(function(it){
+      var n=bytes(JSON.stringify(it))+1;
+      if(size+n>3400)flush();
+      batch.push(it);size+=n;
+    });
+    flush();
+  }
+  // 최근 기록 중 우편함에 없는 것(12시간 지나 사라졌거나 못 보낸 것)을 다시 올려요. force면 최근 기록 전부.
+  function healStore(force){
+    if(!NTFY)return;
+    clearTimeout(retryT);
+    var t=Date.now(),td=today();
+    var recentChat={};items('c').sort(byAt).slice(-80).forEach(function(c){recentChat[c.id]=1;});
+    var out=[];
+    for(var id in store){
+      var it=store[id],recent=t-it.u<KEEP,keep;
+      if(it.k==='c')keep=recentChat[id]&&recent;
+      else if(it.k==='p')keep=recent||(!it.x&&it.d>=td);
+      else if(it.k==='r')keep=true;
+      else keep=recent;
+      if(!keep)continue;
+      var s=seen[id];
+      if(!force&&s&&s.u===it.u&&s.t>t-FRESH)continue;
+      out.push(it);
+    }
+    out.sort(function(a,b){return a.u-b.u;});
+    send(out);
+  }
+
+  // ----- 대화방 -----
+  function chats(){return items('c').sort(byAt);}
+  function readOf(w){var r=store['r'+w];return r?r.t:0;}
+  function unread(){
+    if(me===null)return 0;
+    var t=readOf(me),n=0;
+    items('c').forEach(function(c){if(c.w!==me&&c.at>t)n++;});
+    return n;
+  }
+  function viewing(id){return !$(id).hidden&&document.visibilityState!=='hidden';}
+  // 대화방을 보고 있으면 읽었다고 상대에게 알려요(잠깐 모아서 한 번에)
+  function markRead(){
+    if(me===null||!viewing('chat'))return;
+    var last=0;items('c').forEach(function(c){if(c.at>last)last=c.at;});
+    if(last<=readOf(me))return;
+    clearTimeout(readT);
+    readT=setTimeout(function(){
+      if(me===null||!viewing('chat'))return;
+      var l=0;items('c').forEach(function(c){if(c.at>l)l=c.at;});
+      if(l>readOf(me))put({id:'r'+me,k:'r',w:me,t:l});
+    },600);
+  }
+  function nearBottom(){return window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-160;}
+  function toBottom(){window.scrollTo(0,document.documentElement.scrollHeight);}
+  function renderChat(force){
+    var box=$('chatList'),list=chats(),stick=force||nearBottom();
+    var other=me===null?1:1-me,rt=readOf(other),lastRead=null;
+    list.forEach(function(c){if(c.w===me&&c.at<=rt)lastRead=c.id;});
+    var html='',lastDay='',prevW=-1;
+    if(!list.length)html='<p class="chatempty">아직 대화가 없어요.<br>먼저 말을 걸어 보세요!</p>';
+    var td=today(),yd=ymd(new Date(Date.now()-DAY));
+    list.slice(-400).forEach(function(c){
+      var d=ymd(new Date(c.at));
+      if(d!==lastDay){html+='<div class="day">'+(d===td?'오늘':d===yd?'어제':dlabel(d).replace(/ \((.)\)$/,' $1요일'))+'</div>';lastDay=d;prevW=-1;}
+      var mine=me!==null&&c.w===me,meta=clock(c.at);
+      if(mine){
+        if(!delivered(c))meta='보내는 중… · '+meta;
+        else if(c.id===lastRead)meta='<b>읽음</b> · '+meta;
+      }
+      html+='<div class="msg '+(mine?'mine':'them')+'">'+(!mine&&prevW!==c.w?'<span class="who">'+NAMES[c.w]+'</span>':'')
+        +'<div class="bubble">'+esc(c.s)+'</div><span class="meta">'+meta+'</span></div>';
+      prevW=c.w;
+    });
+    box.innerHTML=html;
+    $('chatInput').placeholder=(me===null?'':NAMES[1-me]+'에게 ')+'보낼 말';
+    if(stick)toBottom();
+  }
+  function sendChat(){
+    var inp=$('chatInput'),text=inp.value.replace(/\s+$/,'').replace(/^\s+/,'');
+    if(!text||me===null)return;
+    inp.value='';
+    put({id:uid('c'),k:'c',w:me,at:Date.now(),s:text.slice(0,1000)});
+    renderChat(true);
+    markRead();
+  }
+
+  // ----- 공유 달력 -----
+  function plans(){return items('p').filter(function(p){return !p.x;}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(a.u-b.u);});}
+  function planHtml(p,td){
+    var diff=dnum(p.d)-dnum(td),dp=dpart(p.d),chip;
+    if(diff===0)chip='<div class="dday today">오늘</div>';
+    else if(diff>0)chip='<div class="dday">D-'+diff+'<small>'+dp.m+'/'+dp.d+'</small></div>';
+    else chip='<div class="dday">끝<small>'+dp.m+'/'+dp.d+'</small></div>';
+    return '<div class="sticker plan'+(diff<0?' past':'')+'">'+chip+'<div class="txt"><div class="t">'+esc(p.s)+'</div><div class="s">'+dlabel(p.d)+' · '+SUBJ[p.w]+' 적음</div></div>'
+      +'<button class="btn del" type="button" data-del="'+esc(p.id)+'" aria-label="'+esc(p.s)+' 지우기">✕</button></div>';
+  }
+  function renderCal(){
+    var td=today();
+    if(!selD){selD=td;var p=dpart(td);calY=p.y;calM=p.m-1;}
+    $('calTitle').textContent=calY+'년 '+(calM+1)+'월';
+    var byDay={};plans().forEach(function(p){(byDay[p.d]=byDay[p.d]||[]).push(p);});
+    var first=new Date(calY,calM,1),start=new Date(calY,calM,1-first.getDay());
+    var html='';for(var i=0;i<7;i++)html+='<div class="wd">'+WD.charAt(i)+'</div>';
+    var weeks=Math.ceil((first.getDay()+new Date(calY,calM+1,0).getDate())/7);
+    for(var k=0;k<weeks*7;k++){
+      var dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+k),ds=ymd(dt),list=byDay[ds]||[];
+      var cls='d'+(dt.getMonth()!==calM?' o':'')+(dt.getDay()===0?' sun':'')+(ds===td?' today':'')+(ds===selD?' sel':'');
+      var dots='';list.slice(0,3).forEach(function(p){dots+='<i'+(p.w===1?' class="u"':'')+'></i>';});
+      html+='<button type="button" class="'+cls+'" data-d="'+ds+'" aria-label="'+dlabel(ds)+(list.length?' 일정 '+list.length+'개':'')+'">'+dt.getDate()+'<span class="dots">'+dots+'</span></button>';
+    }
+    $('calGrid').innerHTML=html;
+    $('selTitle').textContent=dlabel(selD)+(selD===td?' · 오늘':'');
+    var sel=byDay[selD]||[];
+    $('selPlans').innerHTML=sel.length?sel.map(function(p){return planHtml(p,td);}).join(''):'<p class="none">이날은 아직 일정이 없어요.</p>';
+    var up=plans().filter(function(p){return p.d>=td&&p.d!==selD;}).slice(0,20);
+    $('upPlans').innerHTML=up.length?up.map(function(p){return planHtml(p,td);}).join(''):'<p class="none">다가오는 일정이 없어요.</p>';
+  }
+  function addPlan(){
+    var inp=$('planInput'),text=inp.value.trim();
+    if(!text||me===null)return;
+    inp.value='';
+    put({id:uid('p'),k:'p',w:me,d:selD,s:text.slice(0,60)});
+  }
+  function askDelPlan(id){
+    var p=store[id];if(!p||p.x)return;
+    openModal('이 일정을 지울까요?','<p><b>'+esc(p.s)+'</b><br>'+dlabel(p.d)+'</p><p>지우면 두 폰 모두에서 사라져요.</p>',[
+      ['그냥 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[id];if(c&&!c.x&&me!==null)put({id:c.id,k:'p',w:c.w,d:c.d,s:c.s,x:1});}]
+    ]);
+  }
+
+  // ----- 오늘의 한마디 -----
+  function wordOf(d,w){var it=store['w'+d+'-'+w];return it&&!it.x&&it.s?it.s:'';}
+  function lineHtml(w,s,emptyText){return '<span class="line"><span class="nm'+(w?' u':'')+'">'+NAMES[w]+'</span><span class="q'+(s?'':' empty')+'">'+(s?esc(s):emptyText)+'</span></span>';}
+  function renderWord(){
+    var td=today();
+    $('wordFormTitle').textContent=dlabel(td)+' 내 한마디';
+    var inp=$('wordInput');
+    if(document.activeElement!==inp||inp.dataset.d!==td){inp.value=me===null?'':wordOf(td,me);inp.dataset.d=td;}
+    $('wordToday').innerHTML='<div class="dt">오늘</div>'+lineHtml(0,wordOf(td,0),'아직 안 썼어요')+lineHtml(1,wordOf(td,1),'아직 안 썼어요');
+    var days={};items('w').forEach(function(it){if(!it.x&&it.s&&it.d<td)days[it.d]=1;});
+    var list=Object.keys(days).sort().reverse().slice(0,60);
+    $('wordPast').innerHTML=list.length?list.map(function(d){
+      return '<div class="sticker daycard"><div class="dt">'+dlabel(d)+'</div>'+lineHtml(0,wordOf(d,0),'안 썼어요')+lineHtml(1,wordOf(d,1),'안 썼어요')+'</div>';
+    }).join(''):'<p class="none">지난 한마디가 여기에 쌓여요.</p>';
+  }
+  function saveWord(){
+    if(me===null)return;
+    var td=today(),text=$('wordInput').value.trim().slice(0,80),id='w'+td+'-'+me,cur=store[id];
+    $('wordInput').blur();
+    if(!text){if(cur&&!cur.x)put({id:id,k:'w',w:me,d:td,s:'',x:1});return;}
+    if(cur&&!cur.x&&cur.s===text)return;
+    put({id:id,k:'w',w:me,d:td,s:text});
+  }
+
+  // ----- 내기 -----
+  function betOf(gid){var b=store['b'+gid];return b&&!b.x&&b.s?b:null;}
+  function betResult(g){var b=g&&betOf(g.gid);return b&&g.over&&g.winner>=0?SUBJ[1-g.winner]+' '+b.s:'';}
+  function renderBet(){
+    var g=game,b=g&&betOf(g.gid),fresh0=g&&!g.over&&!g.moves.length;
+    if(!fresh0)betEditing=false;
+    var line=$('betLine'),box=$('betBox'),open=$('betOpen');
+    box.hidden=!(fresh0&&betEditing&&me!==null);
+    open.hidden=!(fresh0&&!b&&!betEditing&&me!==null);
+    line.hidden=!b||betEditing&&fresh0;
+    if(b){
+      var txt=g.over&&g.winner>=0?betResult(g):'지는 사람이 '+b.s;
+      $('betLineText').textContent=txt;
+    }
+    $('betEditBtn').hidden=!(b&&fresh0&&me!==null);
+    var chips=$('betChips').children,v=$('betInput').value.trim();
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].textContent===v);
+    $('betCancel').textContent=b?'내기 빼기':'내기 없이';
+    var hb=g&&!g.over&&b;
+    $('homeBet').hidden=!hb;
+    if(hb)$('homeBetText').textContent='지는 사람이 '+b.s;
+  }
+  function openBet(){
+    if(!game||game.over||game.moves.length||me===null)return;
+    var b=betOf(game.gid);
+    $('betInput').value=b?b.s:'';
+    betEditing=true;renderBet();
+    $('betInput').focus();
+  }
+  function saveBet(){
+    if(!game||game.over||me===null)return;
+    if(game.moves.length){betEditing=false;renderBet();say('벌써 첫 수를 둬서 내기는 못 바꿔요.','no');return;}
+    var text=$('betInput').value.trim().slice(0,40);
+    if(!text){$('betInput').focus();return;}
+    betEditing=false;
+    // 아직 아무도 안 둔 첫 판이면 판부터 상대 폰과 맞춰요(같은 판에 내기가 걸리게)
+    if(seq===0)commit(clone(game),null);
+    put({id:'b'+game.gid,k:'b',w:me,g:game.gid,s:text});
+    $('betInput').blur();
+  }
+  function cancelBet(){
+    betEditing=false;
+    var b=game&&betOf(game.gid);
+    if(b&&!game.moves.length&&!game.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    else renderBet();
+  }
+
+  // ----- 판 기록과 전적판 -----
+  function ensureRecord(g){
+    if(!g||!g.over||store['g'+g.gid])return;
+    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:g.moves.length,at:Date.now()});
+  }
+  // 승패는 언제나 공유 전적을 따라가요(동시 기권 같은 엇갈림이 있어도 점수와 같게)
+  function records(){
+    return items('g').map(function(r){
+      var w=Object.prototype.hasOwnProperty.call(tally.r,r.g)?tally.r[r.g]:(r.g<=tally.f?r.wn:null);
+      return w===null||w===undefined?null:{r:r,w:w};
+    }).filter(Boolean).sort(function(a,b){return b.r.at-a.r.at;});
+  }
+  function renderStats(){
+    var sc=scores(),tot=sc[0]+sc[1];
+    $('stScore0').textContent=sc[0];$('stScore1').textContent=sc[1];
+    var draws=0;for(var k in tally.r)if(tally.r[k]===-1)draws++;
+    $('stTotal').textContent=(tot+draws)+'판';
+    $('stOmok').textContent=sc[0]+' : '+sc[1];
+    $('stBar').innerHTML=tot?(sc[0]?'<i class="a" style="flex:'+sc[0]+'"></i>':'')+(sc[1]?'<i class="b" style="flex:'+sc[1]+'"></i>':''):'';
+    var recs=records(),streak=0,sw=-1;
+    for(var i=0;i<recs.length;i++){
+      var w=recs[i].w;
+      if(w<0)break;
+      if(sw<0)sw=w;
+      if(w!==sw)break;
+      streak++;
+    }
+    $('stStreak').textContent=streak>=2?NAMES[sw]+' '+streak+'연승':streak===1?NAMES[sw]+' 1승째':'–';
+    var unpaid=0;
+    recs.forEach(function(x){var b=betOf(x.r.g);if(b&&x.w>=0&&!b.pd)unpaid++;});
+    $('stUnpaid').textContent=unpaid+'개';
+    var RS={five:'5목',resign:'기권',draw:'무승부'};
+    $('stRecent').innerHTML=recs.length?recs.slice(0,30).map(function(x){
+      var r=x.r,b=betOf(r.g),dd=new Date(r.at),chip,sub,btn='';
+      if(x.w>=0)chip='<div class="wl'+(x.w===1?' u':'')+'">'+NAMES[x.w]+' 승</div>';
+      else chip='<div class="wl dr">무승부</div>';
+      sub=(dd.getMonth()+1)+'월 '+dd.getDate()+'일 · ';
+      if(b&&x.w>=0){
+        sub+='🎯 '+esc(SUBJ[1-x.w]+' '+b.s);
+        btn=b.pd?'<button class="paid" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙 했음">✓ 했어요</button>':'<button class="paid no" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙을 했으면 누르기">했으면 누르기</button>';
+      }else sub+=b?'🎯 '+esc(b.s)+' (비김)':'내기 없음';
+      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">오목 · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
+    }).join(''):'<p class="none">이제부터 끝난 판이 여기에 쌓여요.</p>';
+  }
+  function togglePaid(id){
+    var b=store[id];if(!b||b.x||me===null)return;
+    if(b.pd){
+      openModal('아직 안 했어요?','<p>"'+esc(b.s)+'" 내기를 다시 안 한 걸로 바꿀까요?</p>',[
+        ['그대로 둘래','sun',closeModal],
+        ['안 한 걸로','',function(){closeModal();var c=store[id];if(c)put({id:c.id,k:'b',w:c.w,g:c.g,s:c.s,pd:0});}]
+      ]);
+      return;
+    }
+    put({id:b.id,k:'b',w:b.w,g:b.g,s:b.s,pd:1});
+  }
+
+  // ----- 홈 카드 -----
+  function renderHomeStore(){
+    var td=today();
+    $('wordDate').textContent=dlabel(td);
+    $('wordHome0').textContent=wordOf(td,0)||'아직 안 썼어요';$('wordHome0').classList.toggle('empty',!wordOf(td,0));
+    $('wordHome1').textContent=wordOf(td,1)||'아직 안 썼어요';$('wordHome1').classList.toggle('empty',!wordOf(td,1));
+    var n=unread(),bd=$('chatBadge');
+    bd.hidden=!n;bd.textContent=n>99?'99+':n;
+    var cs=chats(),last=cs[cs.length-1],pv=$('chatPreview');
+    if(last)pv.innerHTML='<b>'+NAMES[last.w]+':</b> '+esc(last.s);
+    else pv.textContent='둘만 보는 대화방';
+    $('chatTile').setAttribute('aria-label','대화방'+(n?', 안 읽은 글 '+n+'개':''));
+    var up=plans().filter(function(p){return p.d>=td;})[0],cp=$('calPreview');
+    if(up){var diff=dnum(up.d)-dnum(td);cp.innerHTML='<b>'+(diff?'D-'+diff:'오늘')+'</b> '+esc(up.s);}
+    else cp.textContent='약속을 같이 적어요';
+  }
+  function renderStore(){
+    renderHomeStore();renderBet();
+    if(!$('chat').hidden){renderChat(false);markRead();}
+    if(!$('cal').hidden)renderCal();
+    if(!$('word').hidden)renderWord();
+    if(!$('stats').hidden)renderStats();
+  }
+
+  // ----- 버튼 -----
+  function needMe(){
+    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return false;}
+    return true;
+  }
+  $('chatTile').addEventListener('click',function(){if(!needMe())return;go('chat');renderChat(true);markRead();setTimeout(function(){toBottom();},50);});
+  $('calTile').addEventListener('click',function(){if(!needMe())return;selD='';go('cal');renderCal();});
+  $('wordCard').addEventListener('click',function(){if(!needMe())return;go('word');renderWord();});
+  $('vsCard').addEventListener('click',function(){go('stats');renderStats();});
+  $('chatForm').addEventListener('submit',function(e){e.preventDefault();sendChat();$('chatInput').focus();});
+  $('calPrev').addEventListener('click',function(){calM--;if(calM<0){calM=11;calY--;}renderCal();});
+  $('calNext').addEventListener('click',function(){calM++;if(calM>11){calM=0;calY++;}renderCal();});
+  $('calGrid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-d]');if(!b)return;
+    selD=b.dataset.d;var p=dpart(selD);calY=p.y;calM=p.m-1;renderCal();
+  });
+  $('cal').addEventListener('click',function(e){var b=e.target.closest('[data-del]');if(b)askDelPlan(b.dataset.del);});
+  $('planForm').addEventListener('submit',function(e){e.preventDefault();addPlan();});
+  $('wordForm').addEventListener('submit',function(e){e.preventDefault();saveWord();});
+  $('stRecent').addEventListener('click',function(e){var b=e.target.closest('[data-paid]');if(b)togglePaid(b.dataset.paid);});
+  $('betOpen').addEventListener('click',openBet);
+  $('betEditBtn').addEventListener('click',openBet);
+  $('betCancel').addEventListener('click',cancelBet);
+  $('betBox').addEventListener('submit',function(e){e.preventDefault();saveBet();});
+  $('betInput').addEventListener('input',renderBet);
+  $('betChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('betInput').value=b.textContent;renderBet();});
+  document.querySelectorAll('.back').forEach(function(b){b.addEventListener('click',goHome);});
+  // 자정이 지나면 '오늘'을 새로 그려요
+  setInterval(function(){var td=today();if(td!==renderStore.day){renderStore.day=td;renderStore();}},60000);
+  renderStore.day=today();
+
   // 시작: 이 폰에 남은 판 → 우편함에 쌓인 판 → 실시간으로 듣기
   render();if(!game)say('판 불러오는 중…');
 
@@ -751,7 +1403,7 @@ function Rules(N){
     }).then(function(t){
       t.split('\n').forEach(function(line){
         if(!line)return;
-        try{var m=JSON.parse(line);if(m.event==='message')receive(m.message,m.id);}catch(e){}
+        try{var m=JSON.parse(line);if(m.event==='message')receive(m.message,m.id,m.time);}catch(e){}
       });
     });
   }
@@ -760,7 +1412,7 @@ function Rules(N){
     try{es=new EventSource(NTFY+'/sse?since='+(lastMsgId||'all'));}catch(e){return;}
     es.onopen=function(){mode='live';note('');render();if(game&&!game.over)sayTurn();};
     es.onmessage=function(e){
-      try{var m=JSON.parse(e.data);if(m.event==='message')receive(m.message,m.id);}catch(err){}
+      try{var m=JSON.parse(e.data);if(m.event==='message')receive(m.message,m.id,m.time);}catch(err){}
     };
     es.onerror=function(){if(mode==='live'){mode='wait';render();}};
   }
@@ -778,6 +1430,7 @@ function Rules(N){
       render();if(!game.over)sayTurn();
       listen();
       heal();
+      healStore(false);
     }).catch(function(){
       quiet=false;
       mode='off';
@@ -799,7 +1452,9 @@ function Rules(N){
       NTFY='https://ntfy.sh/'+t;
       try{localStorage.setItem('tuji-key',code);}catch(e){}
       $('lock').hidden=true;
+      loadStore();
       try{var saved=localStorage.getItem('tuji-state-'+NTFY.slice(-12));if(saved)receive(saved,'');}catch(e){}
+      renderStore();
       render();if(!game)say('판 불러오는 중…');
       connect();
     });
@@ -846,7 +1501,7 @@ function Rules(N){
   })();
   // 폰을 잠깐 껐다 켜면 놓친 수를 다시 받아요
   document.addEventListener('visibilitychange',function(){
-    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(function(){heal();listen();}).catch(function(){});
+    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(function(){heal();healStore(false);listen();markRead();renderStore();}).catch(function(){});
   });
 })();
 </script>
