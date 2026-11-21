@@ -267,6 +267,15 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .gamerow .thumb i{width:16px;height:16px}
 .gamerow .thumb i:nth-child(1){left:5px;top:5px}
 .gamerow .thumb i:nth-child(2){right:5px;bottom:5px}
+/* 땅따먹기 */
+.thumb.land{background:var(--paper);transform:rotate(4deg);overflow:hidden}
+.thumb.land svg{position:absolute;inset:0;width:100%;height:100%}
+.gamerow .thumb.land{width:44px;height:44px}
+.landwrap{padding:10px;background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.landwrap svg{display:block;width:100%;height:auto;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none}
+.landwrap .pop{transform-box:fill-box;transform-origin:center;animation:drop .32s cubic-bezier(.3,1.6,.5,1)}
+.landwrap .ln{transition:stroke .15s}
+.landwrap .sel{animation:pulse .6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
 
 /* 음악 나눔 */
 .ticon.mus{background:#8FD3FF;transform:rotate(-3deg)}
@@ -357,6 +366,17 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <div class="betline" id="homeBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeBetText"></span></div>
     <button class="btn sun" id="startBtn" type="button">한 판 붙기</button>
   </div>
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb land" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="9" y="9" width="22" height="22" rx="5" fill="#1D1B26"/><circle cx="16" cy="19" r="2.6" fill="#fff"/><circle cx="24" cy="19" r="2.6" fill="#fff"/><g stroke="#1D1B26" stroke-width="3.5" stroke-linecap="round"><line x1="31" y1="9" x2="53" y2="9"/><line x1="53" y1="9" x2="53" y2="31"/><line x1="9" y1="31" x2="9" y2="53"/></g><line x1="31" y1="31" x2="53" y2="31" stroke="#FF5D8F" stroke-width="3.5" stroke-linecap="round"/><g fill="#FFFDF5" stroke="#1D1B26" stroke-width="2"><circle cx="9" cy="9" r="3.5"/><circle cx="31" cy="9" r="3.5"/><circle cx="53" cy="9" r="3.5"/><circle cx="9" cy="31" r="3.5"/><circle cx="31" cy="31" r="3.5"/><circle cx="53" cy="31" r="3.5"/><circle cx="9" cy="53" r="3.5"/><circle cx="31" cy="53" r="3.5"/><circle cx="53" cy="53" r="3.5"/></g></svg></div>
+      <div>
+        <h2>땅따먹기</h2>
+        <p id="homeLand">점 사이에 선을 그어 네모를 닫으면 내 땅! 땅을 더 많이 차지하면 이겨요.</p>
+      </div>
+    </div>
+    <div class="betline" id="homeLandBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeLandBetText"></span></div>
+    <button class="btn sun" id="landBtn" type="button">한 판 붙기</button>
+  </div>
 
   <div class="duo">
     <button class="sticker tile" id="chatTile" type="button"><span class="badge" id="chatBadge" hidden></span><span class="ticon talk" aria-hidden="true">💬</span><h2>대화방</h2><p id="chatPreview">둘만 보는 대화방</p></button>
@@ -409,6 +429,34 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <p class="hint" id="hint">자리를 누르고 한 번 더 누르면 놓여요. 상대가 두면 바로 보여요. 빨간 ✕는 흑이 못 두는 자리예요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</p>
 </section>
 
+<section class="view" id="land" hidden>
+  <div class="top">
+    <button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>땅따먹기</h2>
+    <button class="btn small" id="lRulesBtn" type="button">규칙</button>
+  </div>
+  <div class="players">
+    <div class="chip" id="lChip0"><div class="mini b"></div><div><div class="n">지원<small id="lMeTag0" hidden>나</small></div><div class="t" id="lChipText0"></div></div></div>
+    <div class="chip" id="lChip1"><div class="mini w"></div><div><div class="n">지우<small id="lMeTag1" hidden>나</small></div><div class="t" id="lChipText1"></div></div></div>
+  </div>
+  <div class="betline" id="lBetLine" hidden>🎯 <b>내기</b><span class="sp" id="lBetLineText"></span><button class="btn" id="lBetEditBtn" type="button" hidden>바꾸기</button></div>
+  <form class="sticker addplan betbox" id="lBetBox" hidden autocomplete="off">
+    <b>🎯 이번 판 내기 걸기</b>
+    <p class="hint">지는 사람이 할 일을 적어요. 판이 끝나기 전엔 언제든 걸고 바꿀 수 있어요.</p>
+    <input class="field" id="lBetInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
+    <div class="chips" id="lBetChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
+    <div class="actions"><button class="btn" id="lBetCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
+  </form>
+  <button class="btn" id="lBetOpen" type="button" hidden>🎯 이번 판 내기 걸기</button>
+  <div class="status" id="lStatus" role="status" aria-live="polite"></div>
+  <div class="landwrap"><svg id="lBoard" viewBox="0 0 340 340" role="img" aria-label="땅따먹기 판"></svg></div>
+  <div class="actions">
+    <button class="btn" id="lUndoBtn" type="button">무르기</button>
+    <button class="btn sun go" id="lGoBtn" type="button">긋기</button>
+    <button class="btn" id="lQuitBtn" type="button">기권</button>
+  </div>
+  <p class="hint">점 두 개 사이를 누르고 한 번 더 누르면 선이 그어져요. 네모를 닫으면 그 땅은 내 것이고 한 번 더 그어요. 무르기는 상대가 다음 선을 긋기 전까지만 돼요.</p>
+</section>
 <section class="view" id="chat" hidden>
   <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>대화방</h2></div>
   <div class="sticker chatbox" id="chatList" aria-live="polite"></div>
@@ -502,7 +550,8 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   </div>
   <p class="sec">게임별</p>
   <div class="sticker gamerow"><div class="thumb" aria-hidden="true"><i></i><i></i></div><span class="nm">오목</span><span class="sc" id="stOmok">0 : 0</span></div>
-  <div class="slot"><b>새 게임 자리</b><span>게임이 늘어나면 여기에 같이 쌓여요.</span></div>
+  <div class="sticker gamerow"><div class="thumb land" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="9" y="9" width="22" height="22" rx="5" fill="#1D1B26"/><circle cx="16" cy="19" r="2.6" fill="#fff"/><circle cx="24" cy="19" r="2.6" fill="#fff"/><g stroke="#1D1B26" stroke-width="4" stroke-linecap="round"><line x1="31" y1="9" x2="53" y2="9"/><line x1="53" y1="9" x2="53" y2="31"/><line x1="9" y1="31" x2="9" y2="53"/></g></svg></div><span class="nm">땅따먹기</span><span class="sc" id="stLand">0 : 0</span></div>
+  <div class="slot"><b>다음 게임 자리</b><span>게임이 늘어나면 여기에 같이 쌓여요.</span></div>
   <p class="sec">최근 판</p>
   <div class="plans" id="stRecent"></div>
 </section>
@@ -726,6 +775,7 @@ function Rules(N){
     $('homeGame').textContent=hg;
     $('homeGame').classList.toggle('now',hg!=='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.');
     if(store)renderHomeStore();
+    if(lgame)lRender();
     if(!game){$('goBtn').disabled=$('undoBtn').disabled=$('quitBtn').disabled=true;return;}
 
     var last=game.moves.length?game.moves[game.moves.length-1]:null;
@@ -859,9 +909,11 @@ function Rules(N){
   }
   // 지금 판의 승패는 언제나 '지금 판'을 따라가요 (동시 기권 같은 엇갈림 정리)
   function syncTally(){
-    if(!game)return;
-    if(game.over)tally.r[game.gid]=game.winner;
-    else delete tally.r[game.gid];
+    [game,lgame].forEach(function(g){
+      if(!g)return;
+      if(g.over)tally.r[g.gid]=g.winner;
+      else delete tally.r[g.gid];
+    });
   }
   // 두 전적 합치기: 같은 판은 한 번만 세요
   function mergeTally(a,o){
@@ -884,8 +936,19 @@ function Rules(N){
     if(o&&o.v===1&&o.hello){
       if(o.hello!==clientId&&!quiet){
         if(seq>0&&game)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
+        if(lseq>0&&lgame)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
         healStore(true);
       }
+      return;
+    }
+    // 땅따먹기 판
+    if(o&&o.v===1&&o.d){
+      if(typeof o.n!=='number'||!isFinite(o.n)||!lValid(o.d))return;
+      if(id&&o.n>lServerMax)lServerMax=o.n;
+      tally=mergeTally(tally,o.t);
+      if(o.n>=lseq){lseq=o.n;lApply(lDec(o.d));}
+      syncTally();
+      render();saveLocal();lSaveLocal();
       return;
     }
     if(!o||o.v!==1||typeof o.n!=='number'||!isFinite(o.n)||!o.g||!valid(o.g))return;
@@ -998,11 +1061,12 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats','music','song','review'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land'];
   function show(id){
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
     if(id==='home')render();
+    if(id==='land')lRender();
   }
   // 폰의 '뒤로' 버튼으로도 홈에 돌아오게 기록을 남겨요
   function go(id){
@@ -1075,7 +1139,7 @@ function Rules(N){
   var store={},seen={},postQ=Promise.resolve(),saveT=0,retryT=0,readT=0;
   var DAY=86400000,FRESH=11*3600000,KEEP=45*DAY;
   var SUBJ=['지원이','지우가'],WD='일월화수목금토';
-  var betNote='',betEditing=false,calY=0,calM=0,selD='';
+  var betNote='',lBetNote='',betEditing=false,calY=0,calM=0,selD='';
   var enc8=window.TextEncoder?new TextEncoder():null;
   function bytes(str){return enc8?enc8.encode(str).length:str.length*3;}
   function pad(n){return (n<10?'0':'')+n;}
@@ -1120,6 +1184,9 @@ function Rules(N){
       if(!cur||newer(it,cur)){
         var was=cur;store[it.id]=it;cur=it;changed=true;
         // 상대가 지금 판에 내기를 걸거나 바꾸거나 빼면 알려 줘요
+        if(it.k==='b'&&lgame&&!lgame.over&&it.g===lgame.gid&&me!==null&&it.w!==me&&!quiet){
+          lBetNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
+        }
         if(it.k==='b'&&game&&!game.over&&it.g===game.gid&&me!==null&&it.w!==me&&!quiet){
           betNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
         }
@@ -1128,6 +1195,7 @@ function Rules(N){
     });
     if(changed){prune();saveStore();renderStore();}
     if(betNote){var n=betNote;betNote='';say(n,canPlay()?'mine':'');}
+    if(lBetNote){var ln=lBetNote;lBetNote='';lSay(ln,lCanPlay()?'mine':'');}
   }
   // 대화는 이 폰에 최근 2000개까지만 남겨요
   function prune(){
@@ -1386,7 +1454,7 @@ function Rules(N){
   // ----- 판 기록과 전적판 -----
   function ensureRecord(g){
     if(!g||!g.over||store['g'+g.gid])return;
-    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:g.moves.length,at:Date.now()});
+    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:(g.moves||g.lines||[]).length,at:Date.now()});
   }
   // 승패는 언제나 공유 전적을 따라가요(동시 기권 같은 엇갈림이 있어도 점수와 같게)
   function records(){
@@ -1400,7 +1468,10 @@ function Rules(N){
     $('stScore0').textContent=sc[0];$('stScore1').textContent=sc[1];
     var draws=0;for(var k in tally.r)if(tally.r[k]===-1)draws++;
     $('stTotal').textContent=(tot+draws)+'판';
-    $('stOmok').textContent=sc[0]+' : '+sc[1];
+    var per={o:tally.b.slice(),l:[0,0]};
+    for(var gk in tally.r){var gw=tally.r[gk];if(gw===0||gw===1)per[isLand(gk)?'l':'o'][gw]++;}
+    $('stOmok').textContent=per.o[0]+' : '+per.o[1];
+    $('stLand').textContent=per.l[0]+' : '+per.l[1];
     $('stBar').innerHTML=tot?(sc[0]?'<i class="a" style="flex:'+sc[0]+'"></i>':'')+(sc[1]?'<i class="b" style="flex:'+sc[1]+'"></i>':''):'';
     var recs=records(),streak=0,sw=-1;
     for(var i=0;i<recs.length;i++){
@@ -1414,7 +1485,7 @@ function Rules(N){
     var unpaid=0;
     recs.forEach(function(x){var b=betOf(x.r.g);if(b&&x.w>=0&&!b.pd)unpaid++;});
     $('stUnpaid').textContent=unpaid+'개';
-    var RS={five:'5목',resign:'기권',draw:'무승부'};
+    var RS={five:'5목',resign:'기권',draw:'무승부',box:'땅 많이'};
     $('stRecent').innerHTML=recs.length?recs.slice(0,30).map(function(x){
       var r=x.r,b=betOf(r.g),dd=new Date(r.at),chip,sub,btn='';
       if(x.w>=0)chip='<div class="wl'+(x.w===1?' u':'')+'">'+NAMES[x.w]+' 승</div>';
@@ -1424,7 +1495,7 @@ function Rules(N){
         sub+='🎯 '+esc(SUBJ[1-x.w]+' '+b.s);
         btn=b.pd?'<button class="paid" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙 했음">✓ 했어요</button>':'<button class="paid no" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙을 했으면 누르기">했으면 누르기</button>';
       }else sub+=b?'🎯 '+esc(b.s)+' (비김)':'내기 없음';
-      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">오목 · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
+      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">'+(isLand(r.g)?'땅따먹기':'오목')+' · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
     }).join(''):'<p class="none">이제부터 끝난 판이 여기에 쌓여요.</p>';
   }
   function togglePaid(id){
@@ -1581,7 +1652,7 @@ function Rules(N){
     renderMusicTile();
   }
   function renderStore(){
-    renderHomeStore();renderBet();
+    renderHomeStore();renderBet();lRenderBet();
     if(!$('chat').hidden){renderChat(false);markRead();}
     if(!$('cal').hidden)renderCal();
     if(!$('word').hidden)renderWord();
@@ -1589,6 +1660,313 @@ function Rules(N){
     if(!$('music').hidden)renderMusic();
     if(!$('review').hidden)renderRevSong();
   }
+
+  // ===== 땅따먹기 =====
+  // 점 6×6, 칸 5×5. 선 번호: 가로선 0~29 (줄 j의 i번째 = j*5+i), 세로선 30~59 (30 + j*6+i)
+  // 판 {gid, first(먼저 긋는 사람), lines[선 번호 순서], over, winner, reason}
+  // 차례와 땅 주인은 lines를 처음부터 다시 따라가며 계산해요(두 폰이 늘 같은 결과).
+  var LN=5,LH=LN*(LN+1),LL=2*LH,LBOX=LN*LN;
+  var LA='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var LP=30,LG=56;
+  var LEDGE=[],LADJ=[];
+  (function(){
+    for(var l=0;l<LL;l++)LADJ.push([]);
+    for(var j=0;j<LN;j++)for(var i=0;i<LN;i++){
+      var b=j*LN+i,e=[j*LN+i,(j+1)*LN+i,LH+j*(LN+1)+i,LH+j*(LN+1)+i+1];
+      LEDGE.push(e);e.forEach(function(l){LADJ[l].push(b);});
+    }
+  })();
+  // 선 l의 양 끝 점 좌표
+  function lEnds(l){
+    if(l<LH){var j=Math.floor(l/LN),i=l%LN;return [LP+i*LG,LP+j*LG,LP+(i+1)*LG,LP+j*LG];}
+    var k=l-LH,jj=Math.floor(k/(LN+1)),ii=k%(LN+1);return [LP+ii*LG,LP+jj*LG,LP+ii*LG,LP+(jj+1)*LG];
+  }
+  function isLand(gid){return String(gid).indexOf('_d')>0;}
+  function lBlank(first){return {gid:'g'+Date.now().toString(36)+'_d'+Math.random().toString(36).slice(2,6),first:first,lines:[],over:false,winner:-1,reason:''};}
+  function lReplay(g){
+    var has={},own=[],by=[],turn=g.first,sc=[0,0],got=0;
+    for(var b=0;b<LBOX;b++)own.push(-1);
+    g.lines.forEach(function(l){
+      has[l]=1;by.push(turn);got=0;
+      LADJ[l].forEach(function(bx){
+        if(own[bx]<0&&LEDGE[bx].every(function(e){return has[e];})){own[bx]=turn;sc[turn]++;got++;}
+      });
+      if(!got)turn=1-turn;
+    });
+    return {has:has,own:own,by:by,turn:turn,score:sc,got:got,full:sc[0]+sc[1]===LBOX};
+  }
+  var lgame=null,lst=null,lseq=0,lServerMax=0,lBusy=false,lSel=-1,lFresh=-1,lPop={},lShownGid='',lShownOver=false,lLoaded=false,lEditing=false;
+  var lStatusEl=$('lStatus'),lBoardEl=$('lBoard');
+
+  function lCanPlay(){return !!lgame&&!lgame.over&&!lBusy&&me!==null&&lst.turn===me;}
+  function lCanUndo(){
+    if(!lgame||lgame.over||lBusy||!lgame.lines.length||me===null)return false;
+    return lst.by[lst.by.length-1]===me;
+  }
+  function lCanQuit(){return !!lgame&&!lgame.over&&!lBusy&&me!==null;}
+  function lSay(msg,kind){
+    lStatusEl.textContent=msg;
+    lStatusEl.classList.remove('no','mine');
+    if(kind==='no'){void lStatusEl.offsetWidth;lStatusEl.classList.add('no');}
+    else if(kind==='mine')lStatusEl.classList.add('mine');
+  }
+  function lTurnMsg(){
+    if(!lgame)return '판 불러오는 중…';
+    var n=NAMES[lst.turn],last=lgame.lines.length?lst.by[lst.by.length-1]:-1;
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(!lgame.lines.length)return lst.turn===me?'내가 먼저! 선 하나 그어요.':n+'부터 그어요. 기다리는 중…';
+    if(lst.turn===me)return last===me&&lst.got?'땅 먹었다! 한 번 더 그어요 ✏️':'내 차례! 선 하나 그어요.';
+    if(last===lst.turn&&lst.got)return n+'가 땅을 먹었어요! 한 번 더 긋는 중…';
+    return n+' 차례예요. 기다리는 중…';
+  }
+  function lSayTurn(){lSay(lTurnMsg(),lCanPlay()?'mine':'');}
+  function lEndTitle(g){return g.winner>=0?NAMES[g.winner]+' 승리!':'무승부!';}
+  function lEndBody(g){
+    if(g.reason==='resign')return NAMES[1-g.winner]+'의 기권으로 끝났어요.';
+    var sc=lReplay(g).score;
+    return '땅 '+sc[g.winner]+'칸 대 '+sc[1-g.winner]+'칸! '+NAMES[1-g.winner]+', 다시 붙어야죠?';
+  }
+  function lEndHtml(g){
+    var br=betResult(g),sc=scores();
+    return '<p>'+lEndBody(g)+'</p>'+(br?'<div class="betline">🎯 <b>내기</b><span class="sp">'+esc(br)+'</span></div>':'')+'<p>전체 전적 지원 '+sc[0]+' : '+sc[1]+' 지우</p>';
+  }
+  function lShowEnd(){
+    if(!lgame||!lgame.over)return;
+    openModal(lEndTitle(lgame),lEndHtml(lgame),[['한 판 더','sun',lRematch],['판 보기','',closeModal]]);
+  }
+
+  function lRender(){
+    if(!lgame)return;
+    var st=lst,live0=!lgame.over&&lgame.lines.length;
+    var hl=live0?'지금 게임 중 · 땅 '+st.score[0]+' : '+st.score[1]+' · '+NAMES[st.turn]+' 차례':'점 사이에 선을 그어 네모를 닫으면 내 땅! 땅을 더 많이 차지하면 이겨요.';
+    $('homeLand').textContent=hl;$('homeLand').classList.toggle('now',!!live0);
+    for(var p=0;p<2;p++){
+      var on=!lgame.over&&st.turn===p;
+      $('lChip'+p).classList.toggle('on',on);
+      $('lChipText'+p).textContent='땅 '+st.score[p]+'칸'+(on?' · 그을 차례':'');
+      $('lMeTag'+p).hidden=me!==p;
+    }
+    // 판 그리기
+    var h='',lastL=lgame.lines.length?lgame.lines[lgame.lines.length-1]:-1,winSet={};
+    for(var b=0;b<LBOX;b++){
+      var o=st.own[b];if(o<0)continue;
+      var x=LP+(b%LN)*LG,y=LP+Math.floor(b/LN)*LG,cx=x+LG/2,cy=y+LG/2,eye=o?'#1D1B26':'#fff';
+      h+='<g'+(lPop[b]?' class="pop"':'')+'><rect x="'+(x+4)+'" y="'+(y+4)+'" width="'+(LG-8)+'" height="'+(LG-8)+'" rx="10" fill="'+(o?'#FFFDF5':'#1D1B26')+'" stroke="#1D1B26" stroke-width="2.5"/>'
+        +'<circle cx="'+(cx-8)+'" cy="'+(cy-3)+'" r="4.5" fill="'+eye+'"/><circle cx="'+(cx+8)+'" cy="'+(cy-3)+'" r="4.5" fill="'+eye+'"/></g>';
+    }
+    lgame.lines.forEach(function(l){
+      var e=lEnds(l);
+      h+='<line class="ln'+(l===lFresh?' pop':'')+'" x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'" stroke="'+(l===lastL?'#FF5D8F':'#1D1B26')+'" stroke-width="7" stroke-linecap="round"/>';
+    });
+    if(lSel>=0&&!st.has[lSel]){
+      var se=lEnds(lSel);
+      h+='<line x1="'+se[0]+'" y1="'+se[1]+'" x2="'+se[2]+'" y2="'+se[3]+'" stroke="#FFD23F" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 13"/>';
+    }
+    for(var i=0;i<=LN;i++)for(var j=0;j<=LN;j++)h+='<circle cx="'+(LP+i*LG)+'" cy="'+(LP+j*LG)+'" r="8" fill="#FFFDF5" stroke="#1D1B26" stroke-width="3"/>';
+    lBoardEl.innerHTML=h;
+    lBoardEl.setAttribute('aria-label','땅따먹기 판. 그은 선 '+lgame.lines.length+'개, 지원 땅 '+st.score[0]+'칸, 지우 땅 '+st.score[1]+'칸');
+    lFresh=-1;lPop={};
+    if(!lStatusEl.classList.contains('no'))lStatusEl.classList.toggle('mine',lCanPlay());
+    $('lGoBtn').disabled=!lCanPlay()||lSel<0;
+    $('lUndoBtn').disabled=!lCanUndo();
+    $('lQuitBtn').disabled=!lCanQuit();
+    lRenderBet();
+  }
+
+  function lApply(g){
+    var prev=lgame,prevSt=lst;
+    var same=prev&&prev.gid===g.gid&&prev.over===g.over&&prev.lines.join()===g.lines.join();
+    lgame=g;lst=lReplay(g);
+    var newGame=!prev||prev.gid!==g.gid;
+    if(newGame){lSel=-1;lEditing=false;if(!$('land').hidden){closeModal();stopConfetti();}}
+    if(!newGame&&g.lines.length>prev.lines.length){
+      lFresh=g.lines[g.lines.length-1];
+      for(var b=0;b<LBOX;b++)if(lst.own[b]>=0&&prevSt.own[b]<0)lPop[b]=1;
+    }
+    if(lSel>=0&&(lst.has[lSel]||!lCanPlay()))lSel=-1;
+    if(g.over)lSel=-1;
+    var justEnded=g.over&&!(lShownGid===g.gid&&lShownOver);
+    var firstLook=!lLoaded||quiet;
+    lShownGid=g.gid;lShownOver=g.over;lLoaded=true;
+    if(g.over){
+      lSay(lEndTitle(g));lRender();
+      if(justEnded&&!firstLook&&!$('land').hidden){
+        if(g.winner>=0)startConfetti();
+        var gid=g.gid;
+        setTimeout(function(){if(lgame&&lgame.gid===gid&&lgame.over&&!$('land').hidden)lShowEnd();},g.winner>=0?900:200);
+      }
+    }else{
+      if(prev&&prev.gid===g.gid&&prev.over&&!$('land').hidden){closeModal();stopConfetti();}
+      if(!same)lSayTurn();
+      lRender();
+    }
+  }
+
+  // 보내고 받기
+  function lEnc(g){
+    return {id:g.gid,f:g.first,l:g.lines.map(function(l){return LA[l];}).join(''),o:g.over?1:0,w:g.winner,r:g.reason||''};
+  }
+  function lDec(e){
+    return {gid:String(e.id),first:e.f===1?1:0,lines:String(e.l||'').split('').map(function(c){return LA.indexOf(c);}),
+      over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:String(e.r||'')};
+  }
+  function lValid(e){
+    if(!e||typeof e!=='object'||typeof e.id!=='string'||!isLand(e.id)||e.id.length>60)return false;
+    if(e.f!==0&&e.f!==1)return false;
+    var l=e.l||'';if(typeof l!=='string'||l.length>LL)return false;
+    var seen0={};
+    for(var i=0;i<l.length;i++){var k=LA.indexOf(l[i]);if(k<0||k>=LL||seen0[k])return false;seen0[k]=1;}
+    if(typeof (e.r||'')!=='string'||(e.r||'').length>10)return false;
+    return true;
+  }
+  function lPacket(){return JSON.stringify({v:1,n:lseq,k:clientId,d:lEnc(lgame),t:tally});}
+  function lSaveLocal(){if(lgame&&NTFY)try{localStorage.setItem('tuji-land-'+NTFY.slice(-12),lPacket());}catch(e){}}
+  function lCommit(g,result){
+    var before={g:lgame,t:JSON.parse(JSON.stringify(tally)),n:lseq};
+    if(result){tally=JSON.parse(JSON.stringify(tally));tally.r[g.gid]=result.winner;tally=fold(tally);}
+    lseq=Math.max(lseq+1,Date.now());lApply(g);lSaveLocal();
+    lBusy=true;lRender();
+    fetch(NTFY,{method:'POST',body:lPacket()}).then(function(r){
+      if(!r.ok)throw new Error('send '+r.status);
+      if(mode!=='live'){mode='live';note('');render();}
+      if(g.over&&lgame&&lgame.gid===g.gid)ensureRecord(lgame);
+    }).catch(function(){
+      if(lgame===g){lseq=before.n;tally=before.t;lApply(before.g);lSaveLocal();}
+      lSay('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
+    }).then(function(){lBusy=false;lRender();render();});
+  }
+
+  function lPlace(l){
+    if(!lCanPlay()||lst.has[l])return;
+    var g=clone(lgame);
+    g.lines.push(l);
+    var st=lReplay(g),result=null;
+    if(st.full){
+      g.over=true;g.winner=st.score[0]>st.score[1]?0:st.score[1]>st.score[0]?1:-1;g.reason=g.winner<0?'draw':'box';
+      result={winner:g.winner};
+    }
+    lSel=-1;
+    lCommit(g,result);
+  }
+  // 누른 곳에서 가장 가까운 안 그은 선 찾기
+  function lPick(px,py){
+    var best=-1,bs=1e9;
+    for(var l=0;l<LL;l++){
+      if(lst.has[l])continue;
+      var e=lEnds(l),mx=(e[0]+e[2])/2,my=(e[1]+e[3])/2,hz=e[1]===e[3];
+      var along=Math.abs(hz?px-mx:py-my),across=Math.abs(hz?py-my:px-mx);
+      if(along>LG/2+4||across>LG*0.42)continue;
+      var sc=across+along*0.35;
+      if(sc<bs){bs=sc;best=l;}
+    }
+    return best;
+  }
+  function lTap(ev){
+    if(!lgame||lgame.over)return;
+    var r=lBoardEl.getBoundingClientRect();if(!r.width)return;
+    var px=(ev.clientX-r.left)*340/r.width,py=(ev.clientY-r.top)*340/r.height;
+    var l=lPick(px,py);
+    if(l<0)return;
+    if(!lCanPlay()){
+      if(me!==null&&!lBusy)lSay(NAMES[lst.turn]+' 차례예요. 조금만 기다려요!','no');
+      else lSayTurn();
+      return;
+    }
+    if(lSel===l){lPlace(l);return;}
+    lSel=l;
+    lSay('여기? 한 번 더 누르면 그어져요.','mine');
+    lRender();
+  }
+  function lUndo(){
+    if(!lCanUndo())return;
+    var g=clone(lgame);g.lines.pop();
+    lCommit(g,null);
+    lSay('한 줄 물렀어요. '+lTurnMsg(),lCanPlay()?'mine':'');
+  }
+  function lRematch(){
+    closeModal();stopConfetti();
+    if(!lgame||!lgame.over)return;
+    lCommit(lBlank(1-lgame.first),null);
+  }
+
+  // 땅따먹기 내기 (오목과 같은 방식: 판이 끝나기 전엔 언제든 걸고 바꿔요)
+  function lRenderBet(){
+    var g=lgame;if(!g)return;
+    var b=betOf(g.gid),fresh0=!g.over;
+    if(!fresh0)lEditing=false;
+    $('lBetBox').hidden=!(fresh0&&lEditing&&me!==null);
+    $('lBetOpen').hidden=!(fresh0&&!b&&!lEditing&&me!==null);
+    $('lBetLine').hidden=!b||lEditing&&fresh0;
+    if(b)$('lBetLineText').textContent=g.over&&g.winner>=0?betResult(g):'지는 사람이 '+b.s;
+    $('lBetEditBtn').hidden=!(b&&fresh0&&me!==null);
+    var chips=$('lBetChips').children,v=$('lBetInput').value.trim();
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].textContent===v);
+    $('lBetCancel').textContent=b?'내기 빼기':'내기 없이';
+    var hb=!g.over&&b;
+    $('homeLandBet').hidden=!hb;
+    if(hb)$('homeLandBetText').textContent='지는 사람이 '+b.s;
+  }
+  function lOpenBet(){
+    if(!lgame||lgame.over||me===null)return;
+    var b=betOf(lgame.gid);
+    $('lBetInput').value=b?b.s:'';
+    lEditing=true;lRenderBet();
+    $('lBetInput').focus();
+  }
+  function lSaveBet(){
+    if(!lgame||lgame.over||me===null)return;
+    var text=$('lBetInput').value.trim().slice(0,40);
+    if(!text){$('lBetInput').focus();return;}
+    lEditing=false;
+    if(lseq===0)lCommit(clone(lgame),null);
+    put({id:'b'+lgame.gid,k:'b',w:me,g:lgame.gid,s:text});
+    $('lBetInput').blur();
+  }
+  function lCancelBet(){
+    lEditing=false;
+    var b=lgame&&betOf(lgame.gid);
+    if(b&&!lgame.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    else lRenderBet();
+  }
+
+  lBoardEl.addEventListener('click',lTap);
+  $('lGoBtn').addEventListener('click',function(){if(lSel>=0)lPlace(lSel);});
+  $('lUndoBtn').addEventListener('click',lUndo);
+  $('lQuitBtn').addEventListener('click',function(){
+    if(!lCanQuit())return;
+    var p=me;
+    openModal(NAMES[p]+', 진짜 기권?','<p>기권하면 '+NAMES[1-p]+'의 승리로 끝나요.</p>',[
+      ['계속 할래','sun',closeModal],
+      ['기권할게','pink',function(){
+        closeModal();
+        if(!lgame||lgame.over)return;
+        var g=clone(lgame);g.over=true;g.winner=1-p;g.reason='resign';
+        lCommit(g,{winner:g.winner});
+      }]
+    ]);
+  });
+  $('lRulesBtn').addEventListener('click',function(){
+    openModal('땅따먹기 규칙','<ul>'
+      +'<li>번갈아 가며 점 두 개 사이에 선을 하나씩 그어요.</li>'
+      +'<li>네 번째 선을 그어 네모를 닫으면 그 칸은 내 땅! 내 얼굴이 들어가고 한 번 더 그어요.</li>'
+      +'<li>한 번에 네모 두 개를 닫아도 둘 다 내 땅이에요. 연달아 계속 먹을 수도 있어요.</li>'
+      +'<li>25칸이 다 차면 끝. 땅을 더 많이 가진 사람이 이겨요.</li>'
+      +'<li>세 번째 선을 긋는 건 조심! 상대에게 네모를 넘겨줄 수 있어요.</li>'
+      +'<li>무르기는 상대가 다음 선을 긋기 전까지만 돼요. 한 판 더 하면 먼저 긋는 사람이 바뀌어요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+  $('landBtn').addEventListener('click',function(){
+    if(!needMe())return;
+    go('land');
+    if(lgame&&lgame.over)lShowEnd();
+    else if(lgame)lSayTurn();
+  });
+  $('lBetOpen').addEventListener('click',lOpenBet);
+  $('lBetEditBtn').addEventListener('click',lOpenBet);
+  $('lBetCancel').addEventListener('click',lCancelBet);
+  $('lBetBox').addEventListener('submit',function(e){e.preventDefault();lSaveBet();});
+  $('lBetInput').addEventListener('input',lRenderBet);
+  $('lBetChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('lBetInput').value=b.textContent;lRenderBet();});
 
   // ----- 버튼 -----
   function needMe(){
@@ -1661,7 +2039,8 @@ function Rules(N){
   // 우편함이 비었거나(12시간 지남) 이 폰 판이 더 최신이면 다시 올리고, 판이 없는 새 폰이면 "안녕"을 보내요
   function heal(){
     if(seq>0&&seq>serverMax)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
-    else if(seq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
+    if(lseq>0&&lseq>lServerMax)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
+    if(seq===0||lseq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
   }
   var tries=0;
   function connect(){
@@ -1669,6 +2048,7 @@ function Rules(N){
       quiet=false;
       tries=0;mode='live';note('');
       if(!game){loaded=true;apply(blankGame(0));}
+      if(!lgame){lLoaded=true;lApply(lBlank(0));}
       render();if(!game.over)sayTurn();
       listen();
       heal();
@@ -1677,6 +2057,7 @@ function Rules(N){
       quiet=false;
       mode='off';
       if(!game){loaded=true;apply(blankGame(0));}
+      if(!lgame){lLoaded=true;lApply(lBlank(0));}
       note('인터넷 연결이 안 돼서 상대 폰과 이어지지 않았어요. 잠시 뒤 다시 시도할게요.');
       render();
       setTimeout(connect,Math.min(30000,3000*(++tries)));
@@ -1696,6 +2077,7 @@ function Rules(N){
       $('lock').hidden=true;
       loadStore();
       try{var saved=localStorage.getItem('tuji-state-'+NTFY.slice(-12));if(saved)receive(saved,'');}catch(e){}
+      try{var lsaved=localStorage.getItem('tuji-land-'+NTFY.slice(-12));if(lsaved)receive(lsaved,'');}catch(e){}
       renderStore();
       render();if(!game)say('판 불러오는 중…');
       connect();
