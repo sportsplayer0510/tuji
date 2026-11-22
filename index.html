@@ -359,7 +359,13 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .keys button:disabled{opacity:.3;box-shadow:none}
 .keys button.full{opacity:.4}
 .keys.memo button{background:#E4F7FF}
-.tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lives{display:flex;align-items:center;gap:8px;padding:8px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-family:var(--display);font-size:17px}
+.lives .hs{font-size:22px;letter-spacing:2px;font-family:system-ui,sans-serif}
+.lives .hs .gone{filter:grayscale(1);opacity:.35}
+.lives .hs .lost{display:inline-block;animation:shake .4s}
+.lives small{margin-left:auto;font-family:var(--body);font-size:12px;color:var(--muted)}
+.lives.zero{background:#FFD3DC}
 .tools .btn{min-height:48px;font-size:16px;padding:0 6px;white-space:nowrap}
 .tools .btn[aria-pressed="true"]{background:#8FD3FF}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -520,6 +526,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <div class="chip sdkchip" id="sChip0"><span class="dot0" aria-hidden="true"></span><div><div class="n">지원<small id="sMeTag0" hidden>나</small></div><div class="t" id="sChipText0"></div></div></div>
     <div class="chip sdkchip" id="sChip1"><span class="dot1" aria-hidden="true"></span><div><div class="n">지우<small id="sMeTag1" hidden>나</small></div><div class="t" id="sChipText1"></div></div></div>
   </div>
+  <div class="lives" id="sLives" aria-live="polite"></div>
   <div class="status" id="sStatus" role="status" aria-live="polite"></div>
   <div class="sdkwrap"><div class="sgrid" id="sBoard" role="grid" aria-label="수도쿠 판"></div></div>
   <div class="sinfo2"><span id="sLeft"></span><span id="sTime"></span></div>
@@ -527,10 +534,9 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <div class="tools">
     <button class="btn" id="sMemoBtn" type="button" aria-pressed="false">✏️ 메모</button>
     <button class="btn" id="sEraseBtn" type="button">지우기</button>
-    <button class="btn" id="sCheckBtn" type="button">틀린 칸?</button>
   </div>
   <button class="btn" id="sNewBtn" type="button">새 퍼즐 꺼내기</button>
-  <p class="hint">칸을 누르고 아래 숫자를 누르면 들어가요. 차례 없이 둘이 동시에 채워요. 지원이 넣은 숫자는 노랑, 지우가 넣은 숫자는 분홍 칸이에요. 메모는 내 폰에만 보여요.</p>
+  <p class="hint">칸을 누르고 아래 숫자를 누르면 들어가요. 차례 없이 둘이 동시에 채워요. 틀린 숫자를 누르면 목숨이 하나 줄어요. 목숨은 둘이 합쳐 4개! 지원이 넣은 숫자는 노랑, 지우가 넣은 숫자는 분홍 칸이에요. 메모는 내 폰에만 보여요.</p>
 </section>
 <section class="view" id="chat" hidden>
   <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>대화방</h2></div>
@@ -1244,7 +1250,8 @@ function Rules(N){
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
       case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
       case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
-      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
+      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
+      case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
       case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
     }
@@ -1859,7 +1866,7 @@ function Rules(N){
   // 같은 칸을 동시에 고치면 고친 시각(u)이 나중인 숫자가 남아요(두 폰이 같은 규칙으로 골라서 결국 같아져요).
   var SDK=Sudoku();
   var SGRE=/^s[0-9a-z]{4,30}$/;
-  var sSel=-1,sMemo=false,sWrong={},sWrongT=0,sPop={},sNote='',sDone={},sOkCache={},sQ={},sQT=0,sTick=0,sMaking=false,sCurGid='',sLastGid='';
+  var LIVES=4,sFail={},sLivesShown={},sSel=-1,sMemo=false,sWrong={},sWrongT=0,sPop={},sNote='',sDone={},sOkCache={},sQ={},sQT=0,sTick=0,sMaking=false,sCurGid='',sLastGid='';
   function sOk(q){
     // 받은 퍼즐도 답이 딱 하나인지 이 폰에서 다시 확인해요
     if(!(q.g in sOkCache)){var r=SDK.solve(q.p.split('').map(Number),2);sOkCache[q.g]=r.count===1?r.sol:null;}
@@ -1884,7 +1891,11 @@ function Rules(N){
     var bad={};
     for(var a=0;a<81;a++){if(!v[a])continue;var pp=SDK.PEERS[a];for(var k=0;k<20;k++)if(v[pp[k]]===v[a]){bad[a]=1;break;}}
     var solved=filled===81&&v.every(function(x,i){return x===sol[i];});
-    return {v:v,by:by,sol:sol,n:n,filled:filled,bad:bad,solved:solved||!!q.dn};
+    // 목숨: 틀린 (칸, 숫자) 하나마다 하나씩 줄어요. 둘이 같은 실수를 동시에 해도 한 번만 세요.
+    var wrong={},miss=0;
+    items('l').forEach(function(l){if(l.g!==q.g||+q.p.charAt(l.c)||l.v===sol[l.c])return;var key=l.c*10+l.v;if(!wrong[key]){wrong[key]=1;miss++;}});
+    var lives=Math.max(0,LIVES-miss),failed=!q.dn&&lives<=0;
+    return {v:v,by:by,sol:sol,n:n,filled:filled,bad:bad,solved:!failed&&(solved||!!q.dn),lives:lives,wrong:wrong,failed:failed,over:!!q.dn||failed};
   }
   function memoKey(g){return 'tuji-sdkmemo-'+g;}
   function memoLoad(g){try{var o=JSON.parse(localStorage.getItem(memoKey(g))||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
@@ -1912,13 +1923,16 @@ function Rules(N){
   function sHome(){
     var q=sCur(),el=$('homeSdk'),dl=sDoneList(),best=sBest();
     var tail=dl.length?' 같이 푼 퍼즐 '+dl.length+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
-    if(q&&!q.dn){var st=sState(q);el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움';el.classList.add('now');}
+    var fst=q&&!q.dn?sState(q):null;
+    if(fst&&fst.failed){el.textContent='목숨을 다 써서 실패했어요. 다시 도전해요!'+tail;el.classList.remove('now');}
+    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움';el.classList.add('now');}
     else{el.textContent='차례 없이 둘이 아무 칸이나 같이 채워요. 어려움 난이도, 매번 새 퍼즐!'+tail;el.classList.remove('now');}
     $('stSdk').textContent=dl.length+'개';
   }
   function sStatusMsg(q,st){
     if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
     if(q.dn)return '다 풀었어요! 🎉 걸린 시간 '+dur(q.dn-q.at);
+    if(st.failed)return '목숨을 다 썼어요 😵 같은 퍼즐로 다시 하거나 새 퍼즐을 꺼내요.';
     if(sSel>=0&&st.by[sSel]===-1)return '처음부터 있던 숫자는 못 바꿔요.';
     if(sSel<0)return '빈칸을 누르고 숫자를 골라요. 남은 칸 '+(81-st.filled)+'개!';
     return (sMemo?'메모 중: ':'')+'숫자를 눌러 '+(sMemo?'메모해요.':'채워요.');
@@ -1933,8 +1947,9 @@ function Rules(N){
       if(sCurGid&&!quiet&&q.w!==me&&me!==null)sNote=NAMES[q.w]+'가 새 퍼즐을 꺼냈어요! 같이 풀어요.';
       sCurGid=q.g;sSel=-1;sWrong={};
     }
-    if(q.dn)sSel=-1;
-    var st=sState(q),mm=memos(q.g),h='',selV=sSel>=0?st.v[sSel]:0;
+    var st=sState(q);
+    if(st.over)sSel=-1;
+    var mm=memos(q.g),h='',selV=sSel>=0?st.v[sSel]:0;
     for(var i=0;i<81;i++){
       var r=SDK.ROW[i],c=SDK.COL[i],cls='sc';
       if(c===2||c===5)cls+=' c3';if(c===8)cls+=' c9';
@@ -1944,10 +1959,11 @@ function Rules(N){
       if(selV&&i!==sSel&&st.v[i]===selV)cls+=' same';
       if(i===sSel)cls+=' sel';
       if(st.bad[i]&&st.by[i]!==-1&&!q.dn)cls+=' bad';
-      if(sWrong[i]&&st.v[i]&&st.v[i]!==st.sol[i])cls+=' wrong';
+      if(sWrong[i])cls+=' wrong';
       if(sPop[i])cls+=' pop';
       var inner='',lab=(r+1)+'행 '+(c+1)+'열 ';
-      if(st.v[i]){inner='<span class="v">'+st.v[i]+'</span>';lab+=st.v[i]+(st.by[i]===-1?' (처음 숫자)':st.by[i]>=0?' ('+NAMES[st.by[i]]+')':'');}
+      if(sWrong[i]&&!st.v[i]){inner='<span class="v">'+sWrong[i]+'</span>';lab+=sWrong[i]+' (틀림)';}
+      else if(st.v[i]){inner='<span class="v">'+st.v[i]+'</span>';lab+=st.v[i]+(st.by[i]===-1?' (처음 숫자)':st.by[i]>=0?' ('+NAMES[st.by[i]]+')':'');}
       else{
         var ms=mm[i]||0;lab+='빈칸';
         if(ms){inner='<span class="mm">';for(var d=1;d<=9;d++)inner+='<i>'+(ms&(1<<d)?d:'')+'</i>';inner+='</span>';}
@@ -1958,22 +1974,40 @@ function Rules(N){
     sPop={};
     // 숫자판: 9개 다 쓴 숫자는 흐리게(눌러서 지우거나 고칠 수 있게 막지는 않아요)
     var cnt=[0,0,0,0,0,0,0,0,0,0];st.v.forEach(function(x){cnt[x]++;});
-    var kh='',lock=!!q.dn||me===null;
+    var kh='',lock=st.over||me===null;
     for(var k=1;k<=9;k++)kh+='<button type="button" data-k="'+k+'"'+(cnt[k]>=9&&!sMemo&&!lock?' class="full"':'')+(lock?' disabled':'')+' aria-label="'+k+(sMemo?' 메모':'')+'">'+k+'<small>'+(9-cnt[k]>0?9-cnt[k]:'')+'</small></button>';
     $('sKeys').innerHTML=kh;$('sKeys').classList.toggle('memo',sMemo);
     $('sMemoBtn').setAttribute('aria-pressed',String(sMemo));
-    $('sMemoBtn').disabled=lock;$('sEraseBtn').disabled=lock;$('sCheckBtn').disabled=lock;
-    $('sNewBtn').classList.toggle('sun',!!q.dn);
+    $('sMemoBtn').disabled=lock;$('sEraseBtn').disabled=lock;
+    $('sNewBtn').classList.toggle('sun',st.over);
+    $('sNewBtn').textContent=st.failed?'같은 퍼즐 다시 · 새 퍼즐':'새 퍼즐 꺼내기';
+    sRenderLives(q,st);
     for(var p=0;p<2;p++){$('sChipText'+p).textContent=(q.dn&&q.c0!==undefined?(p?q.c1:q.c0):st.n[p])+'칸 채움';$('sMeTag'+p).hidden=me!==p;}
-    $('sLeft').textContent=q.dn?'81칸 다 채움':'남은 칸 '+(81-st.filled)+'개';
+    $('sLeft').textContent=q.dn?'81칸 다 채움':st.failed?'81칸 중 '+st.filled+'칸까지 채움':'남은 칸 '+(81-st.filled)+'개';
     $('sTime').textContent=sTimeText(q);
     if(sNote){var n=sNote;sNote='';sSay(n,'mine');}
-    else if(!$('sStatus').classList.contains('no')&&!sRender.keep)sSay(sStatusMsg(q,st));
+    else if(st.over||(!$('sStatus').classList.contains('no')&&!sRender.keep))sSay(sStatusMsg(q,st));
     sRender.keep=false;
     sCheckDone(q,st);
   }
-  // 다 맞게 채워지면 한 번만 '다 풀었다'를 적고 축하해요
+  function sRenderLives(q,st){
+    var el=$('sLives'),prev=sLivesShown[q.g],h='';
+    for(var i=0;i<LIVES;i++){
+      var alive=i<st.lives,justLost=!alive&&prev!==undefined&&i<prev&&i>=st.lives;
+      h+='<span class="'+(alive?'':'gone')+(justLost?' lost':'')+'">❤️</span>';
+    }
+    sLivesShown[q.g]=st.lives;
+    el.innerHTML='목숨 <span class="hs" aria-label="남은 목숨 '+st.lives+'개">'+h+'</span><small>둘이 합쳐 '+LIVES+'개</small>';
+    el.classList.toggle('zero',st.failed);
+  }
+  // 다 맞게 채워지면 한 번만 '다 풀었다'를 적고 축하해요. 목숨을 다 쓰면 실패를 알려요.
   function sCheckDone(q,st){
+    if(st.failed){
+      if(sFail[q.g]===undefined)sFail[q.g]=quiet?'seen':'show';
+      if(sFail[q.g]==='show'&&!quiet&&!$('sdk').hidden){sFail[q.g]='seen';sShowFail(q,st);}
+      if(!q.fl&&me!==null)put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,fl:Date.now()});
+      return;
+    }
     if(q.dn){
       if(sDone[q.g]===undefined)sDone[q.g]=quiet?'seen':'party';
       if(sDone[q.g]==='party'){sDone[q.g]='seen';if(!quiet&&!$('sdk').hidden)sCelebrate(q);}
@@ -1981,6 +2015,22 @@ function Rules(N){
     }
     if(!st.solved||me===null)return;
     put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1]});
+  }
+  function sShowFail(q,st){
+    var g=q.g;
+    setTimeout(function(){
+      var cur=sCur();if(!cur||cur.g!==g||$('sdk').hidden)return;
+      openModal('목숨을 다 썼어요 😵','<p>둘이 합쳐 목숨 '+LIVES+'개를 다 썼어요.</p><p>81칸 중 <b>'+st.filled+'칸</b>까지 채웠어요. 아깝다!</p>',
+        [['같은 퍼즐 다시','sun',function(){closeModal();sRetry();}],['새 퍼즐','',function(){closeModal();sNew(true);}],['판 보기','',closeModal]]);
+    },500);
+  }
+  // 같은 문제로 처음부터 다시(새 판 번호라 목숨과 칸이 새로 시작해요)
+  function sRetry(){
+    var q=sCur();if(!q)return;
+    var g='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    sCurGid=g;sSel=-1;sWrong={};
+    put({id:'q'+g,k:'q',w:me===null?0:me,g:g,p:q.p,at:Date.now()});
+    sSay('같은 퍼즐로 다시! 목숨 '+LIVES+'개로 시작해요.','mine');sRender.keep=true;sRender();
   }
   function sCelebrate(q){
     startConfetti();
@@ -2008,18 +2058,27 @@ function Rules(N){
   window.addEventListener('pagehide',function(){if(sQT)sFlush();});
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&sQT)sFlush();});
   function sInput(d){
-    var q=sCur();if(!q||q.dn||me===null)return;
+    var q=sCur();if(!q||me===null)return;
+    var st=sState(q);if(st.over)return;
     if(sSel<0){sSay('먼저 채울 칸을 눌러요.','no');return;}
-    var st=sState(q);
     if(st.by[sSel]===-1){sSay('처음부터 있던 숫자는 못 바꿔요.','no');return;}
     if(sMemo&&d){
       if(st.v[sSel]){sSay('숫자가 있는 칸엔 메모를 못 해요. 먼저 지워요.','no');return;}
       var mm=memos(q.g);mm[sSel]=(mm[sSel]||0)^(1<<d);if(!mm[sSel])delete mm[sSel];memoSave(q.g,mm);sRender();return;
     }
-    var cur=store['e'+q.g+'-'+sSel];
-    if(!d&&!(cur&&cur.v)){var m2=memos(q.g);if(m2[sSel]){delete m2[sSel];memoSave(q.g,m2);}sRender();return;}
-    if(d&&cur&&cur.v===d)d=0; // 같은 숫자를 또 누르면 지워요
-    delete sWrong[sSel];
+    // 맞는 숫자만 들어가요. 이미 채운 칸(언제나 정답)은 그대로 둬요.
+    if(!d){var m2=memos(q.g);if(m2[sSel]){delete m2[sSel];memoSave(q.g,m2);sRender();}else if(st.v[sSel])sSay('맞게 채운 숫자는 그대로 둬요. 지우기는 메모만 지워요.','no');return;}
+    if(st.v[sSel]){sSay(st.v[sSel]===d?'이미 '+ro(d)+' 채운 칸이에요.':'이미 맞게 채운 칸이에요.','no');return;}
+    if(d!==st.sol[sSel]){
+      var key=sSel*10+d,c0=sSel;
+      sWrong={};sWrong[c0]=d;clearTimeout(sWrongT);sWrongT=setTimeout(function(){sWrong={};sRender();},900);
+      if(st.wrong[key]){sSay('땡! '+eun(d)+' 여기 아니라고 했어요. 목숨은 그대로예요.','no');sRender.keep=true;sRender();return;}
+      sPut({id:'l'+q.g+'-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),k:'l',w:me,g:q.g,c:sSel,v:d});
+      var left=sState(q).lives;
+      sSay(left>0?'땡! '+eun(d)+' 여기 아니에요. 목숨 하나 잃었어요 (남은 목숨 '+left+'개)':'땡! 목숨을 다 썼어요 😵','no');
+      sRender.keep=true;sRender();return;
+    }
+    sWrong={};
     if(d){
       // 넣은 숫자는 같은 줄·칸의 내 메모에서 지워요
       var mm2=memos(q.g),ch=false,pp=SDK.PEERS[sSel];
@@ -2028,22 +2087,14 @@ function Rules(N){
       if(ch)memoSave(q.g,mm2);
     }
     sPut({id:'e'+q.g+'-'+sSel,k:'e',w:me,g:q.g,c:sSel,v:d});
-    if(d){
-      var st2=sState(q);
-      if(st2.bad[sSel])sSay(eun(d)+' 같은 줄이나 칸에 벌써 있어요!','no');
-    }
-  }
-  function sCheck(){
-    var q=sCur();if(!q||q.dn)return;
-    var st=sState(q),n=0;sWrong={};
-    for(var i=0;i<81;i++)if(st.by[i]>=0&&st.v[i]!==st.sol[i]){sWrong[i]=1;n++;}
-    clearTimeout(sWrongT);sWrongT=setTimeout(function(){sWrong={};sRender();},4000);
-    sSay(n?'틀린 칸이 '+n+'개 있어요! 빨갛게 보여요.':'지금까지 채운 건 다 맞아요 👍',n?'no':'mine');
-    sRender.keep=true;sRender();
   }
   // 새 퍼즐: 무작위로 만들고, 답이 딱 하나인지 확인한 것만 써요
   function sNew(force){
     var q=sCur();
+    if(q&&!force&&sState(q).failed){
+      openModal('어떻게 할까요?','<p>같은 퍼즐로 처음부터 다시 하거나, 새 퍼즐을 꺼낼 수 있어요.</p>',[['같은 퍼즐 다시','sun',function(){closeModal();sRetry();}],['새 퍼즐','',function(){closeModal();sNew(true);}]]);
+      return;
+    }
     if(q&&!q.dn&&!force){
       var st=sState(q);
       if(st.filled>q.p.replace(/0/g,'').length){
@@ -2070,11 +2121,15 @@ function Rules(N){
   }
   // 받은 칸 기록 알림: 상대가 채우면 톡 튀고, 내가 방금 고친 칸을 상대도 동시에 고쳤으면 알려 줘요
   function sOnRecv(it,was){
-    if(quiet||it.k!=='e'||me===null)return;
+    if(quiet||me===null||(it.k!=='e'&&it.k!=='l'))return;
     var q=sCur();if(!q||it.g!==q.g)return;
+    if(it.k==='l'){
+      if(it.w!==me&&!was){var st=sState(q);if(st.wrong[it.c*10+it.v]===1&&!st.failed)sNote=SUBJ[it.w]+' 틀려서 목숨이 하나 줄었어요. 남은 목숨 '+st.lives+'개!';}
+      return;
+    }
     if(it.w!==me)sPop[it.c]=1;
     if(was&&was.w===me&&it.w!==me&&Date.now()-was.u<6000&&was.v!==it.v)
-      sNote=NAMES[it.w]+'도 방금 같은 칸('+(SDK.ROW[it.c]+1)+'행 '+(SDK.COL[it.c]+1)+'열)을 고쳤어요. 나중에 고친 '+ro(it.v)+' 맞췄어요.';
+      sNote=NAMES[it.w]+'도 방금 같은 칸('+(SDK.ROW[it.c]+1)+'행 '+(SDK.COL[it.c]+1)+'열)을 채웠어요.';
   }
   // 오래된 퍼즐 칸 기록은 정리해요(지금 퍼즐 것만 남기고, 퍼즐은 최근 60개만)
   function sPrune(){
@@ -2083,7 +2138,7 @@ function Rules(N){
     qs.slice(60).forEach(function(q){delete store[q.id];delete seen[q.id];});
     // 지금 퍼즐과 가장 최근 두 퍼즐(동시에 꺼낸 경우 대비)의 칸만 남겨요
     var live={};if(cur)live[cur.g]=1;qs.slice(0,2).forEach(function(q){live[q.g]=1;});
-    items('e').forEach(function(e){if(!live[e.g])delete store[e.id],delete seen[e.id];});
+    items('e').concat(items('l')).forEach(function(e){if(!live[e.g])delete store[e.id],delete seen[e.id];});
   }
 
   // ===== 땅따먹기 =====
@@ -2402,8 +2457,7 @@ function Rules(N){
   $('sKeys').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b&&!b.disabled)sInput(+b.dataset.k);});
   $('sEraseBtn').addEventListener('click',function(){sInput(0);});
   $('sMemoBtn').addEventListener('click',function(){sMemo=!sMemo;sRender();});
-  $('sCheckBtn').addEventListener('click',sCheck);
-  $('sNewBtn').addEventListener('click',function(){if(needMe())sNew(false);});
+    $('sNewBtn').addEventListener('click',function(){if(needMe())sNew(false);});
   document.addEventListener('keydown',function(e){
     if($('sdk').hidden||!veil.hidden||e.ctrlKey||e.metaKey||e.altKey)return;
     if(/^[1-9]$/.test(e.key)){sInput(+e.key);e.preventDefault();}
@@ -2417,9 +2471,10 @@ function Rules(N){
       +'<li>가로줄, 세로줄, 굵은 선 3×3 칸마다 1부터 9까지 한 번씩만 들어가요.</li>'
       +'<li>차례가 없어요. 둘이 동시에 아무 칸이나 채우고 고칠 수 있어요.</li>'
       +'<li>지원이 넣은 숫자는 노랑 칸, 지우가 넣은 숫자는 분홍 칸이에요.</li>'
-      +'<li>같은 칸을 둘이 동시에 고치면 나중에 고친 숫자가 남고, 알려 줘요.</li>'
-      +'<li>같은 줄이나 칸에 겹치는 숫자는 빨간 물결줄로 보여요. "틀린 칸?"을 누르면 답과 다른 칸이 잠깐 빨개져요.</li>'
-      +'<li>메모는 내 폰에만 보여요. 같은 숫자를 다시 누르면 지워져요.</li>'
+      +'<li>맞는 숫자만 들어가요. 틀린 숫자를 누르면 목숨이 하나 줄어요. 목숨은 둘이 합쳐 '+LIVES+'개예요.</li>'
+      +'<li>같은 칸에 같은 틀린 숫자를 또 누르면 목숨은 그대로예요. 둘이 같은 실수를 동시에 해도 하나만 줄어요.</li>'
+      +'<li>목숨을 다 쓰면 실패! 같은 퍼즐로 다시 하거나 새 퍼즐을 꺼내요.</li>'
+      +'<li>메모는 내 폰에만 보여요. 지우기는 메모를 지워요.</li>'
       +'<li>퍼즐은 매번 무작위로 새로 만들고, 답이 딱 하나뿐인지 확인한 어려운 퍼즐만 나와요.</li>'
       +'</ul>',[['알겠어','sun',closeModal]]);
   });
