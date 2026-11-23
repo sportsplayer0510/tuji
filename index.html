@@ -320,6 +320,15 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .emos button[aria-pressed="true"]{background:var(--sun);transform:rotate(-6deg);box-shadow:3px 3px 0 var(--ink)}
 .cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:-6px}
 .formerr{margin:0;color:var(--ban);font-size:14px;font-family:var(--display)}
+/* 같이 해결한 게임 (홈) */
+.coop{padding:14px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;background:#E4F7FF}
+.coop .hd{font-family:var(--display);font-size:20px}
+.coop .num{display:flex;align-items:baseline;gap:4px;line-height:1}
+.coop .num b{font-family:var(--display);font-weight:400;font-size:52px;font-variant-numeric:tabular-nums}
+.coop .num small{font-family:var(--display);font-size:20px}
+.coop .names{font-size:13px;color:var(--muted)}
+.coop .kinds{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.coop .kinds span{padding:1px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font-size:13px}
 /* 같이 푸는 수도쿠 */
 .thumb.sdk{background:var(--paper);transform:rotate(-4deg);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr);font-family:var(--display);font-size:15px;line-height:1}
 .thumb.sdk span{display:flex;align-items:center;justify-content:center;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
@@ -468,6 +477,13 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <span class="who"><span class="name">지우</span><span class="score" id="score1">0</span></span>
     <span class="more">전적판 보기 ›</span>
   </button>
+
+  <div class="sticker coop" id="coopCard" role="group" aria-label="같이 해결한 게임">
+    <span class="hd">🤝 같이 해결한 게임</span>
+    <span class="num"><b id="coopTotal">0</b><small>개</small></span>
+    <span class="names">지원 + 지우</span>
+    <span class="kinds" id="coopKinds"></span>
+  </div>
 
   <div class="sticker me">
     <span>이 폰은</span>
@@ -1378,7 +1394,7 @@ function Rules(N){
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
       case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
       case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
-      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
+      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&(it.nd===undefined||(it.nd%1===0&&it.nd>=1&&it.nd<1e6))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
       case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
       case 't':return DRE.test(it.d)&&it.id==='t'+it.d+'-'+it.w&&okNum(it.ms)&&it.ms<=2*DAY&&okNum(it.st)&&okStr(it.s,20);
@@ -2314,15 +2330,26 @@ function Rules(N){
   function eun(d){return d+('136780'.indexOf(String(d))>=0?'은':'는');}
   function ro(d){return d?d+('36'.indexOf(String(d))>=0?'으로':'로'):'빈칸으로';}
   function sDoneList(){return sPuzzles().filter(function(q){return q.dn;});}
+  // 지금까지 같이 깬 수도쿠 수: 다 푼 기록 개수와, 깰 때마다 적어 둔 번호(nd) 중 큰 쪽(오래된 기록이 정리돼도 줄지 않게)
+  function sCount(){var n=0,dl=sDoneList();dl.forEach(function(q){if(q.nd>n)n=q.nd;});return Math.max(n,dl.length);}
   function sBest(){var b=0;sDoneList().forEach(function(q){var d=q.dn-q.at;if(d>0&&(!b||d<b))b=d;});return b;}
   function sHome(){
     var q=sCur(),el=$('homeSdk'),dl=sDoneList(),best=sBest();
-    var tail=dl.length?' 같이 푼 퍼즐 '+dl.length+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
+    var cnt=sCount(),tail=cnt?' 같이 깬 수도쿠 '+cnt+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
     var fst=q&&!q.dn?sState(q):null;
     if(fst&&fst.failed){el.textContent='목숨을 다 써서 실패했어요. 다시 도전해요!'+tail;el.classList.remove('now');}
-    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움';el.classList.add('now');}
+    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움'+'';el.classList.add('now');}
     else{el.textContent='차례 없이 둘이 아무 칸이나 같이 채워요. 어려움 난이도, 매번 새 퍼즐!'+tail;el.classList.remove('now');}
-    $('stSdk').textContent=dl.length+'개';
+    $('stSdk').textContent=cnt+'개';
+    renderCoop();
+  }
+  // 홈 '같이 해결한 게임': 협동 게임마다 [이름, 깬 수 세는 함수]를 여기에 더하면 합계에 같이 들어가요
+  var COOP_GAMES=[['수도쿠',function(){return sCount();}]];
+  function renderCoop(){
+    var tot=0,h='';
+    COOP_GAMES.forEach(function(gm){var n=gm[1]()||0;tot+=n;h+='<span>'+gm[0]+' '+n+'개</span>';});
+    $('coopTotal').textContent=tot;$('coopKinds').innerHTML=h;
+    $('coopCard').setAttribute('aria-label','같이 해결한 게임 '+tot+'개');
   }
   function sStatusMsg(q,st){
     if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
@@ -2409,7 +2436,7 @@ function Rules(N){
       return;
     }
     if(!st.solved||me===null)return;
-    put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1]});
+    put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1],nd:sCount()+1});
   }
   function sShowFail(q,st){
     var g=q.g;
@@ -2529,8 +2556,9 @@ function Rules(N){
   // 오래된 퍼즐 칸 기록은 정리해요(지금 퍼즐 것만 남기고, 퍼즐은 최근 60개만)
   function sPrune(){
     var qs=items('q').sort(function(a,b){return b.at-a.at;}),keep={},cur=sCur();
-    qs.slice(0,60).forEach(function(q){keep[q.g]=1;});
-    qs.slice(60).forEach(function(q){delete store[q.id];delete seen[q.id];});
+    // 다 푼 기록은 500개까지 남기고(깬 수와 최고 기록), 못 푼 퍼즐은 최근 60개만
+    var nd=0,ot=0;
+    qs.forEach(function(q){if(q.dn?++nd>500:++ot>60){delete store[q.id];delete seen[q.id];}});
     // 지금 퍼즐과 가장 최근 두 퍼즐(동시에 꺼낸 경우 대비)의 칸만 남겨요
     var live={};if(cur)live[cur.g]=1;qs.slice(0,2).forEach(function(q){live[q.g]=1;});
     items('e').concat(items('l')).forEach(function(e){if(!live[e.g])delete store[e.id],delete seen[e.id];});
