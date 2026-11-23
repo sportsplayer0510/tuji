@@ -1,0 +1,16 @@
+{
+  "name": "투지 미리보기",
+  "short_name": "투지 미리",
+  "description": "지원이랑 지우 둘만 쓰는 앱",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#C9F2DC",
+  "theme_color": "#C9F2DC",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

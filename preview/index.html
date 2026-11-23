@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>투지 미리보기</title>
+<meta name="theme-color" content="#C9F2DC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="투지">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@500;700&display=swap">
+<style>
+:root{
+  /* 레이아웃: 한 손 폰 화면 한 칼럼, 두꺼운 먹선과 딱딱한 그림자의 스티커 느낌 */
+  --ground:#C9F2DC;
+  --ink:#1D1B26;
+  --paper:#FFFDF5;
+  --pink:#FF5D8F;
+  --sun:#FFD23F;
+  --board:#F6C177;
+  --ban:#C4002B;
+  --muted:#4A4756;
+  --live:#2FBF71;
+  --display:'Jua','Noto Sans KR',system-ui,sans-serif;
+  --body:'Noto Sans KR',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-weight:500;font-size:15px;line-height:1.5;word-break:keep-all;overflow-wrap:break-word;-webkit-tap-highlight-color:transparent}
+button{touch-action:manipulation;font-family:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+.app{max-width:492px;margin:0 auto;padding:20px 16px 32px;display:flex;flex-direction:column;gap:16px}
+.view[hidden]{display:none}
+.view{display:flex;flex-direction:column;gap:16px}
+
+.sticker{background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.btn{min-height:50px;padding:0 18px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:4px 4px 0 var(--ink);font-family:var(--display);font-size:19px;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.sun{background:var(--sun)}
+.btn.pink{background:var(--pink)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* 홈 */
+.logo{display:flex;align-items:center;gap:12px}
+.logo h1{margin:0;font-family:var(--display);font-weight:400;font-size:52px;line-height:1;letter-spacing:1px}
+.logo .tag{margin-left:auto;display:flex;align-items:center;gap:6px;padding:5px 12px;border:3px solid var(--ink);border-radius:999px;background:var(--paper);font-family:var(--display);font-size:15px;transform:rotate(4deg);white-space:nowrap}
+.logo .tag i{width:10px;height:10px;border-radius:50%;border:2px solid var(--ink);background:var(--sun)}
+.logo .tag.ok i{background:var(--live)}
+.logo .tag.off i{background:var(--muted)}
+.pair{display:flex;margin-right:2px}
+.mini{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink)}
+.mini.b{background:radial-gradient(circle at 36% 42%,#fff 0 9%,transparent 10%),radial-gradient(circle at 64% 42%,#fff 0 9%,transparent 10%),var(--ink)}
+.mini.w{margin-left:-10px;background:radial-gradient(circle at 36% 42%,var(--ink) 0 9%,transparent 10%),radial-gradient(circle at 64% 42%,var(--ink) 0 9%,transparent 10%),var(--paper)}
+.sub{margin:0;color:var(--muted)}
+.vs{padding:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vs .who{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.vs .name{font-family:var(--display);font-size:24px}
+.vs .score{font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.vs .mid{font-family:var(--display);font-size:22px;color:var(--pink);transform:rotate(-8deg)}
+.me{padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.me span{font-family:var(--display);font-size:18px}
+.seg{display:flex;gap:8px;margin-left:auto}
+.seg button{min-height:44px;padding:0 16px;border:3px solid var(--ink);border-radius:999px;background:var(--paper);font-family:var(--display);font-size:17px}
+.seg button[aria-pressed="true"]{background:var(--sun);box-shadow:3px 3px 0 var(--ink)}
+.feature{padding:18px;display:flex;flex-direction:column;gap:14px}
+.feature .row{display:flex;align-items:center;gap:14px}
+.feature h2{margin:0;font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1}
+.feature p{margin:0;color:var(--muted);font-size:14px}
+.feature .now{color:var(--ink);font-weight:700}
+.thumb{flex:none;width:64px;height:64px;border:3px solid var(--ink);border-radius:16px;background:var(--board);position:relative;transform:rotate(-5deg)}
+.thumb i{position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid var(--ink)}
+.thumb i:nth-child(1){left:7px;top:7px;background:var(--ink)}
+.thumb i:nth-child(2){right:7px;bottom:7px;background:var(--paper)}
+.slot{padding:18px;border:3px dashed var(--ink);border-radius:20px;display:flex;flex-direction:column;gap:2px}
+.slot b{font-family:var(--display);font-weight:400;font-size:20px}
+.slot span{color:var(--muted);font-size:14px}
+.note{margin:0;padding:10px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-size:14px}
+.note[hidden]{display:none}
+
+/* 대국 */
+.top{display:flex;align-items:center;gap:10px}
+.top h2{margin:0;font-family:var(--display);font-weight:400;font-size:28px;flex:1}
+.icon{width:48px;min-height:48px;padding:0;font-size:22px}
+.small{min-height:48px;font-size:16px;padding:0 14px}
+.players{display:flex;gap:10px}
+.chip{flex:1;display:flex;align-items:center;gap:10px;padding:10px 12px;border:3px solid var(--ink);border-radius:18px;background:var(--paper);opacity:.6;transition:transform .15s;min-width:0}
+.chip.on{opacity:1;background:var(--sun);box-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg)}
+.chip .mini{flex:none;margin:0}
+.chip .n{font-family:var(--display);font-size:20px;line-height:1.1}
+.chip .n small{font-size:13px;padding:1px 6px;margin-left:4px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);vertical-align:2px}
+.chip .t{font-size:12px;color:var(--muted)}
+.chip.on .t{color:var(--ink)}
+.status{min-height:52px;padding:10px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-family:var(--display);font-size:18px;display:flex;align-items:center}
+.status.mine{background:var(--sun)}
+.status.no{background:var(--pink);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.boardwrap{padding:6px;background:var(--board);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.board{position:relative;width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr)}
+.board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cell{touch-action:manipulation;position:relative;z-index:1;border:0;padding:0;background:none;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.cell:focus-visible{outline-offset:-3px}
+.stone{width:88%;height:88%;border-radius:50%;border:2px solid var(--ink)}
+.stone.b{background:radial-gradient(circle at 35% 42%,#fff 0 10%,transparent 11%),radial-gradient(circle at 65% 42%,#fff 0 10%,transparent 11%),var(--ink)}
+.stone.w{background:radial-gradient(circle at 35% 42%,var(--ink) 0 10%,transparent 11%),radial-gradient(circle at 65% 42%,var(--ink) 0 10%,transparent 11%),var(--paper)}
+.stone.new{animation:drop .28s cubic-bezier(.3,1.6,.5,1)}
+.stone.last{box-shadow:0 0 0 3px var(--pink)}
+.stone.ghost{opacity:.55;animation:pulse .8s ease-in-out infinite alternate}
+.stone.win{animation:hop .5s ease-in-out infinite alternate;box-shadow:0 0 0 3px var(--sun)}
+@keyframes drop{from{transform:scale(1.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes pulse{to{transform:scale(.8)}}
+@keyframes hop{to{transform:translateY(-18%)}}
+.banmark{color:var(--ban);font-weight:700;font-size:min(4.4vw,21px);line-height:1}
+.actions{display:flex;gap:10px}
+.actions .btn{flex:1;white-space:nowrap;padding:0 10px}
+.actions .go{flex:1.6}
+.hint{margin:0;font-size:13px;color:var(--muted)}
+
+/* 겹침 창 */
+.veil{position:fixed;inset:0;z-index:10;background:rgba(29,27,38,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.veil[hidden]{display:none}
+.modal{width:100%;max-width:380px;max-height:90%;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px;animation:drop .25s cubic-bezier(.3,1.4,.5,1)}
+.modal h3{margin:0;font-family:var(--display);font-weight:400;font-size:32px;line-height:1.15;text-wrap:balance}
+.modal p{margin:0}
+.modal ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.modal .actions{flex-wrap:wrap}
+.lock{position:fixed;inset:0;z-index:20;background:var(--ground);display:flex;align-items:center;justify-content:center;padding:20px}
+.lock[hidden]{display:none}
+.lock .modal{animation:none}
+.lock input{width:100%;min-height:52px;padding:0 14px;border:3px solid var(--ink);border-radius:16px;background:#fff;font-family:var(--display);font-size:22px;color:var(--ink)}
+.lock input:focus{outline:3px solid var(--pink);outline-offset:2px}
+.err{color:var(--ban);font-weight:700;font-size:14px;min-height:21px}
+.install{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.install[hidden]{display:none}
+.install b{font-family:var(--display);font-weight:400;font-size:20px}
+.install p{margin:0;color:var(--muted);font-size:14px}
+.linkbtn{align-self:center;border:0;background:none;padding:8px;font-size:13px;color:var(--muted);text-decoration:underline}
+#confetti{position:fixed;inset:0;z-index:11;pointer-events:none;width:100%;height:100%}
+
+/* 오늘의 한마디 · 홈 카드 */
+.vs{cursor:pointer;position:relative;padding-bottom:28px;font:inherit;color:inherit;width:100%;text-align:center}
+.vs:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.vs .more{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:var(--muted)}
+.word{padding:14px 16px;display:flex;flex-direction:column;gap:8px;font:inherit;color:inherit;text-align:left;width:100%;cursor:pointer}
+.word:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.word .hd{display:flex;align-items:center;gap:8px}
+.word .hd b{font-family:var(--display);font-weight:400;font-size:20px}
+.word .hd span{margin-left:auto;font-size:12px;color:var(--muted)}
+.line{display:flex;gap:10px;align-items:baseline;min-width:0}
+.line .nm{flex:none;padding:0 10px;border:2px solid var(--ink);border-radius:999px;background:var(--sun);font-family:var(--display);font-size:14px}
+.line .nm.u{background:var(--pink)}
+.line .q{font-size:15px;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.line .q.empty{color:var(--muted)}
+.betline{display:flex;align-items:center;gap:8px;padding:8px 12px;border:3px dashed var(--ink);border-radius:14px;background:#fff;font-size:14px;flex-wrap:wrap}
+.betline[hidden]{display:none}
+.betline b{font-family:var(--display);font-weight:400;font-size:16px}
+.betline .sp{flex:1;min-width:0;word-break:keep-all;overflow-wrap:anywhere}
+.betline .btn{min-height:38px;font-size:15px;padding:0 12px;box-shadow:2px 2px 0 var(--ink)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{position:relative;padding:14px;display:flex;flex-direction:column;gap:8px;text-align:left;font:inherit;color:inherit;cursor:pointer;min-width:0}
+.tile:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--ink)}
+.tile h2{margin:0;font-family:var(--display);font-weight:400;font-size:24px;line-height:1.1}
+.tile p{margin:0;color:var(--muted);font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+.tile p b{color:var(--ink)}
+.ticon{width:48px;height:48px;border:3px solid var(--ink);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;transform:rotate(-5deg)}
+.ticon.talk{background:var(--pink)}
+.ticon.cal{background:var(--sun);transform:rotate(4deg)}
+.badge{position:absolute;top:-10px;right:-8px;min-width:30px;height:30px;padding:0 8px;border:3px solid var(--ink);border-radius:999px;background:var(--pink);font-family:var(--display);font-size:16px;display:flex;align-items:center;justify-content:center;transform:rotate(6deg)}
+.badge[hidden]{display:none}
+.chatempty{margin:auto;padding:30px 10px;text-align:center;color:var(--muted)}
+
+/* 대화방 */
+.chatbox{padding:14px 12px;display:flex;flex-direction:column;gap:8px;min-height:50vh}
+.day{align-self:center;padding:2px 12px;border:2px solid var(--ink);border-radius:999px;background:var(--ground);font-size:12px;margin:6px 0}
+.msg{display:flex;flex-direction:column;max-width:80%;gap:2px}
+.msg.them{align-self:flex-start}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg .who{font-family:var(--display);font-size:14px;margin-left:4px}
+.bubble{padding:9px 13px;border:3px solid var(--ink);border-radius:18px;background:#fff;box-shadow:3px 3px 0 var(--ink);word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg.them .bubble{border-top-left-radius:6px}
+.msg.mine .bubble{background:var(--sun);border-top-right-radius:6px}
+.meta{font-size:11px;color:var(--muted);margin:0 4px}
+.meta b{color:var(--pink);font-weight:700}
+.composer{position:sticky;bottom:12px;display:flex;gap:8px;padding:8px;align-items:center;margin:0}
+.composer .field{flex:1}
+.composer .btn{min-height:48px;flex:none}
+
+/* 달력 · 일정 · 한마디 입력 */
+.addplan{padding:16px;display:flex;flex-direction:column;gap:10px;margin:0}
+.addplan b{font-family:var(--display);font-weight:400;font-size:20px}
+.field{width:100%;min-height:48px;padding:0 12px;border:3px solid var(--ink);border-radius:14px;background:#fff;font:inherit;font-size:16px;color:var(--ink);min-width:0}
+.field:focus{outline:3px solid var(--pink);outline-offset:2px}
+.addrow{display:flex;gap:8px}
+.addrow .field{flex:1}
+.addrow .btn{flex:none}
+.sec{margin:4px 2px -6px;font-family:var(--display);font-size:18px}
+.plans{display:flex;flex-direction:column;gap:12px}
+.none{margin:0;padding:4px 2px;color:var(--muted);font-size:14px}
+.plan{padding:12px 12px 12px 14px;display:flex;align-items:center;gap:12px}
+.dday{flex:none;width:64px;padding:6px 0;border:3px solid var(--ink);border-radius:14px;background:var(--sun);text-align:center;font-family:var(--display);font-size:18px;line-height:1.1;transform:rotate(-3deg)}
+.dday small{display:block;font-family:var(--body);font-size:11px}
+.dday.today{background:var(--pink)}
+.plan .txt{flex:1;min-width:0}
+.plan .t{font-family:var(--display);font-size:19px;line-height:1.25;word-break:keep-all;overflow-wrap:anywhere}
+.plan .s{font-size:12px;color:var(--muted)}
+.del{flex:none;width:42px;min-height:42px;padding:0;font-size:18px;box-shadow:2px 2px 0 var(--ink)}
+.plan.past{opacity:.6;box-shadow:2px 2px 0 var(--ink)}
+.plan.past .dday{background:var(--paper)}
+.cal{padding:14px}
+.calhd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.calhd b{flex:1;text-align:center;font-family:var(--display);font-weight:400;font-size:24px}
+.calhd .btn{width:44px;min-height:44px;padding:0;font-size:18px;box-shadow:2px 2px 0 var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.grid .wd{font-size:12px;color:var(--muted);padding-bottom:2px}
+.grid .wd:first-child{color:var(--ban)}
+.d{aspect-ratio:1;border:2px solid transparent;border-radius:12px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 0 0;font-family:var(--display);font-size:16px;gap:2px;min-width:0}
+.d.o{color:#9a98a3}
+.d.sun{color:var(--ban)}
+.d.o.sun{color:#e08a9c}
+.d.today{border-color:var(--ink);background:var(--ground)}
+.d.sel{border-color:var(--ink);background:var(--sun);box-shadow:2px 2px 0 var(--ink)}
+.dots{display:flex;gap:3px;min-height:7px}
+.dots i{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--ink);background:var(--sun)}
+.dots i.u{background:var(--pink)}
+.d.sel .dots i:not(.u){background:#fff}
+.legend{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink);background:var(--sun);margin-right:4px;vertical-align:0}
+.legend i.u{background:var(--pink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-height:40px;padding:0 14px;border:3px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:14px}
+.chips button.on{background:var(--sun)}
+.betbox[hidden]{display:none}
+.daycard{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.daycard .dt{font-family:var(--display);font-size:17px}
+
+/* 전적판 */
+.big{padding:18px;display:flex;flex-direction:column;gap:14px}
+.big .vs{padding:0;cursor:default}
+.big .vs:active{transform:none;box-shadow:none}
+.bar{display:flex;height:26px;border:3px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.bar i{display:block;height:100%}
+.bar i.a{background:var(--sun)}
+.bar i.b{background:var(--pink)}
+.bar i.a+i.b{border-left:3px solid var(--ink)}
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.stat div{padding:8px 4px;border:3px solid var(--ink);border-radius:14px;background:#fff}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:18px;line-height:1.2}
+.stat span{font-size:12px;color:var(--muted)}
+.rec{padding:12px 14px;display:flex;align-items:center;gap:12px}
+.rec .wl{flex:none;width:56px;padding:4px 0;border:3px solid var(--ink);border-radius:12px;text-align:center;font-family:var(--display);font-size:15px;background:var(--sun);transform:rotate(-3deg)}
+.rec .wl.u{background:var(--pink)}
+.rec .wl.dr{background:var(--paper)}
+.rec .txt{flex:1;min-width:0}
+.rec .t{font-family:var(--display);font-size:17px}
+.rec .s{font-size:12px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.paid{flex:none;min-height:36px;font-size:12px;padding:3px 10px;border:2px solid var(--ink);border-radius:999px;background:#fff;font-family:var(--body)}
+.paid.no{background:var(--sun);font-weight:700;box-shadow:2px 2px 0 var(--ink)}
+.gamerow{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.gamerow .nm{flex:1;font-family:var(--display);font-size:20px}
+.gamerow .sc{font-family:var(--display);font-size:22px}
+.gamerow .thumb{width:44px;height:44px}
+.gamerow .thumb i{width:16px;height:16px}
+.gamerow .thumb i:nth-child(1){left:5px;top:5px}
+.gamerow .thumb i:nth-child(2){right:5px;bottom:5px}
+/* 땅따먹기 */
+.thumb.land{background:var(--paper);transform:rotate(4deg);overflow:hidden}
+.thumb.land svg{position:absolute;inset:0;width:100%;height:100%}
+.gamerow .thumb.land{width:44px;height:44px}
+.landwrap{padding:10px;background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.landwrap svg{display:block;width:100%;height:auto;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none}
+.landwrap .pop{transform-box:fill-box;transform-origin:center;animation:drop .32s cubic-bezier(.3,1.6,.5,1)}
+.landwrap .ln{transition:stroke .15s}
+.landwrap .sel{animation:pulse .6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+
+/* 음악 나눔 */
+.ticon.mus{background:#8FD3FF;transform:rotate(-3deg)}
+.tile.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:12px}
+.tile.wide .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.song{padding:14px;display:flex;flex-direction:column;gap:10px}
+.song.wait{background:#FFF6CF}
+.shd{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.shd .mini{flex:none;width:24px;height:24px;border-width:2px;margin:0}
+.shd b{color:var(--ink)}
+.shd .when{margin-left:auto;white-space:nowrap}
+.shd .sdel{border:0;background:none;padding:2px 4px;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.srow{display:flex;gap:12px;align-items:center}
+.disc{flex:none;width:62px;height:62px;border:3px solid var(--ink);border-radius:50%;background:radial-gradient(circle,var(--paper) 0 12%,var(--ink) 13% 17%,var(--c,#FF5D8F) 18% 100%);transform:rotate(-8deg);box-shadow:3px 3px 0 var(--ink)}
+.sinfo{flex:1;min-width:0}
+.sinfo .t{font-family:var(--display);font-size:21px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.sinfo .a{font-size:13px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.site{display:inline-block;margin-top:4px;padding:0 8px;border:2px solid var(--ink);border-radius:999px;font-size:12px;background:#fff}
+.say{margin:0;padding:8px 12px;border:2px dashed var(--ink);border-radius:14px;background:#fff;font-size:14px;word-break:keep-all;overflow-wrap:anywhere}
+.btn.play{min-height:44px;font-size:16px;padding:0 14px;box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink)}
+.rv{padding:10px 12px;border:3px solid var(--ink);border-radius:16px;background:var(--ground);display:flex;flex-direction:column;gap:4px}
+.rv .h{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px;flex-wrap:wrap}
+.rv .h .mini{width:22px;height:22px;border-width:2px;margin:0}
+.rv p{margin:0;font-size:15px;word-break:keep-all;overflow-wrap:anywhere}
+.rv .emo{font-size:20px;margin-left:auto}
+.rv .ed{border:0;background:none;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer;align-self:flex-end}
+.stars{color:#E8A100;letter-spacing:1px;font-size:17px;-webkit-text-stroke:.6px var(--ink)}
+.stars .off{color:#fff}
+.btns{display:flex;gap:10px}
+.btns .btn{flex:1}
+.filt{display:flex;gap:8px;flex-wrap:wrap}
+.filt button{min-height:38px;padding:0 14px;border:3px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:14px;color:var(--ink)}
+.filt button[aria-pressed="true"]{background:var(--sun)}
+.linkok{font-size:13px;color:var(--live);font-family:var(--display);margin-top:-4px}
+.linkok.bad{color:var(--ban)}
+.lbl{font-family:var(--display);font-size:16px;margin-bottom:-4px}
+.bigstars{display:flex;justify-content:center;gap:6px}
+.bigstars button{border:0;background:none;padding:0;font-size:44px;line-height:1;color:#fff;-webkit-text-stroke:2px var(--ink);cursor:pointer}
+.bigstars button.on{color:#E8A100}
+.emos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.emos button{width:52px;height:52px;border:3px solid var(--ink);border-radius:14px;background:#fff;font-size:26px;padding:0}
+.emos button[aria-pressed="true"]{background:var(--sun);transform:rotate(-6deg);box-shadow:3px 3px 0 var(--ink)}
+.cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:-6px}
+.formerr{margin:0;color:var(--ban);font-size:14px;font-family:var(--display)}
+/* 같이 푸는 수도쿠 */
+.thumb.sdk{background:var(--paper);transform:rotate(-4deg);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr);font-family:var(--display);font-size:15px;line-height:1}
+.thumb.sdk span{display:flex;align-items:center;justify-content:center;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.thumb.sdk span:nth-child(3n){border-right:0}
+.thumb.sdk span:nth-child(n+7){border-bottom:0}
+.thumb.sdk .a{background:#FFE58A}
+.thumb.sdk .b{background:#FFC2D6}
+.gamerow .thumb.sdk{font-size:11px}
+.sdkchip{opacity:1}
+.dot0,.dot1{flex:none;display:inline-block;width:26px;height:26px;border:2px solid var(--ink);border-radius:5px;background:#FFE58A;vertical-align:-2px}
+.dot1{background:#FFC2D6}
+.sdkwrap{padding:6px;background:var(--ink);border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink)}
+.sgrid{display:grid;grid-template-columns:repeat(9,1fr);background:var(--paper);border-radius:12px;overflow:hidden}
+.sgrid .sc{position:relative;aspect-ratio:1;border:0;border-right:1px solid #B5B1C2;border-bottom:1px solid #B5B1C2;border-radius:0;padding:0;background:var(--paper);font-family:var(--display);font-size:min(6.4vw,29px);line-height:1;color:var(--ink);display:flex;align-items:center;justify-content:center;min-width:0;touch-action:manipulation}
+.sgrid .sc.c9{border-right:0}
+.sgrid .sc.r9{border-bottom:0}
+.sgrid .sc.c3{border-right:3px solid var(--ink)}
+.sgrid .sc.r3{border-bottom:3px solid var(--ink)}
+.sgrid .sc.gv{background:#EAE6D6}
+.sgrid .sc.w0{background:#FFE58A}
+.sgrid .sc.w1{background:#FFC2D6}
+.sgrid .sc.near{box-shadow:inset 0 0 0 99px rgba(47,191,113,.16)}
+.sgrid .sc.same{box-shadow:inset 0 0 0 3px #2FBF71}
+.sgrid .sc.sel{box-shadow:inset 0 0 0 4px var(--ink);z-index:1}
+.sgrid .sc.bad{color:var(--ban);text-decoration:underline wavy var(--ban) 2px;text-underline-offset:3px}
+.sgrid .sc.wrong{background:#FF9DB0;animation:shake .3s}
+.sgrid .sc .v{display:block}
+.sgrid .sc.pop .v{animation:drop .32s cubic-bezier(.3,1.6,.5,1)}
+.sgrid .sc .mm{position:absolute;inset:2px;display:grid;grid-template-columns:repeat(3,1fr);font-family:var(--body);font-size:min(2.4vw,11px);font-weight:700;color:var(--muted)}
+.sgrid .sc .mm i{font-style:normal;display:flex;align-items:center;justify-content:center}
+.sgrid.done .sc{animation:hop .45s ease-in-out 2 alternate}
+.sinfo2{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin:-6px 2px 0}
+.keys{display:grid;grid-template-columns:repeat(9,1fr);gap:5px}
+.keys button{position:relative;min-height:54px;padding:0;border:3px solid var(--ink);border-radius:12px;background:var(--paper);box-shadow:3px 3px 0 var(--ink);font-family:var(--display);font-size:25px;line-height:1}
+.keys button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.keys button small{position:absolute;right:3px;bottom:2px;font-family:var(--body);font-size:9px;color:var(--muted)}
+.keys button:disabled{opacity:.3;box-shadow:none}
+.keys button.full{opacity:.4}
+.keys.memo button{background:#E4F7FF}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lives{display:flex;align-items:center;gap:8px;padding:8px 14px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);font-family:var(--display);font-size:17px}
+.lives .hs{font-size:22px;letter-spacing:2px;font-family:system-ui,sans-serif}
+.lives .hs .gone{filter:grayscale(1);opacity:.35}
+.lives .hs .lost{display:inline-block;animation:shake .4s}
+.lives small{margin-left:auto;font-family:var(--body);font-size:12px;color:var(--muted)}
+.lives.zero{background:#FFD3DC}
+.tools .btn{min-height:48px;font-size:16px;padding:0 6px;white-space:nowrap}
+.tools .btn[aria-pressed="true"]{background:#8FD3FF}
+/* 일한 시간 */
+.ticon.tm{background:#B9A6FF;transform:rotate(3deg)}
+.ticon.dr{background:#FFA86B;transform:rotate(-4deg)}
+.tile .fire{display:inline-block;animation:pulse .7s ease-in-out infinite alternate}
+.tmcard{padding:18px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.tmcard.run{background:#FFF6CF}
+.tmhd{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:18px}
+.tmhd .mini{width:26px;height:26px;margin:0;flex:none}
+.tmhd .st{margin-left:auto;font-family:var(--body);font-size:13px;color:var(--muted);white-space:nowrap}
+.tmhd .st.on{color:var(--ink);font-weight:700}
+.tmbig{font-family:var(--display);font-size:62px;line-height:1;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.tmwhat{margin:-4px 0 0;text-align:center;font-size:14px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.tmwhat b{color:var(--ink)}
+.btn.go{min-height:64px;font-size:24px}
+.tmother{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.tmother.run{background:#FFE3EC}
+.tmother .tmbig{font-size:40px;text-align:left}
+.tmvs{font-family:var(--display);font-size:17px;text-align:center;margin:0}
+.week{padding:14px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.bars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;align-items:end;height:130px}
+.bars .d{aspect-ratio:auto;padding:0;border:0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bars .pr{display:flex;gap:3px;align-items:flex-end;height:100%;width:100%;min-width:0;justify-content:center}
+.bars i{display:block;width:40%;max-width:16px;min-height:3px;border:2px solid var(--ink);border-radius:6px 6px 2px 2px;background:var(--sun)}
+.bars i.u{background:var(--pink)}
+.bars .lb{font-size:12px;color:var(--muted);line-height:1}
+.bars .lb.td{color:var(--ink);font-weight:700}
+.wsum{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--muted);border-top:2px dashed var(--ink);padding-top:8px;text-align:center}
+.wsum span{display:flex;flex-direction:column}
+.wsum b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--ink)}
+.nw{white-space:nowrap}
+/* 오늘의 술 */
+.dayset{display:flex;align-items:center;gap:10px}
+.dayset b{flex:1;text-align:center;font-family:var(--display);font-weight:400;font-size:20px}
+.dayset .btn{width:48px;min-height:44px;padding:0;font-size:22px}
+.drlist{display:flex;flex-direction:column;gap:8px}
+.drrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border:2px solid var(--ink);border-radius:14px;background:#fff}
+.drrow.has{background:#FFE9D6}
+.drrow .em{font-size:26px;width:34px;text-align:center;flex:none}
+.drrow .nm{flex:1;min-width:0;font-family:var(--display);font-size:18px;line-height:1.15}
+.drrow .nm small{display:block;font-family:var(--body);font-size:11px;color:var(--muted)}
+.drrow .n{min-width:46px;text-align:center;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.drrow button{flex:none;width:44px;height:44px;border:3px solid var(--ink);border-radius:12px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:24px;line-height:1;padding:0}
+.drrow button.plus{background:var(--sun)}
+.drrow button:active{transform:translate(2px,2px);box-shadow:none}
+.drrow button:disabled{opacity:.3;box-shadow:none}
+.btn.none0{min-height:44px;font-size:16px}
+.btn.none0[aria-pressed="true"]{background:#8FD3FF}
+.drsum{font-size:15px;word-break:keep-all;overflow-wrap:anywhere}
+.drsum .tag2{display:inline-block;margin:2px 4px 2px 0;padding:1px 10px;border:2px solid var(--ink);border-radius:999px;background:#FFE9D6;white-space:nowrap}
+.drsum.empty{color:var(--muted)}
+.drmonth{padding:12px 16px;display:flex;justify-content:space-around;gap:8px;text-align:center}
+.drmonth div{display:flex;flex-direction:column}
+.drmonth b{font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1}
+.drmonth span{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section class="view" id="home">
+  <div class="logo">
+    <div class="pair" aria-hidden="true"><div class="mini b"></div><div class="mini w"></div></div>
+    <h1>투지</h1>
+    <div class="tag" id="linkTag" role="status"><i></i><span id="linkText">연결 중</span></div>
+  </div>
+  <p class="note" style="background:#FFD23F">🔍 미리보기 사이트예요. 여기 기록은 진짜 투지와 섞이지 않아요.</p>
+  <p class="sub">지원이랑 지우, 지 둘이라서 투지.</p>
+
+  <button class="sticker word" id="wordCard" type="button">
+    <span class="hd"><b>오늘의 한마디</b><span id="wordDate"></span></span>
+    <span class="line"><span class="nm">지원</span><span class="q" id="wordHome0"></span></span>
+    <span class="line"><span class="nm u">지우</span><span class="q" id="wordHome1"></span></span>
+  </button>
+
+  <button class="sticker vs" id="vsCard" type="button" aria-label="전적판 보기">
+    <span class="who"><span class="name">지원</span><span class="score" id="score0">0</span></span>
+    <span class="mid">VS</span>
+    <span class="who"><span class="name">지우</span><span class="score" id="score1">0</span></span>
+    <span class="more">전적판 보기 ›</span>
+  </button>
+
+  <div class="sticker me">
+    <span>이 폰은</span>
+    <div class="seg" role="group" aria-label="이 폰을 쓰는 사람">
+      <button type="button" data-seat="0" aria-pressed="false">지원</button>
+      <button type="button" data-seat="1" aria-pressed="false">지우</button>
+    </div>
+  </div>
+
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb" aria-hidden="true"><i></i><i></i></div>
+      <div>
+        <h2>오목</h2>
+        <p id="homeGame">렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.</p>
+      </div>
+    </div>
+    <div class="betline" id="homeBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeBetText"></span></div>
+    <button class="btn sun" id="startBtn" type="button">한 판 붙기</button>
+  </div>
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb land" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="9" y="9" width="22" height="22" rx="5" fill="#1D1B26"/><circle cx="16" cy="19" r="2.6" fill="#fff"/><circle cx="24" cy="19" r="2.6" fill="#fff"/><g stroke="#1D1B26" stroke-width="3.5" stroke-linecap="round"><line x1="31" y1="9" x2="53" y2="9"/><line x1="53" y1="9" x2="53" y2="31"/><line x1="9" y1="31" x2="9" y2="53"/></g><line x1="31" y1="31" x2="53" y2="31" stroke="#FF5D8F" stroke-width="3.5" stroke-linecap="round"/><g fill="#FFFDF5" stroke="#1D1B26" stroke-width="2"><circle cx="9" cy="9" r="3.5"/><circle cx="31" cy="9" r="3.5"/><circle cx="53" cy="9" r="3.5"/><circle cx="9" cy="31" r="3.5"/><circle cx="31" cy="31" r="3.5"/><circle cx="53" cy="31" r="3.5"/><circle cx="9" cy="53" r="3.5"/><circle cx="31" cy="53" r="3.5"/><circle cx="53" cy="53" r="3.5"/></g></svg></div>
+      <div>
+        <h2>땅따먹기</h2>
+        <p id="homeLand">점 사이에 선을 그어 네모를 닫으면 내 땅! 땅을 더 많이 차지하면 이겨요.</p>
+      </div>
+    </div>
+    <div class="betline" id="homeLandBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeLandBetText"></span></div>
+    <button class="btn sun" id="landBtn" type="button">한 판 붙기</button>
+  </div>
+
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb sdk" aria-hidden="true"><span>5</span><span class="a">3</span><span></span><span class="b">6</span><span>9</span><span class="a">8</span><span></span><span class="b">1</span><span>4</span></div>
+      <div>
+        <h2>같이 푸는 수도쿠</h2>
+        <p id="homeSdk">차례 없이 둘이 아무 칸이나 같이 채워요. 어려움 난이도, 매번 새 퍼즐!</p>
+      </div>
+    </div>
+    <button class="btn sun" id="sdkBtn" type="button">같이 풀기</button>
+  </div>
+
+  <div class="duo">
+    <button class="sticker tile" id="chatTile" type="button"><span class="badge" id="chatBadge" hidden></span><span class="ticon talk" aria-hidden="true">💬</span><h2>대화방</h2><p id="chatPreview">둘만 보는 대화방</p></button>
+    <button class="sticker tile" id="calTile" type="button"><span class="ticon cal" aria-hidden="true">📅</span><h2>공유 달력</h2><p id="calPreview">약속을 같이 적어요</p></button>
+    <button class="sticker tile" id="tmTile" type="button"><span class="ticon tm" aria-hidden="true">⏱️</span><h2>일한 시간</h2><p id="tmPreview">열품타처럼 오늘 일한 시간을 재요</p></button>
+    <button class="sticker tile" id="drTile" type="button"><span class="ticon dr" aria-hidden="true">🍺</span><h2>오늘의 술</h2><p id="drPreview">오늘 마신 술을 서로 보여 줘요</p></button>
+    <button class="sticker tile wide" id="musicTile" type="button"><span class="badge" id="musicBadge" hidden></span><span class="ticon mus" aria-hidden="true">🎵</span><span class="tx"><h2>음악 나눔</h2><p id="musicPreview">노래를 서로 추천하고 감상평을 남겨요</p></span></button>
+  </div>
+
+  <p class="note" id="homeNote" hidden></p>
+
+  <div class="sticker install" id="installCard" hidden>
+    <b>폰에 앱으로 깔기</b>
+    <p id="installText">홈 화면에 투지 아이콘을 만들어 두면 앱처럼 바로 열 수 있어요.</p>
+    <button class="btn" id="installBtn" type="button" hidden>홈 화면에 추가</button>
+  </div>
+
+  <button class="linkbtn" id="relockBtn" type="button">다른 암호로 들어가기</button>
+</section>
+
+<section class="view" id="game" hidden>
+  <div class="top">
+    <button class="btn icon" id="backBtn" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>오목</h2>
+    <button class="btn small" id="rulesBtn" type="button">규칙</button>
+  </div>
+
+  <div class="players">
+    <div class="chip" id="chip0"><div class="mini" id="chipStone0"></div><div><div class="n">지원<small id="meTag0" hidden>나</small></div><div class="t" id="chipText0"></div></div></div>
+    <div class="chip" id="chip1"><div class="mini" id="chipStone1"></div><div><div class="n">지우<small id="meTag1" hidden>나</small></div><div class="t" id="chipText1"></div></div></div>
+  </div>
+
+  <div class="betline" id="betLine" hidden>🎯 <b>내기</b><span class="sp" id="betLineText"></span><button class="btn" id="betEditBtn" type="button" hidden>바꾸기</button></div>
+  <form class="sticker addplan betbox" id="betBox" hidden autocomplete="off">
+    <b>🎯 이번 판 내기 걸기</b>
+    <p class="hint">지는 사람이 할 일을 적어요. 판이 끝나기 전엔 언제든 걸고 바꿀 수 있어요.</p>
+    <input class="field" id="betInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
+    <div class="chips" id="betChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
+    <div class="actions"><button class="btn" id="betCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
+  </form>
+  <button class="btn" id="betOpen" type="button" hidden>🎯 이번 판 내기 걸기</button>
+
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <div class="boardwrap"><div class="board" id="board"></div></div>
+
+  <div class="actions">
+    <button class="btn" id="undoBtn" type="button">무르기</button>
+    <button class="btn sun go" id="goBtn" type="button">두기</button>
+    <button class="btn" id="quitBtn" type="button">기권</button>
+  </div>
+  <p class="hint" id="hint">자리를 누르고 한 번 더 누르면 놓여요. 상대가 두면 바로 보여요. 빨간 ✕는 흑이 못 두는 자리예요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</p>
+</section>
+
+<section class="view" id="land" hidden>
+  <div class="top">
+    <button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>땅따먹기</h2>
+    <button class="btn small" id="lRulesBtn" type="button">규칙</button>
+  </div>
+  <div class="players">
+    <div class="chip" id="lChip0"><div class="mini b"></div><div><div class="n">지원<small id="lMeTag0" hidden>나</small></div><div class="t" id="lChipText0"></div></div></div>
+    <div class="chip" id="lChip1"><div class="mini w"></div><div><div class="n">지우<small id="lMeTag1" hidden>나</small></div><div class="t" id="lChipText1"></div></div></div>
+  </div>
+  <div class="betline" id="lBetLine" hidden>🎯 <b>내기</b><span class="sp" id="lBetLineText"></span><button class="btn" id="lBetEditBtn" type="button" hidden>바꾸기</button></div>
+  <form class="sticker addplan betbox" id="lBetBox" hidden autocomplete="off">
+    <b>🎯 이번 판 내기 걸기</b>
+    <p class="hint">지는 사람이 할 일을 적어요. 판이 끝나기 전엔 언제든 걸고 바꿀 수 있어요.</p>
+    <input class="field" id="lBetInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
+    <div class="chips" id="lBetChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
+    <div class="actions"><button class="btn" id="lBetCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
+  </form>
+  <button class="btn" id="lBetOpen" type="button" hidden>🎯 이번 판 내기 걸기</button>
+  <div class="status" id="lStatus" role="status" aria-live="polite"></div>
+  <div class="landwrap"><svg id="lBoard" viewBox="0 0 340 340" role="img" aria-label="땅따먹기 판"></svg></div>
+  <div class="actions">
+    <button class="btn" id="lUndoBtn" type="button">무르기</button>
+    <button class="btn sun go" id="lGoBtn" type="button">긋기</button>
+    <button class="btn" id="lQuitBtn" type="button">기권</button>
+  </div>
+  <p class="hint">점 두 개 사이를 누르고 한 번 더 누르면 선이 그어져요. 네모를 닫으면 그 땅은 내 것이고 한 번 더 그어요. 무르기는 상대가 다음 선을 긋기 전까지만 돼요.</p>
+</section>
+<section class="view" id="sdk" hidden>
+  <div class="top">
+    <button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>같이 수도쿠</h2>
+    <button class="btn small" id="sRulesBtn" type="button">규칙</button>
+  </div>
+  <div class="players">
+    <div class="chip sdkchip" id="sChip0"><span class="dot0" aria-hidden="true"></span><div><div class="n">지원<small id="sMeTag0" hidden>나</small></div><div class="t" id="sChipText0"></div></div></div>
+    <div class="chip sdkchip" id="sChip1"><span class="dot1" aria-hidden="true"></span><div><div class="n">지우<small id="sMeTag1" hidden>나</small></div><div class="t" id="sChipText1"></div></div></div>
+  </div>
+  <div class="lives" id="sLives" aria-live="polite"></div>
+  <div class="status" id="sStatus" role="status" aria-live="polite"></div>
+  <div class="sdkwrap"><div class="sgrid" id="sBoard" role="grid" aria-label="수도쿠 판"></div></div>
+  <div class="sinfo2"><span id="sLeft"></span><span id="sTime"></span></div>
+  <div class="keys" id="sKeys"></div>
+  <div class="tools">
+    <button class="btn" id="sMemoBtn" type="button" aria-pressed="false">✏️ 메모</button>
+    <button class="btn" id="sEraseBtn" type="button">지우기</button>
+  </div>
+  <button class="btn" id="sNewBtn" type="button">새 퍼즐 꺼내기</button>
+  <p class="hint">칸을 누르고 아래 숫자를 누르면 들어가요. 차례 없이 둘이 동시에 채워요. 틀린 숫자를 누르면 목숨이 하나 줄어요. 목숨은 둘이 합쳐 4개! 지원이 넣은 숫자는 노랑, 지우가 넣은 숫자는 분홍 칸이에요. 메모는 내 폰에만 보여요.</p>
+</section>
+<section class="view" id="chat" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>대화방</h2></div>
+  <div class="sticker chatbox" id="chatList" aria-live="polite"></div>
+  <form class="sticker composer" id="chatForm" autocomplete="off">
+    <input class="field" id="chatInput" maxlength="1000" enterkeyhint="send" aria-label="보낼 말">
+    <button class="btn sun" type="submit">보내기</button>
+  </form>
+</section>
+
+<section class="view" id="cal" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>공유 달력</h2></div>
+  <div class="sticker cal">
+    <div class="calhd"><button class="btn" id="calPrev" type="button" aria-label="이전 달">‹</button><b id="calTitle"></b><button class="btn" id="calNext" type="button" aria-label="다음 달">›</button></div>
+    <div class="grid" id="calGrid"></div>
+    <div class="legend"><span><i></i>지원이 적음</span><span><i class="u"></i>지우가 적음</span></div>
+  </div>
+  <p class="sec" id="selTitle"></p>
+  <div class="plans" id="selPlans"></div>
+  <form class="sticker addplan" id="planForm" autocomplete="off">
+    <b>이날 일정 추가</b>
+    <div class="addrow"><input class="field" id="planInput" maxlength="60" placeholder="예: 영화 보기" aria-label="일정 내용"><button class="btn sun" type="submit">추가</button></div>
+  </form>
+  <p class="sec">다가오는 일정</p>
+  <div class="plans" id="upPlans"></div>
+</section>
+
+<section class="view" id="word" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘의 한마디</h2></div>
+  <form class="sticker addplan" id="wordForm" autocomplete="off">
+    <b id="wordFormTitle">오늘 내 한마디</b>
+    <div class="addrow"><input class="field" id="wordInput" maxlength="80" placeholder="오늘의 한 줄" aria-label="오늘의 한마디"><button class="btn sun" type="submit">저장</button></div>
+    <p class="hint">하루에 한 줄. 그날 안에는 몇 번이든 고칠 수 있어요.</p>
+  </form>
+  <div class="sticker daycard" id="wordToday"></div>
+  <p class="sec">지난 한마디</p>
+  <div class="plans" id="wordPast"></div>
+</section>
+
+
+<section class="view" id="music" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>음악 나눔</h2></div>
+  <button class="btn sun" id="songNew" type="button">🎵 노래 추천하기</button>
+  <div class="filt" id="musicFilt" role="group" aria-label="누가 추천한 노래만 볼지">
+    <button type="button" data-f="-1" aria-pressed="true">모두</button><button type="button" data-f="0" aria-pressed="false">지원 추천</button><button type="button" data-f="1" aria-pressed="false">지우 추천</button>
+  </div>
+  <div class="plans" id="songList"></div>
+</section>
+
+<section class="view" id="song" hidden>
+  <div class="top"><button class="btn icon toMusic" type="button" aria-label="음악 나눔으로">&#8592;</button><h2>노래 추천하기</h2></div>
+  <form class="sticker addplan" id="songForm" autocomplete="off" novalidate>
+    <label class="lbl" for="songLink">🔗 노래 링크</label>
+    <input class="field" id="songLink" type="url" inputmode="url" maxlength="500" placeholder="여기에 붙여 넣기">
+    <span class="linkok" id="songLinkOk" hidden></span>
+    <p class="hint" style="margin:0">유튜브·멜론·스포티파이 등에서 '공유 → 링크 복사' 한 걸 붙여 넣어요. 링크가 없으면 비워 둬도 돼요(유튜브 검색으로 연결해 드려요).</p>
+    <label class="lbl" for="songTitle">🎵 노래 제목</label>
+    <input class="field" id="songTitle" maxlength="60" placeholder="예: 밤양갱">
+    <label class="lbl" for="songArtist">🎤 가수</label>
+    <input class="field" id="songArtist" maxlength="60" placeholder="예: 비비">
+    <label class="lbl" for="songNote">💬 한마디 (안 써도 돼요)</label>
+    <input class="field" id="songNote" maxlength="100" placeholder="예: 퇴근길에 들어 봐">
+    <p class="formerr" id="songErr" hidden></p>
+    <button class="btn sun" id="songSend" type="submit">보내기</button>
+  </form>
+  <p class="hint" id="songHint"></p>
+</section>
+
+<section class="view" id="review" hidden>
+  <div class="top"><button class="btn icon toMusic" type="button" aria-label="음악 나눔으로">&#8592;</button><h2>감상평 쓰기</h2></div>
+  <div class="sticker song" id="revSong"></div>
+  <form class="sticker addplan" id="revForm" autocomplete="off">
+    <span class="lbl">⭐ 몇 점?</span>
+    <div class="bigstars" id="revStars" role="group" aria-label="별점"></div>
+    <span class="lbl">😀 들은 기분</span>
+    <div class="emos" id="revEmos" role="group" aria-label="들은 기분"></div>
+    <label class="lbl" for="revInput">✍️ 한 줄 감상</label>
+    <input class="field" id="revInput" maxlength="60" placeholder="예: 후렴 중독성 미쳤다">
+    <div class="cnt" id="revCnt">0 / 60</div>
+    <p class="formerr" id="revErr" hidden></p>
+    <button class="btn sun" type="submit" id="revSend">감상평 남기기</button>
+  </form>
+  <p class="hint" id="revHint"></p>
+</section>
+
+<section class="view" id="timer" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘 일한 시간</h2></div>
+  <div class="sticker tmcard" id="tmMine">
+    <div class="tmhd" id="tmMineHd"></div>
+    <div class="tmbig" id="tmMineBig" role="timer" aria-live="off">0:00:00</div>
+    <p class="tmwhat" id="tmMineWhat" hidden></p>
+    <input class="field" id="tmWhat" maxlength="20" placeholder="지금 할 일 (안 써도 돼요) 예: 보고서" aria-label="지금 할 일">
+    <button class="btn sun go" id="tmGo" type="button">▶ 시작</button>
+  </div>
+  <div class="sticker tmother" id="tmOther"></div>
+  <p class="tmvs" id="tmVs"></p>
+  <p class="sec">최근 7일</p>
+  <div class="sticker week">
+    <div class="bars" id="tmBars"></div>
+    <div class="legend"><span><i></i>지원</span><span><i class="u"></i>지우</span></div>
+    <div class="wsum" id="tmWeek"></div>
+  </div>
+  <p class="hint">시작을 누르고 일하다가, 쉴 때 멈춤을 눌러요. 하루 동안 잰 시간이 다 더해지고, 밤 12시가 지나면 새 하루로 넘어가요. 폰을 꺼도 시간은 계속 재져요.</p>
+</section>
+
+<section class="view" id="drink" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘의 술</h2></div>
+  <div class="sticker addplan">
+    <div class="dayset"><button class="btn" id="drPrev" type="button" aria-label="전날">‹</button><b id="drDate"></b><button class="btn" id="drNext" type="button" aria-label="다음 날">›</button></div>
+    <span class="lbl" id="drMineTitle">내가 마신 술</span>
+    <div class="drlist" id="drMine"></div>
+    <button class="btn none0" id="drNone" type="button" aria-pressed="false">🙅 이날은 안 마셨어요</button>
+    <form class="addrow" id="drForm" autocomplete="off"><input class="field" id="drSay" maxlength="40" placeholder="누구랑·어디서 (안 써도 돼요)" aria-label="술 한마디"><button class="btn sun" type="submit">저장</button></form>
+  </div>
+  <div class="sticker daycard" id="drOther"></div>
+  <div class="sticker drmonth" id="drMonth"></div>
+  <p class="sec">지난 술 기록</p>
+  <div class="plans" id="drPast"></div>
+</section>
+
+<section class="view" id="stats" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>전적판</h2></div>
+  <div class="sticker big">
+    <div class="vs"><span class="who"><span class="name">지원</span><span class="score" id="stScore0">0</span></span><span class="mid">VS</span><span class="who"><span class="name">지우</span><span class="score" id="stScore1">0</span></span></div>
+    <div class="bar" id="stBar"></div>
+    <div class="stat"><div><b id="stTotal">0판</b><span>모두</span></div><div><b id="stStreak">–</b><span>지금 기세</span></div><div><b id="stUnpaid">0개</b><span>아직 안 한 내기</span></div></div>
+  </div>
+  <p class="sec">게임별</p>
+  <div class="sticker gamerow"><div class="thumb" aria-hidden="true"><i></i><i></i></div><span class="nm">오목</span><span class="sc" id="stOmok">0 : 0</span></div>
+  <div class="sticker gamerow"><div class="thumb land" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="9" y="9" width="22" height="22" rx="5" fill="#1D1B26"/><circle cx="16" cy="19" r="2.6" fill="#fff"/><circle cx="24" cy="19" r="2.6" fill="#fff"/><g stroke="#1D1B26" stroke-width="4" stroke-linecap="round"><line x1="31" y1="9" x2="53" y2="9"/><line x1="53" y1="9" x2="53" y2="31"/><line x1="9" y1="31" x2="9" y2="53"/></g></svg></div><span class="nm">땅따먹기</span><span class="sc" id="stLand">0 : 0</span></div>
+  <div class="sticker gamerow"><div class="thumb sdk" aria-hidden="true"><span>5</span><span class="a">3</span><span></span><span class="b">6</span><span>9</span><span class="a">8</span><span></span><span class="b">1</span><span>4</span></div><span class="nm">같이 푼 수도쿠</span><span class="sc" id="stSdk">0개</span></div>
+  <div class="slot"><b>다음 게임 자리</b><span>게임이 늘어나면 여기에 같이 쌓여요.</span></div>
+  <p class="sec">최근 판</p>
+  <div class="plans" id="stRecent"></div>
+</section>
+
+</div>
+
+<div class="veil" id="veil" hidden>
+  <div class="sticker modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="actions" id="modalActions"></div>
+  </div>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<div class="lock" id="lock" hidden>
+  <form class="sticker modal" id="lockForm" autocomplete="off">
+    <div class="pair" aria-hidden="true"><div class="mini b"></div><div class="mini w"></div></div>
+    <h3>둘만 아는 암호</h3>
+    <p>지원이랑 지우가 같은 암호를 넣어야 같은 판에서 만나요. 암호를 모르면 판도 대화도 볼 수 없어요.</p>
+    <input id="lockInput" type="password" inputmode="text" aria-label="암호" placeholder="암호 (4글자 이상)" autocomplete="off">
+    <div class="err" id="lockErr" role="alert"></div>
+    <button class="btn sun" type="submit">들어가기</button>
+  </form>
+</div>
+
+<script>
+//RULES-START
+function Rules(N){
+  var b=[];for(var i=0;i<N*N;i++)b.push(0);
+  var D=[[1,0],[0,1],[1,1],[1,-1]];
+  function g(x,y){return (x<0||y<0||x>=N||y>=N)?-1:b[y*N+x];}
+  function s(x,y,v){b[y*N+x]=v;}
+  function run(x,y,d,c){
+    var l=0,r=0;
+    while(g(x-(l+1)*d[0],y-(l+1)*d[1])===c)l++;
+    while(g(x+(r+1)*d[0],y+(r+1)*d[1])===c)r++;
+    return [l,r];
+  }
+  // 놓인 돌 기준 승리 줄. 흑은 정확히 5, 백은 5 이상.
+  function winLine(x,y,c){
+    for(var i=0;i<4;i++){
+      var d=D[i],e=run(x,y,d,c),len=e[0]+e[1]+1;
+      if(c===1?len===5:len>=5){
+        var cells=[];
+        for(var k=-e[0];k<=e[1];k++)cells.push([x+k*d[0],y+k*d[1]]);
+        return cells;
+      }
+    }
+    return null;
+  }
+  function overline(x,y){
+    for(var i=0;i<4;i++){var e=run(x,y,D[i],1);if(e[0]+e[1]+1>=6)return true;}
+    return false;
+  }
+  // 이 줄에서 (x,y)를 포함하는 4의 개수 (0,1,2)
+  function fours(x,y,d,c){
+    var pts=[];
+    for(var k=-4;k<=4;k++){
+      if(!k)continue;
+      var px=x+k*d[0],py=y+k*d[1];
+      if(g(px,py)!==0)continue;
+      s(px,py,c);
+      var e=run(px,py,d,c),len=e[0]+e[1]+1;
+      s(px,py,0);
+      if((c===1?len===5:len>=5)&&k-e[0]<=0&&0<=k+e[1])pts.push(k);
+    }
+    if(pts.length<2)return pts.length;
+    if(pts.length===2&&pts[1]-pts[0]===5)return 1; // 열린 4
+    return 2;
+  }
+  function openFour(x,y,d){
+    var e=run(x,y,d,1);
+    if(e[0]+e[1]+1!==4)return false;
+    var l=e[0]+1,r=e[1]+1;
+    if(g(x-l*d[0],y-l*d[1])!==0||g(x+r*d[0],y+r*d[1])!==0)return false;
+    if(g(x-(l+1)*d[0],y-(l+1)*d[1])===1||g(x+(r+1)*d[0],y+(r+1)*d[1])===1)return false;
+    return true;
+  }
+  // 열린 3: 한 수 더 두면 열린 4가 되고, 그 수가 금수가 아닌 경우
+  function three(x,y,d,depth){
+    if(fours(x,y,d,1)>0)return false;
+    for(var k=-3;k<=3;k++){
+      if(!k)continue;
+      var px=x+k*d[0],py=y+k*d[1];
+      if(g(px,py)!==0)continue;
+      if(depth<2&&forbidden(px,py,depth+1))continue;
+      s(px,py,1);
+      var ok=openFour(x,y,d);
+      s(px,py,0);
+      if(ok)return true;
+    }
+    return false;
+  }
+  // 흑이 (x,y)에 둘 수 없으면 이유('33','44','6'), 둘 수 있으면 ''
+  function forbidden(x,y,depth){
+    depth=depth||0;
+    if(g(x,y)!==0)return '';
+    s(x,y,1);
+    var res='';
+    if(!winLine(x,y,1)){
+      if(overline(x,y))res='6';
+      else{
+        var f=0,t=0,i;
+        for(i=0;i<4;i++)f+=fours(x,y,D[i],1);
+        if(f>=2)res='44';
+        else{
+          for(i=0;i<4;i++)if(three(x,y,D[i],depth))t++;
+          if(t>=2)res='33';
+        }
+      }
+    }
+    s(x,y,0);
+    return res;
+  }
+  return {get:g,set:s,forbidden:forbidden,winLine:winLine,
+    reset:function(){for(var i=0;i<N*N;i++)b[i]=0;}};
+}
+//RULES-END
+
+(function(){
+  var N=15,R=Rules(N);
+  var NAMES=['지원','지우'];
+  var BAN_TEXT={'33':'3-3','44':'4-4','6':'6목 이상(장목)'};
+
+  // 연결 상태: 'wait'(연결 중) / 'live'(같이 두는 중) / 'off'(인터넷 끊김)
+  // 두 폰을 잇는 우편함(ntfy.sh). 이 이름을 아는 폰끼리만 같은 판을 봐요.
+  var NTFY='';  // 암호로 정해지는 둘만의 우편함 주소
+  var mode='wait',readOnly=false,seq=0,serverMax=0,lastMsgId='',es=null;
+  var clientId=Math.random().toString(36).slice(2,10);
+  var me=null;            // 이 폰을 쓰는 사람 0=지원, 1=지우
+  var game=null;          // 공유되는 판 {gid,blackIdx,moves,over,winner,reason,win}
+  // 공유 전적: 판마다 승자를 적어 두고(합치기 쉬움), 오래된 건 base로 접어 둬요
+  var tally={b:[0,0],f:'',r:{}};
+  var quiet=true,turn=1,sel=null,bans={},fresh=null,shownGid=null,shownOver=false,loaded=false,busy=false;
+
+  try{var m0=localStorage.getItem('tujipv-me');if(m0==='0'||m0==='1')me=+m0;}catch(e){}
+
+  var $=function(id){return document.getElementById(id);};
+  var boardEl=$('board'),statusEl=$('status'),cells=[];
+
+  (function(){
+    var svg='<svg viewBox="0 0 15 15" aria-hidden="true"><g stroke="#1D1B26" stroke-width="0.05" stroke-linecap="round">';
+    for(var i=0;i<N;i++){
+      svg+='<line x1="0.5" y1="'+(i+.5)+'" x2="14.5" y2="'+(i+.5)+'"></line>';
+      svg+='<line x1="'+(i+.5)+'" y1="0.5" x2="'+(i+.5)+'" y2="14.5"></line>';
+    }
+    svg+='</g>';
+    [[3,3],[11,3],[7,7],[3,11],[11,11]].forEach(function(p){svg+='<circle cx="'+(p[0]+.5)+'" cy="'+(p[1]+.5)+'" r="0.13" fill="#1D1B26"></circle>';});
+    svg+='</svg>';
+    boardEl.innerHTML=svg;
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      var btn=document.createElement('button');
+      btn.type='button';btn.className='cell';
+      btn.dataset.x=x;btn.dataset.y=y;
+      boardEl.appendChild(btn);cells.push(btn);
+    }
+  })();
+
+  function newId(){return 'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function blankGame(blackIdx){return {gid:newId(),blackIdx:blackIdx,moves:[],over:false,winner:-1,reason:'',win:[]};}
+  function clone(g){return JSON.parse(JSON.stringify(g));}
+  function who(c){return c===1?game.blackIdx:1-game.blackIdx;}
+  function colorName(c){return c===1?'흑':'백';}
+  function coord(x,y){return 'ABCDEFGHIJKLMNO'.charAt(x)+(N-y);}
+  function live(){return mode==='live';}
+  function myColor(){return me===game.blackIdx?1:2;}
+  // 이 폰에서 지금 돌을 놓을 수 있나
+  function canPlay(){
+    if(!game||game.over||busy)return false;
+    return me!==null&&turn===myColor();
+  }
+  function scores(){
+    var s=tally.b.slice();
+    for(var k in tally.r){var w=tally.r[k];if(w===0||w===1)s[w]++;}
+    return s;
+  }
+  function say(msg,kind){
+    statusEl.textContent=msg;
+    statusEl.classList.remove('no','mine');
+    if(kind==='no'){void statusEl.offsetWidth;statusEl.classList.add('no');}
+    else if(kind==='mine')statusEl.classList.add('mine');
+  }
+
+  function computeBans(){
+    bans={};
+    if(!game||game.over||turn!==1||!game.moves.length)return;
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){
+      if(R.get(x,y)!==0)continue;
+      var near=false;
+      for(var dy=-2;dy<=2&&!near;dy++)for(var dx=-2;dx<=2;dx++){if(R.get(x+dx,y+dy)===1){near=true;break;}}
+      if(!near)continue;
+      var r=R.forbidden(x,y);
+      if(r)bans[x+','+y]=r;
+    }
+  }
+
+  function turnMsg(){
+    if(!game)return '판 불러오는 중…';
+    var n=NAMES[who(turn)];
+    if(mode==='solo'){
+      if(!game.moves.length)return n+'부터! 흑이 먼저 둬요.';
+      return n+' 차례 ('+colorName(turn)+')';
+    }
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(readOnly)return n+' 차례 ('+colorName(turn)+') · 이 폰은 보기만 돼요';
+    if(turn===myColor())return game.moves.length?'내 차례! ('+colorName(turn)+')':'내가 흑이야, 먼저 둬요!';
+    return n+' 차례예요. 기다리는 중…';
+  }
+  function sayTurn(){say(turnMsg(),canPlay()?'mine':'');}
+
+  function render(){
+    var sc=scores();
+    $('score0').textContent=sc[0];$('score1').textContent=sc[1];
+    document.querySelectorAll('.seg button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.seat===me));});
+    var tag=$('linkTag');
+    tag.classList.toggle('ok',live());tag.classList.toggle('off',mode==='off');
+    $('linkText').textContent=live()?'연결됨':mode==='off'?'연결 안 됨':'연결 중';
+    var hg='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.';
+    if(game&&live()&&!game.over&&game.moves.length)hg='지금 대국 중 · '+game.moves.length+'수째 · '+NAMES[who(turn)]+' 차례';
+    $('homeGame').textContent=hg;
+    $('homeGame').classList.toggle('now',hg!=='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.');
+    if(store)renderHomeStore();
+    if(lgame)lRender();
+    if(!game){$('goBtn').disabled=$('undoBtn').disabled=$('quitBtn').disabled=true;return;}
+
+    var last=game.moves.length?game.moves[game.moves.length-1]:null;
+    var winSet={};(game.win||[]).forEach(function(p){winSet[p[0]+','+p[1]]=1;});
+    for(var i=0;i<cells.length;i++){
+      var x=i%N,y=(i-x)/N,v=R.get(x,y),key=x+','+y,html='',label=coord(x,y);
+      if(v){
+        var cls='stone '+(v===1?'b':'w');
+        if(winSet[key])cls+=' win';
+        else if(last&&last[0]===x&&last[1]===y)cls+=' last';
+        if(fresh===key)cls+=' new';
+        html='<div class="'+cls+'"></div>';
+        label+=' '+colorName(v)+'돌';
+      }else if(sel&&sel[0]===x&&sel[1]===y){
+        html='<div class="stone ghost '+(turn===1?'b':'w')+'"></div>';
+        label+=' 고른 자리';
+      }else if(bans[key]){
+        html='<span class="banmark" aria-hidden="true">&#10005;</span>';
+        label+=' 흑 금수 '+BAN_TEXT[bans[key]];
+      }else label+=' 빈 자리';
+      cells[i].innerHTML=html;
+      cells[i].setAttribute('aria-label',label);
+    }
+    fresh=null;
+    for(var p=0;p<2;p++){
+      var c=(p===game.blackIdx)?1:2,on=!game.over&&who(turn)===p;
+      $('chip'+p).classList.toggle('on',on);
+      $('chipStone'+p).className='mini '+(c===1?'b':'w');
+      $('chipText'+p).textContent=colorName(c)+(on?' · 둘 차례':'');
+      $('meTag'+p).hidden=me!==p;
+    }
+    if(!statusEl.classList.contains('no'))statusEl.classList.toggle('mine',canPlay());
+    $('goBtn').disabled=!canPlay()||!sel;
+    $('undoBtn').disabled=!canUndo();
+    $('quitBtn').disabled=!canQuit();
+    if(typeof renderBet==='function'&&store)renderBet();
+  }
+
+  function canUndo(){
+    if(!game||game.over||busy||!game.moves.length)return false;
+    return me!==null&&game.moves[game.moves.length-1][2]===myColor();
+  }
+  function canQuit(){
+    if(!game||game.over||busy)return false;
+    return me!==null;
+  }
+
+  // 공유된(또는 이 폰의) 판 상태를 화면에 반영
+  function apply(g){
+    var prev=game;
+    var same=prev&&prev.gid===g.gid&&prev.over===g.over&&JSON.stringify(prev.moves)===JSON.stringify(g.moves);
+    game=g;
+    R.reset();
+    g.moves.forEach(function(m){R.set(m[0],m[1],m[2]);});
+    turn=g.moves.length%2===0?1:2;
+    var newGame=!prev||prev.gid!==g.gid;
+    if(newGame){sel=null;betEditing=false;closeModal();stopConfetti();}
+    if(!newGame&&g.moves.length>prev.moves.length){
+      var lm=g.moves[g.moves.length-1];fresh=lm[0]+','+lm[1];
+    }
+    if(sel&&(R.get(sel[0],sel[1])!==0||!canPlay()))sel=null;
+    computeBans();
+    if(g.over){bans={};sel=null;}
+    // 끝난 판은 처음 보는 순간 한 번만 축하
+    var justEnded=g.over&&!(shownGid===g.gid&&shownOver);
+    var firstLook=!loaded||quiet;
+    shownGid=g.gid;shownOver=g.over;loaded=true;
+    if(g.over){
+      var title=endTitle(g);
+      say(title);render();
+      if(justEnded&&!firstLook)celebrate(g);
+    }else{
+      if(prev&&prev.gid===g.gid&&prev.over){closeModal();stopConfetti();}
+      if(!same)sayTurn();
+      render();
+    }
+  }
+
+  function endTitle(g){return g.winner>=0?NAMES[g.winner]+' 승리!':'무승부!';}
+  function endBody(g){
+    if(g.reason==='resign')return NAMES[1-g.winner]+'의 기권으로 끝났어요.';
+    if(g.reason==='draw')return '판이 꽉 찼어요. 둘 다 대단해요.';
+    var c=g.winner===g.blackIdx?1:2;
+    return colorName(c)+'돌 '+(g.win||[]).length+'목 완성. '+NAMES[1-g.winner]+', 설욕전 가야죠?';
+  }
+  function endHtml(g,sc){
+    var br=betResult(g);
+    return '<p>'+endBody(g)+'</p>'+(br?'<div class="betline">🎯 <b>내기</b><span class="sp">'+esc(br)+'</span></div>':'')+'<p>지원 '+sc[0]+' : '+sc[1]+' 지우</p>';
+  }
+  function celebrate(g){
+    if(g.winner>=0)startConfetti();
+    var gid=g.gid;
+    setTimeout(function(){
+      if(!game||game.gid!==gid||!game.over)return;
+      var sc=scores();
+      openModal(endTitle(game),endHtml(game,sc),[
+        ['한 판 더 (흑백 바꿔서)','sun',rematch],
+        ['판 보기','',closeModal]
+      ]);
+    },g.winner>=0?900:200);
+  }
+
+  // 판을 짧은 글자로 바꿔 보내고 받기
+  var A='abcdefghijklmno';
+  function enc(g){
+    return {id:g.gid,b:g.blackIdx,m:g.moves.map(function(m){return A[m[0]]+A[m[1]];}).join(''),
+      o:g.over?1:0,w:g.winner,r:g.reason||'',l:(g.win||[]).map(function(p){return A[p[0]]+A[p[1]];}).join('')};
+  }
+  function pairs(str){var out=[];for(var i=0;i+1<str.length;i+=2)out.push([A.indexOf(str[i]),A.indexOf(str[i+1])]);return out;}
+  function dec(e){
+    return {gid:String(e.id),blackIdx:e.b===1?1:0,moves:pairs(e.m||'').map(function(p,i){return [p[0],p[1],i%2===0?1:2];}),
+      over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:e.r||'',win:pairs(e.l||'')};
+  }
+  // 이상한 메시지(깨진 판, 겹친 돌, 판 밖 좌표)는 무시해요
+  function valid(e){
+    if(typeof e!=='object'||typeof e.id!=='string'||!e.id||typeof (e.m||'')!=='string'||typeof (e.l||'')!=='string')return false;
+    var m=e.m||'';if(m.length%2||m.length>N*N*2)return false;
+    var seen={};
+    for(var i=0;i<m.length;i+=2){var k=m.substr(i,2);if(A.indexOf(k[0])<0||A.indexOf(k[1])<0||seen[k])return false;seen[k]=1;}
+    var l=e.l||'';for(var j=0;j<l.length;j++)if(A.indexOf(l[j])<0)return false;
+    return true;
+  }
+  function packet(){return JSON.stringify({v:1,n:seq,k:clientId,g:enc(game),t:tally});}
+  function fold(t){
+    var keys=Object.keys(t.r).sort();
+    if(keys.length<=100)return t;
+    var cut=keys[49];
+    keys.slice(0,50).forEach(function(k){var w=t.r[k];if(w===0||w===1)t.b[w]++;delete t.r[k];});
+    if(cut>t.f)t.f=cut;
+    return t;
+  }
+  // 지금 판의 승패는 언제나 '지금 판'을 따라가요 (동시 기권 같은 엇갈림 정리)
+  function syncTally(){
+    [game,lgame].forEach(function(g){
+      if(!g)return;
+      if(g.over)tally.r[g.gid]=g.winner;
+      else delete tally.r[g.gid];
+    });
+  }
+  // 두 전적 합치기: 같은 판은 한 번만 세요
+  function mergeTally(a,o){
+    if(!o||typeof o!=='object')return a;
+    var t={b:[Math.max(a.b[0],+(o.b&&o.b[0])||0),Math.max(a.b[1],+(o.b&&o.b[1])||0)],f:a.f>(o.f||'')?a.f:String(o.f||''),r:{}};
+    [a.r,o.r||{}].forEach(function(r){for(var k in r){if(k>t.f&&(r[k]===0||r[k]===1||r[k]===-1))t.r[k]=r[k];}});
+    return fold(t);
+  }
+  function saveLocal(){try{localStorage.setItem('tujipv-state-'+NTFY.slice(-12),packet());}catch(e){}}
+  // 받은 판 반영. 번호가 같거나 더 크면 따라가요(두 폰이 같은 순서로 받으니 결국 같은 판이 돼요).
+  function receive(text,id,time){
+    if(id)lastMsgId=id;
+    var o;try{o=JSON.parse(text);}catch(e){return;}
+    // 대화·달력·한마디·내기 같은 기록 묶음
+    if(o&&o.v===1&&Array.isArray(o.s)){
+      var t=id&&okNum(time)?(time<1e11?time*1000:time):0;
+      storeIn(o.s,t);return;
+    }
+    // 새 폰이 "안녕" 하면, 판을 가진 폰이 지금 판을 다시 보내 줘요
+    if(o&&o.v===1&&o.hello){
+      if(o.hello!==clientId&&!quiet){
+        if(seq>0&&game)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
+        if(lseq>0&&lgame)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
+        healStore(true);
+      }
+      return;
+    }
+    // 땅따먹기 판
+    if(o&&o.v===1&&o.d){
+      if(typeof o.n!=='number'||!isFinite(o.n)||!lValid(o.d))return;
+      if(id&&o.n>lServerMax)lServerMax=o.n;
+      tally=mergeTally(tally,o.t);
+      if(o.n>=lseq){lseq=o.n;lApply(lDec(o.d));}
+      syncTally();
+      render();saveLocal();lSaveLocal();
+      return;
+    }
+    if(!o||o.v!==1||typeof o.n!=='number'||!isFinite(o.n)||!o.g||!valid(o.g))return;
+    if(id&&o.n>serverMax)serverMax=o.n;
+    tally=mergeTally(tally,o.t);
+    if(o.n>=seq){seq=o.n;apply(dec(o.g));}
+    syncTally();
+    render();saveLocal();
+  }
+
+  // 바뀐 판을 저장하고 상대 폰으로 보내기
+  function commit(g,result){
+    var before={g:game,t:JSON.parse(JSON.stringify(tally)),n:seq};
+    if(result){tally=JSON.parse(JSON.stringify(tally));tally.r[g.gid]=result.winner;tally=fold(tally);}
+    // 번호는 시계 기준이라, 오래 쉬었다 새 폰으로 와도 늘 앞으로 가요
+    seq=Math.max(seq+1,Date.now());apply(g);saveLocal();
+    busy=true;render();
+    fetch(NTFY,{method:'POST',body:packet()}).then(function(r){
+      if(!r.ok)throw new Error('send '+r.status);
+      if(mode!=='live'){mode='live';note('');}
+      if(g.over&&game&&game.gid===g.gid)ensureRecord(game);
+    }).catch(function(){
+      if(game===g){seq=before.n;tally=before.t;apply(before.g);saveLocal();}
+      say('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
+    }).then(function(){busy=false;render();});
+  }
+
+  function place(x,y){
+    if(!canPlay()||R.get(x,y)!==0)return;
+    var g=clone(game);
+    g.moves.push([x,y,turn]);
+    R.set(x,y,turn);
+    var line=R.winLine(x,y,turn);
+    R.set(x,y,0);
+    var result=null;
+    if(line){
+      g.over=true;g.winner=who(turn);g.reason='five';g.win=line;
+    }else if(g.moves.length===N*N){
+      g.over=true;g.winner=-1;g.reason='draw';
+    }
+    if(g.over)result={winner:g.winner,reason:g.reason,blackIdx:g.blackIdx,moves:g.moves.length,at:new Date().toISOString()};
+    sel=null;
+    commit(g,result);
+  }
+
+  function tap(x,y){
+    if(!game||game.over||R.get(x,y)!==0)return;
+    if(!canPlay()){
+      if(me!==null&&!busy)say(NAMES[who(turn)]+' 차례예요. 조금만 기다려요!','no');
+      else sayTurn();
+      return;
+    }
+    var ban=turn===1?bans[x+','+y]:'';
+    if(ban){sel=null;render();say('거긴 '+BAN_TEXT[ban]+' 금수! 흑은 못 둬요.','no');return;}
+    if(sel&&sel[0]===x&&sel[1]===y){place(x,y);return;}
+    sel=[x,y];
+    say(coord(x,y)+' 여기? 한 번 더 누르면 놓여요.','mine');
+    render();
+  }
+
+  function undo(){
+    if(!canUndo())return;
+    var g=clone(game);
+    g.moves.pop();
+    commit(g,null);
+    say('한 수 물렀어요. '+turnMsg(),canPlay()?'mine':'');
+  }
+
+  function rematch(){
+    if(!game||!game.over){closeModal();return;}
+    commit(blankGame(1-game.blackIdx),null);
+  }
+
+  // 겹침 창
+  var veil=$('veil');
+  function openModal(title,bodyHtml,actions){
+    $('modalTitle').textContent=title;
+    $('modalBody').innerHTML=bodyHtml;
+    var box=$('modalActions');box.innerHTML='';
+    actions.forEach(function(a){
+      var b=document.createElement('button');
+      b.type='button';b.className='btn '+a[1];b.textContent=a[0];
+      b.addEventListener('click',a[2]);box.appendChild(b);
+    });
+    veil.hidden=false;
+    box.firstChild.focus();
+  }
+  function closeModal(){veil.hidden=true;}
+  veil.addEventListener('click',function(e){if(e.target===veil)closeModal();});
+
+  // 색종이
+  var cv=$('confetti'),raf=0;
+  function stopConfetti(){cancelAnimationFrame(raf);cv.hidden=true;}
+  function startConfetti(){
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    var W=cv.width=innerWidth,H=cv.height=innerHeight,ctx=cv.getContext('2d');
+    var cols=['#FF5D8F','#FFD23F','#1D1B26','#FFFDF5','#3B6BFF'],ps=[];
+    for(var i=0;i<90;i++)ps.push({x:Math.random()*W,y:-20-Math.random()*H*.5,vx:(Math.random()-.5)*3,vy:2+Math.random()*4,s:6+Math.random()*8,a:Math.random()*6,c:cols[i%cols.length]});
+    cv.hidden=false;
+    var t0=performance.now();
+    (function tick(t){
+      ctx.clearRect(0,0,W,H);
+      ps.forEach(function(p){
+        p.x+=p.vx;p.y+=p.vy;p.a+=.15;
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+        ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);ctx.restore();
+      });
+      if(t-t0<3200)raf=requestAnimationFrame(tick);else cv.hidden=true;
+    })(t0);
+  }
+
+  // 화면 전환과 버튼
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','sdk','timer','drink'];
+  function show(id){
+    VIEWS.forEach(function(v){$(v).hidden=v!==id;});
+    window.scrollTo(0,0);
+    if(id==='home')render();
+    if(id==='land')lRender();
+    if(id==='sdk')sRender();
+  }
+  // 폰의 '뒤로' 버튼으로도 홈에 돌아오게 기록을 남겨요
+  function go(id){
+    try{if(history.state&&history.state.v)history.replaceState({v:id},'');else history.pushState({v:id},'');}catch(e){}
+    show(id);
+  }
+  function goHome(){
+    if(history.state&&history.state.v){try{history.back();return;}catch(e){}}
+    show('home');
+  }
+  window.addEventListener('popstate',function(){
+    var v=history.state&&history.state.v;
+    if(v&&VIEWS.indexOf(v)>0&&!(v!=='stats'&&me===null)){show(v);if(v==='chat'){renderChat(true);markRead();}else renderStore();}
+    else{closeModal();show('home');}
+  });
+  try{if(history.state&&history.state.v)history.replaceState(null,'');}catch(e){}
+  boardEl.addEventListener('click',function(e){
+    var c=e.target.closest('.cell');
+    if(c)tap(+c.dataset.x,+c.dataset.y);
+  });
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click',function(){
+      me=+b.dataset.seat;
+      try{localStorage.setItem('tujipv-me',String(me));}catch(e){}
+      sel=null;render();renderStore();if(game&&!game.over)sayTurn();
+    });
+  });
+  $('startBtn').addEventListener('click',function(){
+    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return;}
+    go('game');
+    if(game&&game.over)celebrateAgain();
+  });
+  function celebrateAgain(){
+    var sc=scores();
+    openModal(endTitle(game),endHtml(game,sc),[
+      ['한 판 더 (흑백 바꿔서)','sun',rematch],['판 보기','',closeModal]]);
+  }
+  $('backBtn').addEventListener('click',goHome);
+  $('goBtn').addEventListener('click',function(){if(sel)place(sel[0],sel[1]);});
+  $('undoBtn').addEventListener('click',undo);
+  $('quitBtn').addEventListener('click',function(){
+    if(!canQuit())return;
+    var p=me;
+    openModal(NAMES[p]+', 진짜 기권?','<p>기권하면 '+NAMES[1-p]+'의 승리로 끝나요.</p>',[
+      ['계속 둘래','sun',closeModal],
+      ['기권할게','pink',function(){
+        closeModal();
+        if(!game||game.over)return;
+        var g=clone(game);
+        g.over=true;g.winner=1-p;g.reason='resign';g.win=[];
+        commit(g,{winner:g.winner,reason:'resign',blackIdx:g.blackIdx,moves:g.moves.length,at:new Date().toISOString()});
+      }]
+    ]);
+  });
+  $('rulesBtn').addEventListener('click',function(){
+    openModal('렌주룰 한눈에','<ul>'
+      +'<li>흑이 먼저 두고, 가로·세로·대각선으로 5개를 먼저 이으면 이겨요.</li>'
+      +'<li>흑은 3-3, 4-4, 6목 이상(장목)을 둘 수 없어요. 판에 빨간 ✕로 보여요.</li>'
+      +'<li>3은 붙은 3뿐 아니라 한 칸 띈 열린 3도 포함해요.</li>'
+      +'<li>흑의 4-3은 괜찮아요. 5목이 되는 자리는 금수보다 먼저예요.</li>'
+      +'<li>백은 제한이 없고, 6목 이상을 만들어도 이겨요.</li>'
+      +'<li>각자 폰에서 자기 차례에만 둘 수 있어요. 무르기는 상대가 다음 수를 두기 전까지만 돼요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+  function note(t){var n=$('homeNote');n.textContent=t||'';n.hidden=!t;}
+
+  // ===== 같이 쓰는 기록: 대화 · 달력 · 한마디 · 내기 · 판 기록 =====
+  // 기록 하나하나에 이름표(id)와 고친 시각(u)이 있어서, 두 폰이 서로 받은 걸 합치면 늘 같은 모양이 돼요.
+  // 우편함은 12시간만 보관하니까, 폰을 열 때마다 우편함에서 사라진 최근 기록은 다시 올려 줘요.
+  var store={},seen={},postQ=Promise.resolve(),saveT=0,retryT=0,readT=0;
+  var DAY=86400000,FRESH=11*3600000,KEEP=45*DAY;
+  var SUBJ=['지원이','지우가'],WD='일월화수목금토';
+  var betNote='',lBetNote='',betEditing=false,calY=0,calM=0,selD='';
+  var enc8=window.TextEncoder?new TextEncoder():null;
+  function bytes(str){return enc8?enc8.encode(str).length:str.length*3;}
+  function pad(n){return (n<10?'0':'')+n;}
+  function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function today(){return ymd(new Date());}
+  function dnum(s){var p=s.split('-');return Math.round(Date.UTC(+p[0],+p[1]-1,+p[2])/DAY);}
+  function dpart(s){var p=s.split('-');return {y:+p[0],m:+p[1],d:+p[2],w:WD.charAt(new Date(+p[0],+p[1]-1,+p[2]).getDay())};}
+  function dlabel(s){var p=dpart(s);return p.m+'월 '+p.d+'일 ('+p.w+')';}
+  function clock(t){var d=new Date(t),h=d.getHours();return (h<12?'오전 ':'오후 ')+((h%12)||12)+':'+pad(d.getMinutes());}
+  function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function uid(p){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+  function okStr(s,max){return typeof s==='string'&&s.length<=max;}
+  function okNum(n){return typeof n==='number'&&isFinite(n)&&n>=0;}
+  var DRE=/^\d{4}-\d{2}-\d{2}$/;
+  var EMOS=['😍','🔥','🥰','😢','🕺','😴','🤔'];
+  // 술 종류: 그림, 이름, 단위
+  var DRINKS=[['🍶','소주','잔'],['🍺','맥주','잔'],['🍷','와인','잔'],['🥛','막걸리','잔'],['🥃','위스키','잔'],['🍹','하이볼·칵테일','잔']];
+  function validItem(it){
+    if(!it||typeof it!=='object'||Array.isArray(it)||!okStr(it.id,80)||!it.id||!okNum(it.u)||(it.w!==0&&it.w!==1))return false;
+    if(it.x!==undefined&&it.x!==1)return false;
+    var x=it.x===1;
+    switch(it.k){
+      case 'c':return it.id.charAt(0)==='c'&&okStr(it.s,1000)&&!!it.s&&okNum(it.at);
+      case 'p':return it.id.charAt(0)==='p'&&okStr(it.s,100)&&(x||!!it.s)&&DRE.test(it.d);
+      case 'w':return DRE.test(it.d)&&it.id==='w'+it.d+'-'+it.w&&okStr(it.s,100);
+      case 'r':return it.id==='r'+it.w&&okNum(it.t);
+      case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
+      case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
+      case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
+      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
+      case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
+      case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
+      case 't':return DRE.test(it.d)&&it.id==='t'+it.d+'-'+it.w&&okNum(it.ms)&&it.ms<=2*DAY&&okNum(it.st)&&okStr(it.s,20);
+      case 'a':return DRE.test(it.d)&&it.id==='a'+it.d+'-'+it.w&&Array.isArray(it.c)&&it.c.length===DRINKS.length&&it.c.every(function(n){return n%1===0&&n>=0&&n<=99;})&&okStr(it.s,40);
+      case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
+    }
+    return false;
+  }
+  function newer(a,b){if(a.u!==b.u)return a.u>b.u;return JSON.stringify(a)>JSON.stringify(b);}
+  function items(k){var out=[];for(var id in store)if(store[id].k===k)out.push(store[id]);return out;}
+  function byAt(a,b){return a.at-b.at||(a.id<b.id?-1:a.id>b.id?1:0);}
+  function delivered(it){var s=seen[it.id];return !!(s&&s.u===it.u);}
+  // 받은 기록 합치기. t = 우편함에 올라간 시각(우편함에서 받은 경우)
+  function storeIn(list,t){
+    var changed=false;
+    list.forEach(function(it){
+      if(!validItem(it))return;
+      var cur=store[it.id];
+      if(!cur||newer(it,cur)){
+        var was=cur;store[it.id]=it;cur=it;changed=true;
+        sOnRecv(it,was);
+        // 상대가 지금 판에 내기를 걸거나 바꾸거나 빼면 알려 줘요
+        if(it.k==='b'&&lgame&&!lgame.over&&it.g===lgame.gid&&me!==null&&it.w!==me&&!quiet){
+          lBetNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
+        }
+        if(it.k==='b'&&game&&!game.over&&it.g===game.gid&&me!==null&&it.w!==me&&!quiet){
+          betNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
+        }
+      }
+      if(t&&!newer(cur,it)){var s=seen[it.id];if(!s||s.u!==cur.u||s.t<t){seen[it.id]={u:cur.u,t:t};changed=true;}}
+    });
+    if(changed){prune();saveStore();renderStore();}
+    if(betNote){var n=betNote;betNote='';say(n,canPlay()?'mine':'');}
+    if(lBetNote){var ln=lBetNote;lBetNote='';lSay(ln,lCanPlay()?'mine':'');}
+  }
+  // 대화는 이 폰에 최근 2000개까지만 남겨요
+  function prune(){
+    var cs=items('c');
+    if(cs.length>2000){cs.sort(byAt).slice(0,cs.length-2000).forEach(function(c){delete store[c.id];delete seen[c.id];});}
+    sPrune();
+  }
+  function storeKey(){return 'tujipv-store-'+NTFY.slice(-12);}
+  function flushStore(){
+    clearTimeout(saveT);saveT=0;
+    if(NTFY)try{localStorage.setItem(storeKey(),JSON.stringify({s:store,seen:seen}));}catch(e){}
+  }
+  function saveStore(){
+    clearTimeout(saveT);
+    saveT=setTimeout(flushStore,200);
+  }
+  // 앱을 닫거나 다른 앱으로 넘어갈 때는 바로 저장해요
+  window.addEventListener('pagehide',function(){if(saveT)flushStore();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&saveT)flushStore();});
+  function loadStore(){
+    try{
+      var o=JSON.parse(localStorage.getItem(storeKey())||'null');
+      if(o&&o.s&&typeof o.s==='object'){
+        for(var id in o.s){var it=o.s[id];if(validItem(it)&&it.id===id)store[id]=it;}
+        if(o.seen&&typeof o.seen==='object')for(var k in o.seen){var s=o.seen[k];if(store[k]&&s&&okNum(s.u)&&okNum(s.t))seen[k]={u:s.u,t:s.t};}
+      }
+    }catch(e){}
+  }
+  // 새 기록을 이 폰에 적고 상대 폰으로 보내기
+  function put(it){
+    var cur=store[it.id];
+    it.u=Math.max(Date.now(),cur?cur.u+1:0);
+    store[it.id]=it;
+    prune();saveStore();renderStore();
+    send([it]);
+  }
+  // 우편함 한 통에 4KB 넘게 못 넣으니 나눠서 차례로 보내요
+  function send(list){
+    if(!NTFY||!list.length)return;
+    var batch=[],size=0;
+    function flush(){
+      if(!batch.length)return;
+      var sent=batch.slice(),body=JSON.stringify({v:1,k:clientId,s:sent});
+      batch=[];size=0;
+      postQ=postQ.then(function(){
+        return fetch(NTFY,{method:'POST',body:body}).then(function(r){
+          if(!r.ok)throw new Error('send '+r.status);
+          var t=Date.now();
+          sent.forEach(function(it){var c=store[it.id];if(c&&c.u===it.u){var s=seen[it.id];if(!s||s.u!==c.u||s.t<t)seen[it.id]={u:c.u,t:t};}});
+          saveStore();renderStore();
+        }).catch(function(){
+          // 인터넷이 불안하면 조금 뒤 못 보낸 것만 다시 보내요
+          clearTimeout(retryT);retryT=setTimeout(function(){healStore(false);},8000);
+        });
+      });
+    }
+    list.forEach(function(it){
+      var n=bytes(JSON.stringify(it))+1;
+      if(size+n>3400)flush();
+      batch.push(it);size+=n;
+    });
+    flush();
+  }
+  // 최근 기록 중 우편함에 없는 것(12시간 지나 사라졌거나 못 보낸 것)을 다시 올려요. force면 최근 기록 전부.
+  function healStore(force){
+    if(!NTFY)return;
+    clearTimeout(retryT);
+    var t=Date.now(),td=today();
+    var recentChat={};items('c').sort(byAt).slice(-80).forEach(function(c){recentChat[c.id]=1;});
+    var out=[];
+    for(var id in store){
+      var it=store[id],recent=t-it.u<KEEP,keep;
+      if(it.k==='c')keep=recentChat[id]&&recent;
+      else if(it.k==='p')keep=recent||(!it.x&&it.d>=td);
+      else if(it.k==='r')keep=true;
+      else keep=recent;
+      if(!keep)continue;
+      var s=seen[id];
+      if(!force&&s&&s.u===it.u&&s.t>t-FRESH)continue;
+      out.push(it);
+    }
+    out.sort(function(a,b){return a.u-b.u;});
+    send(out);
+  }
+
+  // ----- 대화방 -----
+  function chats(){return items('c').sort(byAt);}
+  function readOf(w){var r=store['r'+w];return r?r.t:0;}
+  function unread(){
+    if(me===null)return 0;
+    var t=readOf(me),n=0;
+    items('c').forEach(function(c){if(c.w!==me&&c.at>t)n++;});
+    return n;
+  }
+  function viewing(id){return !$(id).hidden&&document.visibilityState!=='hidden';}
+  // 대화방을 보고 있으면 읽었다고 상대에게 알려요(잠깐 모아서 한 번에)
+  function markRead(){
+    if(me===null||!viewing('chat'))return;
+    var last=0;items('c').forEach(function(c){if(c.at>last)last=c.at;});
+    if(last<=readOf(me))return;
+    clearTimeout(readT);
+    readT=setTimeout(function(){
+      if(me===null||!viewing('chat'))return;
+      var l=0;items('c').forEach(function(c){if(c.at>l)l=c.at;});
+      if(l>readOf(me))put({id:'r'+me,k:'r',w:me,t:l});
+    },600);
+  }
+  function nearBottom(){return window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-160;}
+  function toBottom(){window.scrollTo(0,document.documentElement.scrollHeight);}
+  function renderChat(force){
+    var box=$('chatList'),list=chats(),stick=force||nearBottom();
+    var other=me===null?1:1-me,rt=readOf(other),lastRead=null;
+    list.forEach(function(c){if(c.w===me&&c.at<=rt)lastRead=c.id;});
+    var html='',lastDay='',prevW=-1;
+    if(!list.length)html='<p class="chatempty">아직 대화가 없어요.<br>먼저 말을 걸어 보세요!</p>';
+    var td=today(),yd=ymd(new Date(Date.now()-DAY));
+    list.slice(-400).forEach(function(c){
+      var d=ymd(new Date(c.at));
+      if(d!==lastDay){html+='<div class="day">'+(d===td?'오늘':d===yd?'어제':dlabel(d).replace(/ \((.)\)$/,' $1요일'))+'</div>';lastDay=d;prevW=-1;}
+      var mine=me!==null&&c.w===me,meta=clock(c.at);
+      if(mine){
+        if(!delivered(c))meta='보내는 중… · '+meta;
+        else if(c.id===lastRead)meta='<b>읽음</b> · '+meta;
+      }
+      html+='<div class="msg '+(mine?'mine':'them')+'">'+(!mine&&prevW!==c.w?'<span class="who">'+NAMES[c.w]+'</span>':'')
+        +'<div class="bubble">'+esc(c.s)+'</div><span class="meta">'+meta+'</span></div>';
+      prevW=c.w;
+    });
+    box.innerHTML=html;
+    $('chatInput').placeholder=(me===null?'':NAMES[1-me]+'에게 ')+'보낼 말';
+    if(stick)toBottom();
+  }
+  function sendChat(){
+    var inp=$('chatInput'),text=inp.value.replace(/\s+$/,'').replace(/^\s+/,'');
+    if(!text||me===null)return;
+    inp.value='';
+    put({id:uid('c'),k:'c',w:me,at:Date.now(),s:text.slice(0,1000)});
+    renderChat(true);
+    markRead();
+  }
+
+  // ----- 공유 달력 -----
+  function plans(){return items('p').filter(function(p){return !p.x;}).sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:(a.u-b.u);});}
+  function planHtml(p,td){
+    var diff=dnum(p.d)-dnum(td),dp=dpart(p.d),chip;
+    if(diff===0)chip='<div class="dday today">오늘</div>';
+    else if(diff>0)chip='<div class="dday">D-'+diff+'<small>'+dp.m+'/'+dp.d+'</small></div>';
+    else chip='<div class="dday">끝<small>'+dp.m+'/'+dp.d+'</small></div>';
+    return '<div class="sticker plan'+(diff<0?' past':'')+'">'+chip+'<div class="txt"><div class="t">'+esc(p.s)+'</div><div class="s">'+dlabel(p.d)+' · '+SUBJ[p.w]+' 적음</div></div>'
+      +'<button class="btn del" type="button" data-del="'+esc(p.id)+'" aria-label="'+esc(p.s)+' 지우기">✕</button></div>';
+  }
+  function renderCal(){
+    var td=today();
+    if(!selD){selD=td;var p=dpart(td);calY=p.y;calM=p.m-1;}
+    $('calTitle').textContent=calY+'년 '+(calM+1)+'월';
+    var byDay={};plans().forEach(function(p){(byDay[p.d]=byDay[p.d]||[]).push(p);});
+    var first=new Date(calY,calM,1),start=new Date(calY,calM,1-first.getDay());
+    var html='';for(var i=0;i<7;i++)html+='<div class="wd">'+WD.charAt(i)+'</div>';
+    var weeks=Math.ceil((first.getDay()+new Date(calY,calM+1,0).getDate())/7);
+    for(var k=0;k<weeks*7;k++){
+      var dt=new Date(start.getFullYear(),start.getMonth(),start.getDate()+k),ds=ymd(dt),list=byDay[ds]||[];
+      var cls='d'+(dt.getMonth()!==calM?' o':'')+(dt.getDay()===0?' sun':'')+(ds===td?' today':'')+(ds===selD?' sel':'');
+      var dots='';list.slice(0,3).forEach(function(p){dots+='<i'+(p.w===1?' class="u"':'')+'></i>';});
+      html+='<button type="button" class="'+cls+'" data-d="'+ds+'" aria-label="'+dlabel(ds)+(list.length?' 일정 '+list.length+'개':'')+'">'+dt.getDate()+'<span class="dots">'+dots+'</span></button>';
+    }
+    $('calGrid').innerHTML=html;
+    $('selTitle').textContent=dlabel(selD)+(selD===td?' · 오늘':'');
+    var sel=byDay[selD]||[];
+    $('selPlans').innerHTML=sel.length?sel.map(function(p){return planHtml(p,td);}).join(''):'<p class="none">이날은 아직 일정이 없어요.</p>';
+    var up=plans().filter(function(p){return p.d>=td&&p.d!==selD;}).slice(0,20);
+    $('upPlans').innerHTML=up.length?up.map(function(p){return planHtml(p,td);}).join(''):'<p class="none">다가오는 일정이 없어요.</p>';
+  }
+  function addPlan(){
+    var inp=$('planInput'),text=inp.value.trim();
+    if(!text||me===null)return;
+    inp.value='';
+    put({id:uid('p'),k:'p',w:me,d:selD,s:text.slice(0,60)});
+  }
+  function askDelPlan(id){
+    var p=store[id];if(!p||p.x)return;
+    openModal('이 일정을 지울까요?','<p><b>'+esc(p.s)+'</b><br>'+dlabel(p.d)+'</p><p>지우면 두 폰 모두에서 사라져요.</p>',[
+      ['그냥 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[id];if(c&&!c.x&&me!==null)put({id:c.id,k:'p',w:c.w,d:c.d,s:c.s,x:1});}]
+    ]);
+  }
+
+  // ----- 오늘의 한마디 -----
+  function wordOf(d,w){var it=store['w'+d+'-'+w];return it&&!it.x&&it.s?it.s:'';}
+  function lineHtml(w,s,emptyText){return '<span class="line"><span class="nm'+(w?' u':'')+'">'+NAMES[w]+'</span><span class="q'+(s?'':' empty')+'">'+(s?esc(s):emptyText)+'</span></span>';}
+  function renderWord(){
+    var td=today();
+    $('wordFormTitle').textContent=dlabel(td)+' 내 한마디';
+    var inp=$('wordInput');
+    if(document.activeElement!==inp||inp.dataset.d!==td){inp.value=me===null?'':wordOf(td,me);inp.dataset.d=td;}
+    $('wordToday').innerHTML='<div class="dt">오늘</div>'+lineHtml(0,wordOf(td,0),'아직 안 썼어요')+lineHtml(1,wordOf(td,1),'아직 안 썼어요');
+    var days={};items('w').forEach(function(it){if(!it.x&&it.s&&it.d<td)days[it.d]=1;});
+    var list=Object.keys(days).sort().reverse().slice(0,60);
+    $('wordPast').innerHTML=list.length?list.map(function(d){
+      return '<div class="sticker daycard"><div class="dt">'+dlabel(d)+'</div>'+lineHtml(0,wordOf(d,0),'안 썼어요')+lineHtml(1,wordOf(d,1),'안 썼어요')+'</div>';
+    }).join(''):'<p class="none">지난 한마디가 여기에 쌓여요.</p>';
+  }
+  function saveWord(){
+    if(me===null)return;
+    var td=today(),text=$('wordInput').value.trim().slice(0,80),id='w'+td+'-'+me,cur=store[id];
+    $('wordInput').blur();
+    if(!text){if(cur&&!cur.x)put({id:id,k:'w',w:me,d:td,s:'',x:1});return;}
+    if(cur&&!cur.x&&cur.s===text)return;
+    put({id:id,k:'w',w:me,d:td,s:text});
+  }
+
+  // ----- 내기 -----
+  function betOf(gid){var b=store['b'+gid];return b&&!b.x&&b.s?b:null;}
+  function betResult(g){var b=g&&betOf(g.gid);return b&&g.over&&g.winner>=0?SUBJ[1-g.winner]+' '+b.s:'';}
+  function renderBet(){
+    var g=game,b=g&&betOf(g.gid),fresh0=!!(g&&!g.over); // 판이 안 끝났으면 언제든 걸고 바꿀 수 있어요
+    if(!fresh0)betEditing=false;
+    var line=$('betLine'),box=$('betBox'),open=$('betOpen');
+    box.hidden=!(fresh0&&betEditing&&me!==null);
+    open.hidden=!(fresh0&&!b&&!betEditing&&me!==null);
+    line.hidden=!b||betEditing&&fresh0;
+    if(b){
+      var txt=g.over&&g.winner>=0?betResult(g):'지는 사람이 '+b.s;
+      $('betLineText').textContent=txt;
+    }
+    $('betEditBtn').hidden=!(b&&fresh0&&me!==null);
+    var chips=$('betChips').children,v=$('betInput').value.trim();
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].textContent===v);
+    $('betCancel').textContent=b?'내기 빼기':'내기 없이';
+    var hb=g&&!g.over&&b;
+    $('homeBet').hidden=!hb;
+    if(hb)$('homeBetText').textContent='지는 사람이 '+b.s;
+  }
+  function openBet(){
+    if(!game||game.over||me===null)return;
+    var b=betOf(game.gid);
+    $('betInput').value=b?b.s:'';
+    betEditing=true;renderBet();
+    $('betInput').focus();
+  }
+  function saveBet(){
+    if(!game||game.over||me===null)return;
+    var text=$('betInput').value.trim().slice(0,40);
+    if(!text){$('betInput').focus();return;}
+    betEditing=false;
+    // 아직 아무도 안 둔 첫 판이면 판부터 상대 폰과 맞춰요(같은 판에 내기가 걸리게)
+    if(seq===0)commit(clone(game),null);
+    put({id:'b'+game.gid,k:'b',w:me,g:game.gid,s:text});
+    $('betInput').blur();
+  }
+  function cancelBet(){
+    betEditing=false;
+    var b=game&&betOf(game.gid);
+    if(b&&!game.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    else renderBet();
+  }
+
+  // ----- 판 기록과 전적판 -----
+  function ensureRecord(g){
+    if(!g||!g.over||store['g'+g.gid])return;
+    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:(g.moves||g.lines||[]).length,at:Date.now()});
+  }
+  // 승패는 언제나 공유 전적을 따라가요(동시 기권 같은 엇갈림이 있어도 점수와 같게)
+  function records(){
+    return items('g').map(function(r){
+      var w=Object.prototype.hasOwnProperty.call(tally.r,r.g)?tally.r[r.g]:(r.g<=tally.f?r.wn:null);
+      return w===null||w===undefined?null:{r:r,w:w};
+    }).filter(Boolean).sort(function(a,b){return b.r.at-a.r.at;});
+  }
+  function renderStats(){
+    var sc=scores(),tot=sc[0]+sc[1];
+    $('stScore0').textContent=sc[0];$('stScore1').textContent=sc[1];
+    var draws=0;for(var k in tally.r)if(tally.r[k]===-1)draws++;
+    $('stTotal').textContent=(tot+draws)+'판';
+    var per={o:tally.b.slice(),l:[0,0]};
+    for(var gk in tally.r){var gw=tally.r[gk];if(gw===0||gw===1)per[isLand(gk)?'l':'o'][gw]++;}
+    $('stOmok').textContent=per.o[0]+' : '+per.o[1];
+    $('stLand').textContent=per.l[0]+' : '+per.l[1];
+    $('stBar').innerHTML=tot?(sc[0]?'<i class="a" style="flex:'+sc[0]+'"></i>':'')+(sc[1]?'<i class="b" style="flex:'+sc[1]+'"></i>':''):'';
+    var recs=records(),streak=0,sw=-1;
+    for(var i=0;i<recs.length;i++){
+      var w=recs[i].w;
+      if(w<0)break;
+      if(sw<0)sw=w;
+      if(w!==sw)break;
+      streak++;
+    }
+    $('stStreak').textContent=streak>=2?NAMES[sw]+' '+streak+'연승':streak===1?NAMES[sw]+' 1승째':'–';
+    var unpaid=0;
+    recs.forEach(function(x){var b=betOf(x.r.g);if(b&&x.w>=0&&!b.pd)unpaid++;});
+    $('stUnpaid').textContent=unpaid+'개';
+    var RS={five:'5목',resign:'기권',draw:'무승부',box:'땅 많이'};
+    $('stRecent').innerHTML=recs.length?recs.slice(0,30).map(function(x){
+      var r=x.r,b=betOf(r.g),dd=new Date(r.at),chip,sub,btn='';
+      if(x.w>=0)chip='<div class="wl'+(x.w===1?' u':'')+'">'+NAMES[x.w]+' 승</div>';
+      else chip='<div class="wl dr">무승부</div>';
+      sub=(dd.getMonth()+1)+'월 '+dd.getDate()+'일 · ';
+      if(b&&x.w>=0){
+        sub+='🎯 '+esc(SUBJ[1-x.w]+' '+b.s);
+        btn=b.pd?'<button class="paid" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙 했음">✓ 했어요</button>':'<button class="paid no" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙을 했으면 누르기">했으면 누르기</button>';
+      }else sub+=b?'🎯 '+esc(b.s)+' (비김)':'내기 없음';
+      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">'+(isLand(r.g)?'땅따먹기':'오목')+' · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
+    }).join(''):'<p class="none">이제부터 끝난 판이 여기에 쌓여요.</p>';
+  }
+  function togglePaid(id){
+    var b=store[id];if(!b||b.x||me===null)return;
+    if(b.pd){
+      openModal('아직 안 했어요?','<p>"'+esc(b.s)+'" 내기를 다시 안 한 걸로 바꿀까요?</p>',[
+        ['그대로 둘래','sun',closeModal],
+        ['안 한 걸로','',function(){closeModal();var c=store[id];if(c)put({id:c.id,k:'b',w:c.w,g:c.g,s:c.s,pd:0});}]
+      ]);
+      return;
+    }
+    put({id:b.id,k:'b',w:b.w,g:b.g,s:b.s,pd:1});
+  }
+
+
+  // ----- 음악 나눔 -----
+  // 노래(m): 링크 l, 제목 t, 가수 a, 한마디 s, 올린 시각 at. 감상평(v): 노래 하나에 상대가 하나, 별 st, 기분 e, 한 줄 s
+  var mf=-1,revId='',revSt=0,revE='',DISC=['#FF5D8F','#8FD3FF','#FFD23F','#B9A6FF','#7BE0AD','#FFA86B'];
+  function songs(){return items('m').filter(function(m){return !m.x;}).sort(function(a,b){return b.at-a.at||(a.id<b.id?1:-1);});}
+  function reviewOf(m){var v=store['v'+m.id];return v&&!v.x&&v.w===1-m.w?v:null;}
+  function waiting(){if(me===null)return [];return songs().filter(function(m){return m.w!==me&&!reviewOf(m);});}
+  function siteOf(l){
+    if(!l)return '';
+    var h='';try{h=new URL(l).hostname.toLowerCase();}catch(e){return '';}
+    var list=[['youtu','유튜브'],['melon','멜론'],['spotify','스포티파이'],['music.apple','애플뮤직'],['genie','지니'],['flo','플로'],['vibe.naver','바이브'],['bugs','벅스'],['soundcloud','사운드클라우드']];
+    for(var i=0;i<list.length;i++)if(h.indexOf(list[i][0])>=0)return list[i][1];
+    return '링크';
+  }
+  function cleanLink(v){
+    v=(v||'').trim();if(!v)return '';
+    var m=v.match(/https?:\/\/\S+/i);if(m)v=m[0];
+    else if(/^[\w.-]+\.[a-z]{2,}(\/\S*)?$/i.test(v))v='https://'+v;
+    else return null;
+    try{var u=new URL(v);if(u.protocol!=='http:'&&u.protocol!=='https:')return null;return u.href.slice(0,500);}catch(e){return null;}
+  }
+  function playUrl(m){return m.l||'https://www.youtube.com/results?search_query='+encodeURIComponent((m.t+' '+m.a).trim());}
+  function discColor(m){var h=0;for(var i=0;i<m.id.length;i++)h=(h*31+m.id.charCodeAt(i))%9973;return DISC[h%DISC.length];}
+  function whenLabel(t){
+    var d=new Date(t),td=today(),dd=ymd(d),diff=dnum(td)-dnum(dd);
+    if(diff===0)return '오늘 '+clock(t);if(diff===1)return '어제';
+    var p=dpart(dd);return p.m+'월 '+p.d+'일';
+  }
+  function starsHtml(n){var h='';for(var i=1;i<=5;i++)h+=i<=n?'★':'<span class="off">★</span>';return '<span class="stars" aria-label="별 '+n+'개">'+h+'</span>';}
+  function songHead(m){
+    return '<div class="shd"><span class="mini '+(m.w?'w':'b')+'"></span><span><b>'+NAMES[m.w]+'</b>'+(m.w?'가':'이')+' 추천</span><span class="when">'+whenLabel(m.at)+'</span>'
+      +(m.w===me?'<button class="sdel" type="button" data-sdel="'+esc(m.id)+'">지우기</button>':'')+'</div>'
+      +'<div class="srow"><div class="disc" style="--c:'+discColor(m)+'" aria-hidden="true"></div><div class="sinfo"><div class="t">'+esc(m.t)+'</div>'
+      +(m.a?'<div class="a">'+esc(m.a)+'</div>':'')+'<span class="site">▶ '+(m.l?siteOf(m.l):'유튜브 검색')+'</span></div></div>'
+      +(m.s?'<p class="say">“'+esc(m.s)+'”</p>':'');
+  }
+  function playBtn(m,txt,cls){return '<a class="btn play'+(cls||'')+'" href="'+esc(playUrl(m))+'" target="_blank" rel="noopener noreferrer">'+txt+'</a>';}
+  function renderMusic(){
+    var all=songs(),list=all.filter(function(m){return mf<0||m.w===mf;}),h='';
+    $('musicFilt').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.f===mf));});
+    list.forEach(function(m){
+      var v=reviewOf(m),wait=m.w!==me&&!v;
+      h+='<div class="sticker song'+(wait?' wait':'')+'">'+songHead(m);
+      if(v){
+        h+='<div class="rv"><div class="h"><span class="mini '+(v.w?'w':'b')+'"></span>'+NAMES[v.w]+'의 감상평 '+starsHtml(v.st)+(v.e?'<span class="emo">'+v.e+'</span>':'')+'</div>'
+          +(v.s?'<p>'+esc(v.s)+'</p>':'')+(v.w===me?'<button class="ed" type="button" data-rev="'+esc(m.id)+'">감상평 고치기</button>':'')+'</div>';
+        h+=playBtn(m,'▶ 들으러 가기','');
+      }else if(wait){
+        h+='<div class="btns">'+playBtn(m,'▶ 들으러 가기','')+'<button class="btn sun play" type="button" data-rev="'+esc(m.id)+'">✍️ 감상평 쓰기</button></div>';
+      }else{
+        h+='<p class="hint" style="margin:0">'+NAMES[1-m.w]+'의 감상평을 기다리는 중…</p>'+playBtn(m,'▶ 들으러 가기','');
+      }
+      h+='</div>';
+    });
+    if(!list.length)h='<p class="none">'+(all.length?'이 사람이 추천한 노래는 아직 없어요.':'아직 추천한 노래가 없어요. 첫 노래를 보내 보세요!')+'</p>';
+    $('songList').innerHTML=h;
+  }
+  function renderMusicTile(){
+    var w=waiting(),bd=$('musicBadge'),pv=$('musicPreview');
+    bd.hidden=!w.length;bd.textContent=w.length>99?'99+':w.length;
+    var all=songs(),last=null;
+    if(me!==null)all.forEach(function(m){var v=reviewOf(m);if(m.w===me&&v&&(!last||v.u>last.u))last=v;});
+    if(w.length)pv.innerHTML='<b>'+NAMES[1-me]+'</b>'+(me===0?'가':'이')+' 추천한 노래가 왔어요. 들어 보고 감상평 남겨 주세요!';
+    else if(last&&store[last.m]&&Date.now()-last.u<3*DAY)pv.innerHTML='<b>'+NAMES[last.w]+'</b>의 감상평: “'+esc(store[last.m].t)+'” '+'★'.repeat(last.st)+(last.s?' '+esc(last.s):'');
+    else if(all.length)pv.innerHTML='최근 노래: <b>'+esc(all[0].t)+'</b>'+(all[0].a?' · '+esc(all[0].a):'');
+    else pv.textContent='노래를 서로 추천하고 감상평을 남겨요';
+    $('musicTile').setAttribute('aria-label','음악 나눔'+(w.length?', 감상평 기다리는 노래 '+w.length+'개':''));
+  }
+  function openSongForm(){
+    ['songLink','songTitle','songArtist','songNote'].forEach(function(id){$(id).value='';});
+    $('songErr').hidden=true;checkLink();
+    $('songSend').textContent=NAMES[1-me]+'에게 보내기';
+    $('songHint').textContent='보내면 '+NAMES[1-me]+' 폰 홈 화면에 빨간 숫자가 떠요.';
+    go('song');
+  }
+  function checkLink(){
+    var v=$('songLink').value,c=cleanLink(v),ok=$('songLinkOk');
+    if(!v.trim()){ok.hidden=true;return;}
+    ok.hidden=false;ok.classList.toggle('bad',c===null);
+    ok.textContent=c===null?'✗ 링크 모양이 아니에요. 다시 복사해 붙여 주세요':'✓ '+(siteOf(c)==='링크'?'링크':siteOf(c)+' 링크')+'예요';
+  }
+  function sendSong(){
+    if(!needMe())return;
+    var l=cleanLink($('songLink').value),t=$('songTitle').value.trim().slice(0,60),a=$('songArtist').value.trim().slice(0,60),s=$('songNote').value.trim().slice(0,100),err=$('songErr');
+    if(l===null){err.textContent='링크 모양이 이상해요. 다시 복사해 붙이거나 비워 주세요.';err.hidden=false;return;}
+    if(!t){err.textContent='노래 제목을 적어 주세요.';err.hidden=false;$('songTitle').focus();return;}
+    err.hidden=true;
+    put({id:uid('m'),k:'m',w:me,at:Date.now(),l:l,t:t,a:a,s:s});
+    mf=-1;go('music');renderMusic();
+  }
+  function askDelSong(id){
+    var m=store[id];if(!m||m.x||m.w!==me)return;
+    openModal('이 노래 지울까요?','<p>“'+esc(m.t)+'”와 감상평이 두 폰에서 모두 사라져요.</p>',[
+      ['그대로 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[id];if(c&&!c.x&&c.w===me)put({id:c.id,k:'m',w:c.w,at:c.at,l:'',t:'',a:'',s:'',x:1});}]
+    ]);
+  }
+  function openReview(id){
+    var m=store[id];if(!m||m.x||me===null||m.w===me)return;
+    revId=id;var v=reviewOf(m);
+    revSt=v?v.st:0;revE=v?v.e:'';$('revInput').value=v?v.s:'';$('revErr').hidden=true;
+    $('revSend').textContent=v?'감상평 고치기':'감상평 남기기';
+    $('revHint').textContent='남긴 뒤에도 고칠 수 있어요. '+NAMES[m.w]+' 폰에 바로 보여요.';
+    go('review');renderRevSong();renderRevForm();
+  }
+  function renderRevSong(){
+    var m=store[revId];
+    if(!m||m.x){$('revSong').innerHTML='<p class="none">이 노래는 지워졌어요.</p>';$('revForm').hidden=true;return;}
+    $('revForm').hidden=false;
+    $('revSong').innerHTML=songHead(m)+'<div class="btns">'+playBtn(m,'▶ 듣기','')+'</div>';
+  }
+  function renderRevForm(){
+    var h='';for(var i=1;i<=5;i++)h+='<button type="button" class="'+(i<=revSt?'on':'')+'" data-st="'+i+'" aria-label="별 '+i+'개" aria-pressed="'+(i===revSt)+'">★</button>';
+    $('revStars').innerHTML=h;
+    $('revEmos').innerHTML=EMOS.map(function(e){return '<button type="button" data-e="'+e+'" aria-pressed="'+(e===revE)+'">'+e+'</button>';}).join('');
+    $('revCnt').textContent=$('revInput').value.length+' / 60';
+  }
+  function sendReview(){
+    var m=store[revId];if(!m||m.x||me===null||m.w===me)return;
+    if(!revSt){$('revErr').textContent='별점을 골라 주세요.';$('revErr').hidden=false;return;}
+    put({id:'v'+m.id,k:'v',w:me,m:m.id,st:revSt,e:revE,s:$('revInput').value.trim().slice(0,60)});
+    go('music');renderMusic();
+  }
+
+  // ----- 일한 시간 (열품타처럼) -----
+  // 하루 기록(t): id 't'+날짜+'-'+사람, 멈춘 구간들의 합 ms, 재는 중이면 시작 시각 st(아니면 0), 지금 할 일 s
+  var TM_LONG=8*3600000;
+  function dayStart(d){var p=d.split('-');return new Date(+p[0],+p[1]-1,+p[2]).getTime();}
+  function nextDay(d){var p=d.split('-');return ymd(new Date(+p[0],+p[1]-1,+p[2]+1));}
+  function prevDay(d){var p=d.split('-');return ymd(new Date(+p[0],+p[1]-1,+p[2]-1));}
+  function tmRec(d,w){var it=store['t'+d+'-'+w];return it&&!it.x?it:null;}
+  function tmRun(w){var r=null;items('t').forEach(function(it){if(it.w===w&&!it.x&&it.st>0&&(!r||it.st>r.st))r=it;});return r;}
+  // 그날 잰 시간: 멈춘 것 + 지금 재는 중인 것 중 그날 몫(자정을 넘기면 날마다 나눠요)
+  function tmDay(d,w,now){
+    var it=tmRec(d,w),ms=it?it.ms:0,r=tmRun(w);
+    if(r&&r.d<=d){var a=Math.max(r.st,dayStart(d)),b=Math.min(now,dayStart(nextDay(d)));if(b>a)ms+=b-a;}
+    return ms;
+  }
+  function hms(ms){var t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h+':'+pad(m)+':'+pad(s);}
+  function hm(ms){var t=Math.floor(ms/60000),h=Math.floor(t/60),m=t%60;return h?h+'시간'+(m?' '+m+'분':''):m+'분';}
+  function tmStart(){
+    if(!needMe()||tmRun(me))return;
+    var td=today(),it=tmRec(td,me);
+    put({id:'t'+td+'-'+me,k:'t',w:me,d:td,ms:it?it.ms:0,st:Date.now(),s:$('tmWhat').value.trim().slice(0,20)});
+  }
+  function tmStop(drop){
+    var r=tmRun(me);if(!r)return;
+    var now=Date.now(),td=today(),d=r.d,first=true;
+    if(drop){put({id:r.id,k:'t',w:me,d:r.d,ms:r.ms,st:0,s:r.s});return;}
+    for(var n=0;n<60&&d<=td;n++){
+      var a=Math.max(r.st,dayStart(d)),b=Math.min(now,dayStart(nextDay(d))),add=b>a?b-a:0,cur=first?r:tmRec(d,me);
+      if(first||add)put({id:'t'+d+'-'+me,k:'t',w:me,d:d,ms:Math.min(2*DAY,(cur?cur.ms:0)+add),st:0,s:cur?cur.s:r.s});
+      first=false;d=nextDay(d);
+    }
+  }
+  function tmToggle(){
+    if(!needMe())return;
+    var r=tmRun(me);
+    if(!r){tmStart();return;}
+    var long=Date.now()-r.st;
+    if(long>TM_LONG){
+      openModal('혹시 깜빡했어요?','<p>타이머가 <b>'+hm(long)+'</b> 동안 켜져 있었어요. 이번에 잰 시간을 다 넣을까요?</p>',[
+        ['다 넣을래','sun',function(){closeModal();tmStop(false);}],
+        ['이번 건 빼 줘','pink',function(){closeModal();tmStop(true);}]
+      ]);
+      return;
+    }
+    tmStop(false);
+  }
+  function tmLabel(w,r){return r&&r.s?'<b>'+esc(r.s)+'</b> 하는 중':'하는 중';}
+  function renderTimer(){
+    if(me===null)return;
+    var now=Date.now(),td=today(),o=1-me,r=tmRun(me),ro=tmRun(o),mine=tmDay(td,me,now),other=tmDay(td,o,now);
+    $('tmMine').classList.toggle('run',!!r);
+    $('tmMineHd').innerHTML='<span class="mini '+(me?'w':'b')+'"></span>'+NAMES[me]+'의 오늘<span class="st'+(r?' on':'')+'">'+(r?'<span class="fire">🔥</span> 재는 중':'멈춤')+'</span>';
+    $('tmMineBig').textContent=hms(mine);
+    $('tmMineWhat').hidden=!r;
+    if(r)$('tmMineWhat').innerHTML=tmLabel(me,r)+' · '+clock(r.st)+'부터';
+    $('tmWhat').hidden=!!r;
+    if(!r&&document.activeElement!==$('tmWhat')){var it=tmRec(td,me);if(!$('tmWhat').value&&it&&it.s)$('tmWhat').value=it.s;}
+    var g=$('tmGo');g.textContent=r?'⏸ 멈춤':'▶ 시작';g.classList.toggle('sun',!r);g.classList.toggle('pink',!!r);
+    var oe=$('tmOther');oe.classList.toggle('run',!!ro);
+    oe.innerHTML='<div class="tmhd"><span class="mini '+(o?'w':'b')+'"></span>'+NAMES[o]+'의 오늘<span class="st'+(ro?' on':'')+'">'+(ro?'<span class="fire">🔥</span> '+tmLabel(o,ro):(other?'쉬는 중':'아직 시작 안 함'))+'</span></div>'
+      +'<div class="tmbig">'+hms(other)+'</div>';
+    var diff=mine-other,vs=$('tmVs');
+    if(!mine&&!other)vs.textContent='오늘 누가 더 오래 할까요? 🏁';
+    else if(Math.abs(diff)<60000)vs.textContent='거의 똑같이 했어요! 🤝';
+    else vs.textContent=(diff>0?SUBJ[me]:SUBJ[o])+' '+hm(Math.abs(diff))+' 더 했어요 '+(diff>0?'💪':'👀');
+    // 최근 7일 막대
+    var days=[],d=td;for(var i=0;i<7;i++){days.unshift(d);d=prevDay(d);}
+    var vals=days.map(function(d){return [tmDay(d,0,now),tmDay(d,1,now)];}),mx=3600000;
+    vals.forEach(function(v){mx=Math.max(mx,v[0],v[1]);});
+    $('tmBars').innerHTML=days.map(function(d,i){
+      var v=vals[i];
+      return '<div class="d" aria-label="'+dlabel(d)+' 지원 '+hm(v[0])+', 지우 '+hm(v[1])+'"><div class="pr"><i style="height:'+Math.max(2,v[0]/mx*100)+'%"></i><i class="u" style="height:'+Math.max(2,v[1]/mx*100)+'%"></i></div><span class="lb'+(d===td?' td':'')+'">'+(d===td?'오늘':dpart(d).w)+'</span></div>';
+    }).join('');
+    var s0=0,s1=0;vals.forEach(function(v){s0+=v[0];s1+=v[1];});
+    $('tmWeek').innerHTML='<span>지원 7일 합<b>'+hm(s0)+'</b></span><span>지우 7일 합<b>'+hm(s1)+'</b></span>';
+  }
+  function renderTmTile(){
+    var now=Date.now(),td=today(),pv=$('tmPreview'),h='',any=false;
+    [0,1].forEach(function(w){
+      var ms=tmDay(td,w,now),r=tmRun(w);if(ms||r)any=true;
+      h+=(w?' · ':'')+'<b>'+NAMES[w]+'</b> '+(r?'<span class="fire">🔥</span>':'')+hm(ms);
+    });
+    if(any)pv.innerHTML=h;else pv.textContent='열품타처럼 오늘 일한 시간을 재요';
+  }
+
+  // ----- 오늘의 술 -----
+  // 하루 기록(a): id 'a'+날짜+'-'+사람, 종류별 잔 수 c(DRINKS 순서), 한마디 s. 기록이 있고 다 0이면 '안 마심'
+  var drD='',drPend=null,drT=0;
+  // 새벽 6시 전에는 어젯밤 술로 쳐요
+  function drToday(){var d=new Date();return d.getHours()<6?prevDay(ymd(d)):ymd(d);}
+  function drRec(d,w){
+    if(drPend&&drPend.d===d&&w===me)return drPend;
+    var it=store['a'+d+'-'+w];return it&&!it.x?it:null;
+  }
+  function drTotal(it){var n=0;if(it)it.c.forEach(function(x){n+=x;});return n;}
+  function drSumHtml(it,emptyText){
+    if(!it)return '<span class="drsum empty">'+emptyText+'</span>';
+    var h='';
+    it.c.forEach(function(n,i){if(n)h+='<span class="tag2">'+DRINKS[i][0]+' '+DRINKS[i][1]+' '+n+DRINKS[i][2]+(i===0&&n>=7?' (약 '+(Math.round(n/7*10)/10)+'병)':'')+'</span>';});
+    if(!h)h='🙅 안 마셨어요';
+    return '<span class="drsum">'+h+(it.s?' <span class="hint">· '+esc(it.s)+'</span>':'')+'</span>';
+  }
+  function drSet(c,s){
+    if(!needMe())return;
+    var cur=drRec(drD,me);
+    drPend={id:'a'+drD+'-'+me,k:'a',w:me,d:drD,c:c,s:s===undefined?(cur?cur.s:''):s};
+    clearTimeout(drT);drT=setTimeout(drFlush,700);
+    renderDrink();renderDrTile();
+  }
+  function drFlush(){
+    clearTimeout(drT);drT=0;
+    var p=drPend;drPend=null;if(!p)return;
+    var cur=store[p.id];
+    if(cur&&!cur.x&&cur.s===p.s&&cur.c.join()===p.c.join())return;
+    put(p);
+  }
+  function drBump(i,delta){
+    var cur=drRec(drD,me),c=cur?cur.c.slice():DRINKS.map(function(){return 0;});
+    c[i]=Math.max(0,Math.min(99,c[i]+delta));
+    drSet(c);
+  }
+  function drShiftDay(n){
+    drFlush();
+    var d=n<0?prevDay(drD):nextDay(drD);
+    if(d>drToday())return;
+    drD=d;$('drSay').value='';renderDrink();
+  }
+  function renderDrink(){
+    if(me===null)return;
+    if(!drD)drD=drToday();
+    var dt=drToday(),mine=drRec(drD,me),o=1-me,other=drRec(drD,o);
+    $('drDate').textContent=(drD===dt?(dt===today()?'오늘 ':'어젯밤 '):drD===prevDay(today())?'어제 ':'')+dlabel(drD);
+    $('drNext').disabled=drD>=dt;
+    $('drMineTitle').textContent=NAMES[me]+(me?'가':'이')+' 마신 술';
+    $('drMine').innerHTML=DRINKS.map(function(k,i){
+      var n=mine?mine.c[i]:0;
+      return '<div class="drrow'+(n?' has':'')+'"><span class="em" aria-hidden="true">'+k[0]+'</span><span class="nm">'+k[1]+(i===0?'<small>7잔 ≈ 1병</small>':'')+'</span>'
+        +'<button type="button" data-dr="'+i+'" data-v="-1" aria-label="'+k[1]+' 한 '+k[2]+' 빼기"'+(n?'':' disabled')+'>−</button><span class="n">'+n+'<small style="font-size:13px">'+k[2]+'</small></span>'
+        +'<button class="plus" type="button" data-dr="'+i+'" data-v="1" aria-label="'+k[1]+' 한 '+k[2]+' 더하기">+</button></div>';
+    }).join('');
+    var none=!!mine&&!drTotal(mine);
+    $('drNone').setAttribute('aria-pressed',String(none));
+    var inp=$('drSay');
+    if(document.activeElement!==inp)inp.value=mine?mine.s:'';
+    $('drOther').innerHTML='<div class="dt">'+NAMES[o]+(o?'가':'이')+' 마신 술</div>'+drSumHtml(other,'아직 안 적었어요');
+    // 이번 달 마신 날
+    var recs={};items('a').forEach(function(it){if(!it.x)recs[it.id]=it;});if(drPend)recs[drPend.id]=drPend;
+    var ym=drD.slice(0,7),cnt=[0,0];
+    for(var id in recs){var it=recs[id];if(it.d.slice(0,7)===ym&&drTotal(it))cnt[it.w]++;}
+    $('drMonth').innerHTML='<div><b>'+cnt[0]+'일</b><span>지원 '+(+ym.slice(5))+'월 마신 날</span></div><div><b>'+cnt[1]+'일</b><span>지우 '+(+ym.slice(5))+'월 마신 날</span></div>';
+    var days={};for(var id2 in recs)if(recs[id2].d<dt)days[recs[id2].d]=1;
+    var list=Object.keys(days).sort().reverse().slice(0,60);
+    $('drPast').innerHTML=list.length?list.map(function(d){
+      return '<div class="sticker daycard"><div class="dt">'+dlabel(d)+'</div>'
+        +'<span class="line"><span class="nm">지원</span>'+drSumHtml(drRec(d,0),'안 적었어요')+'</span>'
+        +'<span class="line"><span class="nm u">지우</span>'+drSumHtml(drRec(d,1),'안 적었어요')+'</span></div>';
+    }).join(''):'<p class="none">지난 술 기록이 여기에 쌓여요.</p>';
+  }
+  function drShort(it){
+    if(!it)return '아직';
+    var h='';it.c.forEach(function(n,i){if(n)h+='<span class="nw">'+DRINKS[i][0]+n+'</span> ';});
+    return h?h.trim():'<span class="nw">안 마심 🙅</span>';
+  }
+  function renderDrTile(){
+    var d=drToday(),a=drRec(d,0),b=drRec(d,1),pv=$('drPreview');
+    if(!a&&!b)pv.textContent='오늘 마신 술을 서로 보여 줘요';
+    else pv.innerHTML='<b>지원</b> '+drShort(a)+' · <b>지우</b> '+drShort(b);
+  }
+  window.addEventListener('pagehide',function(){if(drPend)drFlush();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&drPend)drFlush();});
+
+  // ----- 홈 카드 -----
+  function renderHomeStore(){
+    var td=today();
+    $('wordDate').textContent=dlabel(td);
+    $('wordHome0').textContent=wordOf(td,0)||'아직 안 썼어요';$('wordHome0').classList.toggle('empty',!wordOf(td,0));
+    $('wordHome1').textContent=wordOf(td,1)||'아직 안 썼어요';$('wordHome1').classList.toggle('empty',!wordOf(td,1));
+    var n=unread(),bd=$('chatBadge');
+    bd.hidden=!n;bd.textContent=n>99?'99+':n;
+    var cs=chats(),last=cs[cs.length-1],pv=$('chatPreview');
+    if(last)pv.innerHTML='<b>'+NAMES[last.w]+':</b> '+esc(last.s);
+    else pv.textContent='둘만 보는 대화방';
+    $('chatTile').setAttribute('aria-label','대화방'+(n?', 안 읽은 글 '+n+'개':''));
+    var up=plans().filter(function(p){return p.d>=td;})[0],cp=$('calPreview');
+    if(up){var diff=dnum(up.d)-dnum(td);cp.innerHTML='<b>'+(diff?'D-'+diff:'오늘')+'</b> '+esc(up.s);}
+    else cp.textContent='약속을 같이 적어요';
+    renderMusicTile();renderTmTile();renderDrTile();
+  }
+  function renderStore(){
+    renderHomeStore();renderBet();lRenderBet();
+    sRender();
+    if(!$('chat').hidden){renderChat(false);markRead();}
+    if(!$('cal').hidden)renderCal();
+    if(!$('word').hidden)renderWord();
+    if(!$('stats').hidden)renderStats();
+    if(!$('music').hidden)renderMusic();
+    if(!$('review').hidden)renderRevSong();
+    if(!$('timer').hidden)renderTimer();
+    if(!$('drink').hidden)renderDrink();
+  }
+
+  // ===== 수도쿠 퍼즐 만들기 =====
+  function Sudoku(){
+    var ROW=[],COL=[],BOX=[],PEERS=[],UNITS=[],ALL=511;
+    for(var i=0;i<81;i++){ROW.push(Math.floor(i/9));COL.push(i%9);BOX.push(Math.floor(i/27)*3+Math.floor(i%9/3));}
+    for(var u=0;u<9;u++){var r=[],c=[],b=[];for(var k=0;k<9;k++){r.push(u*9+k);c.push(k*9+u);b.push((Math.floor(u/3)*3+Math.floor(k/3))*9+(u%3)*3+k%3);}UNITS.push(r,c,b);}
+    for(i=0;i<81;i++){var p=[];for(var j=0;j<81;j++)if(j!==i&&(ROW[i]===ROW[j]||COL[i]===COL[j]||BOX[i]===BOX[j]))p.push(j);PEERS.push(p);}
+    function bits(m){var n=0;while(m){m&=m-1;n++;}return n;}
+    function low(m){return 31-Math.clz32(m&-m);}  // 가장 작은 숫자 자리(0~8)
+    function cands(g){
+      var cm=[];for(var i=0;i<81;i++){if(g[i]){cm.push(0);continue;}var m=ALL;var p=PEERS[i];for(var k=0;k<20;k++)if(g[p[k]])m&=~(1<<(g[p[k]]-1));cm.push(m);}return cm;
+    }
+    // 해 개수 세기(limit개까지). rnd면 숫자를 섞어서 시도(빈 판에서 무작위 완성판 만들 때)
+    function solve(g0,limit,rnd){
+      var g=g0.slice(),cnt=0,sol=null;
+      var rm=[0,0,0,0,0,0,0,0,0],cm=[0,0,0,0,0,0,0,0,0],bm=[0,0,0,0,0,0,0,0,0];
+      for(var i=0;i<81;i++)if(g[i]){var b=1<<(g[i]-1);if((rm[ROW[i]]|cm[COL[i]]|bm[BOX[i]])&b)return {count:0};rm[ROW[i]]|=b;cm[COL[i]]|=b;bm[BOX[i]]|=b;}
+      function rec(){
+        var best=-1,bm0=0,bc=10;
+        for(var i=0;i<81;i++){if(g[i])continue;var m=ALL&~(rm[ROW[i]]|cm[COL[i]]|bm[BOX[i]]);var c=bits(m);if(c<bc){bc=c;best=i;bm0=m;if(c<2)break;}}
+        if(best<0){cnt++;if(!sol)sol=g.slice();return cnt>=limit;}
+        if(!bc)return false;
+        var ds=[];for(var d=0;d<9;d++)if(bm0&(1<<d))ds.push(d);
+        if(rnd)for(var a=ds.length-1;a>0;a--){var z=Math.floor(Math.random()*(a+1)),t=ds[a];ds[a]=ds[z];ds[z]=t;}
+        for(var q=0;q<ds.length;q++){var bb=1<<ds[q],r=ROW[best],c2=COL[best],x=BOX[best];
+          g[best]=ds[q]+1;rm[r]|=bb;cm[c2]|=bb;bm[x]|=bb;
+          if(rec())return true;
+          g[best]=0;rm[r]&=~bb;cm[c2]&=~bb;bm[x]&=~bb;}
+        return false;
+      }
+      rec();
+      return {count:cnt,sol:sol};
+    }
+    // 사람이 푸는 방식으로 풀어 보고 가장 어려운 기술 단계를 돌려줘요.
+    // 1 = 외톨이 숫자만, 2 = 짝·세쌍·줄 묶기, 3 = X-윙·Y-윙·소드피시, 0 = 이걸로도 못 풀어요
+    function rate(g0){
+      var g=g0.slice(),cm=cands(g),level=1,hard=0;
+      function place(i,d){g[i]=d;cm[i]=0;var p=PEERS[i],b=~(1<<(d-1));for(var k=0;k<20;k++)cm[p[k]]&=b;}
+      function singles(){
+        var did=false;
+        for(var i=0;i<81;i++)if(!g[i]){if(!cm[i])return -1;if(bits(cm[i])===1){place(i,low(cm[i])+1);did=true;}}
+        for(var u=0;u<27;u++){var un=UNITS[u];
+          for(var d=0;d<9;d++){var b=1<<d,at=-1,n=0,done=false;
+            for(var k=0;k<9;k++){var c=un[k];if(g[c]===d+1){done=true;break;}if(cm[c]&b){n++;at=c;}}
+            if(done)continue;if(!n)return -1;if(n===1){place(at,d+1);did=true;}}}
+        return did?1:0;
+      }
+      function elim(cells,mask){var ch=false;cells.forEach(function(c){if(cm[c]&mask){cm[c]&=~mask;ch=true;}});return ch;}
+      function combos(arr,k){var out=[];(function r(s,acc){if(acc.length===k){out.push(acc.slice());return;}for(var i=s;i<arr.length;i++){acc.push(arr[i]);r(i+1,acc);acc.pop();}})(0,[]);return out;}
+      function tier2(){
+        // 줄 묶기(pointing/claiming)
+        for(var u=0;u<27;u++){var un=UNITS[u];
+          for(var d=0;d<9;d++){var b=1<<d,cs=un.filter(function(c){return cm[c]&b;});if(cs.length<2)continue;
+            for(var v=0;v<27;v++){if(v===u)continue;var vu=UNITS[v];if(cs.every(function(c){return vu.indexOf(c)>=0;})){
+              if(elim(vu.filter(function(c){return cs.indexOf(c)<0;}),b))return true;}}}}
+        // 짝·세쌍(naked / hidden)
+        for(u=0;u<27;u++){un=UNITS[u];var empt=un.filter(function(c){return !g[c];});
+          for(var k=2;k<=3;k++){if(empt.length<=k)continue;
+            var cs2=combos(empt,k);
+            for(var q=0;q<cs2.length;q++){var set=cs2[q],m=0;set.forEach(function(c){m|=cm[c];});
+              if(bits(m)===k&&elim(empt.filter(function(c){return set.indexOf(c)<0;}),m))return true;}
+            var ds=[];for(d=0;d<9;d++)if(empt.some(function(c){return cm[c]&(1<<d);}))ds.push(d);
+            var dc=combos(ds,k);
+            for(q=0;q<dc.length;q++){var dm=0;dc[q].forEach(function(x){dm|=1<<x;});
+              var where=empt.filter(function(c){return cm[c]&dm;});
+              if(where.length===k&&dc[q].every(function(x){return where.some(function(c){return cm[c]&(1<<x);});})){
+                var ch=false;where.forEach(function(c){if(cm[c]&~dm){cm[c]&=dm;ch=true;}});if(ch)return true;}}}}
+        return false;
+      }
+      function tier3(){
+        // X-윙, 소드피시 (가로/세로)
+        for(var size=2;size<=3;size++)for(var dir=0;dir<2;dir++)for(var d=0;d<9;d++){
+          var b=1<<d,lines=[];
+          for(var a=0;a<9;a++){var pos=[];for(var k=0;k<9;k++){var c=dir?k*9+a:a*9+k;if(cm[c]&b)pos.push(k);}if(pos.length>=2&&pos.length<=size)lines.push({a:a,pos:pos});}
+          var cb=combos(lines,size);
+          for(var q=0;q<cb.length;q++){var cols={};cb[q].forEach(function(l){l.pos.forEach(function(p){cols[p]=1;});});
+            var ck=Object.keys(cols).map(Number);if(ck.length!==size)continue;
+            var as=cb[q].map(function(l){return l.a;}),tg=[];
+            ck.forEach(function(p){for(var a2=0;a2<9;a2++)if(as.indexOf(a2)<0)tg.push(dir?p*9+a2:a2*9+p);});
+            if(elim(tg,b))return true;}}
+        // Y-윙
+        for(var piv=0;piv<81;piv++){if(bits(cm[piv])!==2)continue;
+          var wings=PEERS[piv].filter(function(c){return bits(cm[c])===2&&bits(cm[c]&cm[piv])===1;});
+          for(var i=0;i<wings.length;i++)for(var j=i+1;j<wings.length;j++){var w1=wings[i],w2=wings[j];
+            var z=cm[w1]&cm[w2];if(bits(z)!==1||(z&cm[piv])||((cm[w1]|cm[w2])&cm[piv])!==cm[piv])continue;
+            if(elim(PEERS[w1].filter(function(c){return c!==w2&&PEERS[w2].indexOf(c)>=0;}),z))return true;}}
+        return false;
+      }
+      for(var guard=0;guard<500;guard++){
+        var s=singles();if(s<0)return 0;if(s)continue;
+        if(g.indexOf(0)<0){rate.hard=hard;rate.grid=g;return level;}
+        if(tier2()){level=Math.max(level,2);hard++;continue;}
+        if(tier3()){level=3;hard++;continue;}
+        return 0;
+      }
+      return 0;
+    }
+    function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
+    // 어려운 퍼즐: 해가 딱 하나, 외톨이 숫자만으로는 안 풀리고, 사람 기술(3단계까지)로는 풀려요
+    function make(){
+      for(var tries=0;tries<400;tries++){
+        var full=solve(new Array(81).fill(0),1,true).sol,p=full.slice();
+        var order=shuffle(Array.from({length:81},function(_,i){return i;}));
+        for(var k=0;k<81;k++){var i=order[k],v=p[i];p[i]=0;if(solve(p,2).count!==1)p[i]=v;}
+        var lv=rate(p);
+        if(lv===3||(lv===2&&rate.hard>=3))return {p:p,s:full,level:lv,tries:tries+1};
+      }
+      return null;
+    }
+    return {solve:solve,rate:rate,make:make,ROW:ROW,COL:COL,BOX:BOX,PEERS:PEERS,UNITS:UNITS};
+  }
+  // ===== 같이 푸는 수도쿠 =====
+  // 퍼즐(q): id 'q'+g, 문제 p(81글자, 0=빈칸), 꺼낸 사람 w, 꺼낸 시각 at, 다 푼 시각 dn, 다 풀 때 각자 채운 칸 c0·c1
+  // 칸(e): id 'e'+g+'-'+칸번호(0~80), 숫자 v(0=지움), 쓴 사람 w. 칸마다 따로 기록이라 둘이 동시에 다른 칸을 채워도 안 섞여요.
+  // 같은 칸을 동시에 고치면 고친 시각(u)이 나중인 숫자가 남아요(두 폰이 같은 규칙으로 골라서 결국 같아져요).
+  var SDK=Sudoku();
+  var SGRE=/^s[0-9a-z]{4,30}$/;
+  var LIVES=4,sFail={},sLivesShown={},sSel=-1,sMemo=false,sWrong={},sWrongT=0,sPop={},sNote='',sDone={},sOkCache={},sQ={},sQT=0,sTick=0,sMaking=false,sCurGid='',sLastGid='';
+  function sOk(q){
+    // 받은 퍼즐도 답이 딱 하나인지 이 폰에서 다시 확인해요
+    if(!(q.g in sOkCache)){var r=SDK.solve(q.p.split('').map(Number),2);sOkCache[q.g]=r.count===1?r.sol:null;}
+    return sOkCache[q.g];
+  }
+  function sPuzzles(){return items('q').filter(function(q){return !q.x&&sOk(q);});}
+  function sCur(){
+    var best=null;
+    sPuzzles().forEach(function(q){if(!best||q.at>best.at||(q.at===best.at&&q.g>best.g))best=q;});
+    return best;
+  }
+  // 판 계산: 숫자 v, 쓴 사람 by(-1=처음부터 있던 숫자)
+  function sState(q){
+    var v=[],by=[],sol=sOk(q),n=[0,0],filled=0;
+    for(var i=0;i<81;i++){
+      var gv=+q.p.charAt(i);
+      if(gv){v.push(gv);by.push(-1);filled++;continue;}
+      var e=store['e'+q.g+'-'+i];
+      if(e&&e.v){v.push(e.v);by.push(e.w);n[e.w]++;filled++;}else{v.push(0);by.push(-2);}
+    }
+    if(q.dn){for(var j=0;j<81;j++)if(v[j]!==sol[j]){v[j]=sol[j];if(by[j]<0)by[j]=-2;}}
+    var bad={};
+    for(var a=0;a<81;a++){if(!v[a])continue;var pp=SDK.PEERS[a];for(var k=0;k<20;k++)if(v[pp[k]]===v[a]){bad[a]=1;break;}}
+    var solved=filled===81&&v.every(function(x,i){return x===sol[i];});
+    // 목숨: 틀린 (칸, 숫자) 하나마다 하나씩 줄어요. 둘이 같은 실수를 동시에 해도 한 번만 세요.
+    var wrong={},miss=0;
+    items('l').forEach(function(l){if(l.g!==q.g||+q.p.charAt(l.c)||l.v===sol[l.c])return;var key=l.c*10+l.v;if(!wrong[key]){wrong[key]=1;miss++;}});
+    var lives=Math.max(0,LIVES-miss),failed=!q.dn&&lives<=0;
+    return {v:v,by:by,sol:sol,n:n,filled:filled,bad:bad,solved:!failed&&(solved||!!q.dn),lives:lives,wrong:wrong,failed:failed,over:!!q.dn||failed};
+  }
+  function memoKey(g){return 'tujipv-sdkmemo-'+g;}
+  function memoLoad(g){try{var o=JSON.parse(localStorage.getItem(memoKey(g))||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
+  function memoSave(g,m){try{localStorage.setItem(memoKey(g),JSON.stringify(m));}catch(e){}}
+  var sMemos={},sMemoG='';
+  function memos(g){if(sMemoG!==g){sMemoG=g;sMemos=memoLoad(g);}return sMemos;}
+  function sSay(msg,kind){
+    var el=$('sStatus');el.textContent=msg;el.classList.remove('no','mine');
+    if(kind==='no'){void el.offsetWidth;el.classList.add('no');}else if(kind==='mine')el.classList.add('mine');
+  }
+  function dur(ms){
+    var m=Math.max(0,Math.round(ms/60000));
+    if(m<1)return '1분 안';
+    if(m<60)return m+'분';
+    var h=Math.floor(m/60);m%=60;
+    if(h<24)return h+'시간'+(m?' '+m+'분':'');
+    return Math.floor(h/24)+'일 '+(h%24)+'시간';
+  }
+  function sTimeText(q){var d=dur((q.dn||Date.now())-q.at);return q.dn?'걸린 시간 '+d:d==='1분 안'?'방금 시작':'시작한 지 '+d;}
+  // 숫자 뒤 조사: 1·3·6·7·8은 받침 있음, 1·7·8은 ㄹ받침
+  function eun(d){return d+('136780'.indexOf(String(d))>=0?'은':'는');}
+  function ro(d){return d?d+('36'.indexOf(String(d))>=0?'으로':'로'):'빈칸으로';}
+  function sDoneList(){return sPuzzles().filter(function(q){return q.dn;});}
+  function sBest(){var b=0;sDoneList().forEach(function(q){var d=q.dn-q.at;if(d>0&&(!b||d<b))b=d;});return b;}
+  function sHome(){
+    var q=sCur(),el=$('homeSdk'),dl=sDoneList(),best=sBest();
+    var tail=dl.length?' 같이 푼 퍼즐 '+dl.length+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
+    var fst=q&&!q.dn?sState(q):null;
+    if(fst&&fst.failed){el.textContent='목숨을 다 써서 실패했어요. 다시 도전해요!'+tail;el.classList.remove('now');}
+    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움';el.classList.add('now');}
+    else{el.textContent='차례 없이 둘이 아무 칸이나 같이 채워요. 어려움 난이도, 매번 새 퍼즐!'+tail;el.classList.remove('now');}
+    $('stSdk').textContent=dl.length+'개';
+  }
+  function sStatusMsg(q,st){
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(q.dn)return '다 풀었어요! 🎉 걸린 시간 '+dur(q.dn-q.at);
+    if(st.failed)return '목숨을 다 썼어요 😵 같은 퍼즐로 다시 하거나 새 퍼즐을 꺼내요.';
+    if(sSel>=0&&st.by[sSel]===-1)return '처음부터 있던 숫자는 못 바꿔요.';
+    if(sSel<0)return '빈칸을 누르고 숫자를 골라요. 남은 칸 '+(81-st.filled)+'개!';
+    return (sMemo?'메모 중: ':'')+'숫자를 눌러 '+(sMemo?'메모해요.':'채워요.');
+  }
+  function sRender(){
+    sHome();
+    if($('sdk').hidden)return;
+    var q=sCur();
+    if(!q){$('sBoard').innerHTML='';if(!quiet&&!sMaking&&me!==null){sNew(true);return;}sSay(sMaking?'어려운 퍼즐 만드는 중…':'퍼즐 불러오는 중…');return;}
+    if(q.g!==sCurGid){
+      // 다른 퍼즐로 바뀌었어요
+      if(sCurGid&&!quiet&&q.w!==me&&me!==null)sNote=NAMES[q.w]+'가 새 퍼즐을 꺼냈어요! 같이 풀어요.';
+      sCurGid=q.g;sSel=-1;sWrong={};
+    }
+    var st=sState(q);
+    if(st.over)sSel=-1;
+    var mm=memos(q.g),h='',selV=sSel>=0?st.v[sSel]:0;
+    for(var i=0;i<81;i++){
+      var r=SDK.ROW[i],c=SDK.COL[i],cls='sc';
+      if(c===2||c===5)cls+=' c3';if(c===8)cls+=' c9';
+      if(r===2||r===5)cls+=' r3';if(r===8)cls+=' r9';
+      if(st.by[i]===-1)cls+=' gv';else if(st.by[i]>=0)cls+=' w'+st.by[i];
+      if(sSel>=0&&i!==sSel&&(SDK.ROW[sSel]===r||SDK.COL[sSel]===c||SDK.BOX[sSel]===SDK.BOX[i]))cls+=' near';
+      if(selV&&i!==sSel&&st.v[i]===selV)cls+=' same';
+      if(i===sSel)cls+=' sel';
+      if(st.bad[i]&&st.by[i]!==-1&&!q.dn)cls+=' bad';
+      if(sWrong[i])cls+=' wrong';
+      if(sPop[i])cls+=' pop';
+      var inner='',lab=(r+1)+'행 '+(c+1)+'열 ';
+      if(sWrong[i]&&!st.v[i]){inner='<span class="v">'+sWrong[i]+'</span>';lab+=sWrong[i]+' (틀림)';}
+      else if(st.v[i]){inner='<span class="v">'+st.v[i]+'</span>';lab+=st.v[i]+(st.by[i]===-1?' (처음 숫자)':st.by[i]>=0?' ('+NAMES[st.by[i]]+')':'');}
+      else{
+        var ms=mm[i]||0;lab+='빈칸';
+        if(ms){inner='<span class="mm">';for(var d=1;d<=9;d++)inner+='<i>'+(ms&(1<<d)?d:'')+'</i>';inner+='</span>';}
+      }
+      h+='<button type="button" class="'+cls+'" data-i="'+i+'" aria-label="'+lab+'">'+inner+'</button>';
+    }
+    var b=$('sBoard');b.innerHTML=h;b.classList.toggle('done',!!q.dn&&sDone[q.g]==='party');
+    sPop={};
+    // 숫자판: 9개 다 쓴 숫자는 흐리게(눌러서 지우거나 고칠 수 있게 막지는 않아요)
+    var cnt=[0,0,0,0,0,0,0,0,0,0];st.v.forEach(function(x){cnt[x]++;});
+    var kh='',lock=st.over||me===null;
+    for(var k=1;k<=9;k++)kh+='<button type="button" data-k="'+k+'"'+(cnt[k]>=9&&!sMemo&&!lock?' class="full"':'')+(lock?' disabled':'')+' aria-label="'+k+(sMemo?' 메모':'')+'">'+k+'<small>'+(9-cnt[k]>0?9-cnt[k]:'')+'</small></button>';
+    $('sKeys').innerHTML=kh;$('sKeys').classList.toggle('memo',sMemo);
+    $('sMemoBtn').setAttribute('aria-pressed',String(sMemo));
+    $('sMemoBtn').disabled=lock;$('sEraseBtn').disabled=lock;
+    $('sNewBtn').classList.toggle('sun',st.over);
+    $('sNewBtn').textContent=st.failed?'같은 퍼즐 다시 · 새 퍼즐':'새 퍼즐 꺼내기';
+    sRenderLives(q,st);
+    for(var p=0;p<2;p++){$('sChipText'+p).textContent=(q.dn&&q.c0!==undefined?(p?q.c1:q.c0):st.n[p])+'칸 채움';$('sMeTag'+p).hidden=me!==p;}
+    $('sLeft').textContent=q.dn?'81칸 다 채움':st.failed?'81칸 중 '+st.filled+'칸까지 채움':'남은 칸 '+(81-st.filled)+'개';
+    $('sTime').textContent=sTimeText(q);
+    if(sNote){var n=sNote;sNote='';sSay(n,'mine');}
+    else if(st.over||(!$('sStatus').classList.contains('no')&&!sRender.keep))sSay(sStatusMsg(q,st));
+    sRender.keep=false;
+    sCheckDone(q,st);
+  }
+  function sRenderLives(q,st){
+    var el=$('sLives'),prev=sLivesShown[q.g],h='';
+    for(var i=0;i<LIVES;i++){
+      var alive=i<st.lives,justLost=!alive&&prev!==undefined&&i<prev&&i>=st.lives;
+      h+='<span class="'+(alive?'':'gone')+(justLost?' lost':'')+'">❤️</span>';
+    }
+    sLivesShown[q.g]=st.lives;
+    el.innerHTML='목숨 <span class="hs" aria-label="남은 목숨 '+st.lives+'개">'+h+'</span><small>둘이 합쳐 '+LIVES+'개</small>';
+    el.classList.toggle('zero',st.failed);
+  }
+  // 다 맞게 채워지면 한 번만 '다 풀었다'를 적고 축하해요. 목숨을 다 쓰면 실패를 알려요.
+  function sCheckDone(q,st){
+    if(st.failed){
+      if(sFail[q.g]===undefined)sFail[q.g]=quiet?'seen':'show';
+      if(sFail[q.g]==='show'&&!quiet&&!$('sdk').hidden){sFail[q.g]='seen';sShowFail(q,st);}
+      if(!q.fl&&me!==null)put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,fl:Date.now()});
+      return;
+    }
+    if(q.dn){
+      if(sDone[q.g]===undefined)sDone[q.g]=quiet?'seen':'party';
+      if(sDone[q.g]==='party'){sDone[q.g]='seen';if(!quiet&&!$('sdk').hidden)sCelebrate(q);}
+      return;
+    }
+    if(!st.solved||me===null)return;
+    put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1]});
+  }
+  function sShowFail(q,st){
+    var g=q.g;
+    setTimeout(function(){
+      var cur=sCur();if(!cur||cur.g!==g||$('sdk').hidden)return;
+      openModal('목숨을 다 썼어요 😵','<p>둘이 합쳐 목숨 '+LIVES+'개를 다 썼어요.</p><p>81칸 중 <b>'+st.filled+'칸</b>까지 채웠어요. 아깝다!</p>',
+        [['같은 퍼즐 다시','sun',function(){closeModal();sRetry();}],['새 퍼즐','',function(){closeModal();sNew(true);}],['판 보기','',closeModal]]);
+    },500);
+  }
+  // 같은 문제로 처음부터 다시(새 판 번호라 목숨과 칸이 새로 시작해요)
+  function sRetry(){
+    var q=sCur();if(!q)return;
+    var g='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    sCurGid=g;sSel=-1;sWrong={};
+    put({id:'q'+g,k:'q',w:me===null?0:me,g:g,p:q.p,at:Date.now()});
+    sSay('같은 퍼즐로 다시! 목숨 '+LIVES+'개로 시작해요.','mine');sRender.keep=true;sRender();
+  }
+  function sCelebrate(q){
+    startConfetti();
+    setTimeout(function(){
+      var cur=sCur();if(!cur||cur.g!==q.g||$('sdk').hidden)return;
+      var best=sBest();
+      openModal('다 풀었다! 🎉','<p>둘이 같이 어려운 수도쿠를 풀었어요.</p><p>걸린 시간 <b>'+dur(cur.dn-cur.at)+'</b>'+(best&&best===cur.dn-cur.at&&sDoneList().length>1?' (최고 기록!)':'')+'</p><p>지원 '+(cur.c0||0)+'칸 · 지우 '+(cur.c1||0)+'칸 채움</p>',
+        [['새 퍼즐','sun',function(){closeModal();sNew(true);}],['판 보기','',closeModal]]);
+    },900);
+  }
+  // 칸 바꾸기는 잠깐(0.5초) 모았다가 한 번에 보내요(우편함 아끼기)
+  function sPut(it){
+    var cur=store[it.id];
+    it.u=Math.max(Date.now(),cur?cur.u+1:0);
+    store[it.id]=it;saveStore();
+    sQ[it.id]=1;
+    if(!sQT)sQT=setTimeout(sFlush,500);
+    renderStore();
+  }
+  function sFlush(){
+    clearTimeout(sQT);sQT=0;
+    var list=Object.keys(sQ).map(function(id){return store[id];}).filter(Boolean);sQ={};
+    send(list);
+  }
+  window.addEventListener('pagehide',function(){if(sQT)sFlush();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&sQT)sFlush();});
+  function sInput(d){
+    var q=sCur();if(!q||me===null)return;
+    var st=sState(q);if(st.over)return;
+    if(sSel<0){sSay('먼저 채울 칸을 눌러요.','no');return;}
+    if(st.by[sSel]===-1){sSay('처음부터 있던 숫자는 못 바꿔요.','no');return;}
+    if(sMemo&&d){
+      if(st.v[sSel]){sSay('숫자가 있는 칸엔 메모를 못 해요. 먼저 지워요.','no');return;}
+      var mm=memos(q.g);mm[sSel]=(mm[sSel]||0)^(1<<d);if(!mm[sSel])delete mm[sSel];memoSave(q.g,mm);sRender();return;
+    }
+    // 맞는 숫자만 들어가요. 이미 채운 칸(언제나 정답)은 그대로 둬요.
+    if(!d){var m2=memos(q.g);if(m2[sSel]){delete m2[sSel];memoSave(q.g,m2);sRender();}else if(st.v[sSel])sSay('맞게 채운 숫자는 그대로 둬요. 지우기는 메모만 지워요.','no');return;}
+    if(st.v[sSel]){sSay(st.v[sSel]===d?'이미 '+ro(d)+' 채운 칸이에요.':'이미 맞게 채운 칸이에요.','no');return;}
+    if(d!==st.sol[sSel]){
+      var key=sSel*10+d,c0=sSel;
+      sWrong={};sWrong[c0]=d;clearTimeout(sWrongT);sWrongT=setTimeout(function(){sWrong={};sRender();},900);
+      if(st.wrong[key]){sSay('땡! '+eun(d)+' 여기 아니라고 했어요. 목숨은 그대로예요.','no');sRender.keep=true;sRender();return;}
+      sPut({id:'l'+q.g+'-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),k:'l',w:me,g:q.g,c:sSel,v:d});
+      var left=sState(q).lives;
+      sSay(left>0?'땡! '+eun(d)+' 여기 아니에요. 목숨 하나 잃었어요 (남은 목숨 '+left+'개)':'땡! 목숨을 다 썼어요 😵','no');
+      sRender.keep=true;sRender();return;
+    }
+    sWrong={};
+    if(d){
+      // 넣은 숫자는 같은 줄·칸의 내 메모에서 지워요
+      var mm2=memos(q.g),ch=false,pp=SDK.PEERS[sSel];
+      for(var k=0;k<20;k++)if(mm2[pp[k]]&(1<<d)){mm2[pp[k]]&=~(1<<d);if(!mm2[pp[k]])delete mm2[pp[k]];ch=true;}
+      if(mm2[sSel]){delete mm2[sSel];ch=true;}
+      if(ch)memoSave(q.g,mm2);
+    }
+    sPut({id:'e'+q.g+'-'+sSel,k:'e',w:me,g:q.g,c:sSel,v:d});
+  }
+  // 새 퍼즐: 무작위로 만들고, 답이 딱 하나인지 확인한 것만 써요
+  function sNew(force){
+    var q=sCur();
+    if(q&&!force&&sState(q).failed){
+      openModal('어떻게 할까요?','<p>같은 퍼즐로 처음부터 다시 하거나, 새 퍼즐을 꺼낼 수 있어요.</p>',[['같은 퍼즐 다시','sun',function(){closeModal();sRetry();}],['새 퍼즐','',function(){closeModal();sNew(true);}]]);
+      return;
+    }
+    if(q&&!q.dn&&!force){
+      var st=sState(q);
+      if(st.filled>q.p.replace(/0/g,'').length){
+        openModal('새 퍼즐 꺼낼까요?','<p>지금 퍼즐은 그만두고 새 퍼즐로 바꿔요. '+NAMES[1-me]+' 화면도 같이 바뀌어요.</p>',[['그만두고 새로','pink',function(){closeModal();sNew(true);}],['계속 풀래','sun',closeModal]]);
+        return;
+      }
+    }
+    if(sMaking)return;
+    sMaking=true;sSay('어려운 퍼즐 만드는 중…');
+    setTimeout(function(){
+      var r=SDK.make();sMaking=false;
+      if(!r){sSay('퍼즐을 못 만들었어요. 다시 눌러 주세요.','no');return;}
+      var g='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      sCurGid=g;sSel=-1;sWrong={};
+      put({id:'q'+g,k:'q',w:me===null?0:me,g:g,p:r.p.join(''),at:Date.now()});
+      sSay('새 퍼즐이에요! 같이 풀어 봐요.','mine');sRender.keep=true;sRender();
+    },60);
+  }
+  function sOpen(){
+    go('sdk');
+    if(!sCur()&&!quiet)sNew(true);
+    else sRender();
+    clearInterval(sTick);sTick=setInterval(function(){if($('sdk').hidden){clearInterval(sTick);return;}var q=sCur();if(q)$('sTime').textContent=sTimeText(q);},30000);
+  }
+  // 받은 칸 기록 알림: 상대가 채우면 톡 튀고, 내가 방금 고친 칸을 상대도 동시에 고쳤으면 알려 줘요
+  function sOnRecv(it,was){
+    if(quiet||me===null||(it.k!=='e'&&it.k!=='l'))return;
+    var q=sCur();if(!q||it.g!==q.g)return;
+    if(it.k==='l'){
+      if(it.w!==me&&!was){var st=sState(q);if(st.wrong[it.c*10+it.v]===1&&!st.failed)sNote=SUBJ[it.w]+' 틀려서 목숨이 하나 줄었어요. 남은 목숨 '+st.lives+'개!';}
+      return;
+    }
+    if(it.w!==me)sPop[it.c]=1;
+    if(was&&was.w===me&&it.w!==me&&Date.now()-was.u<6000&&was.v!==it.v)
+      sNote=NAMES[it.w]+'도 방금 같은 칸('+(SDK.ROW[it.c]+1)+'행 '+(SDK.COL[it.c]+1)+'열)을 채웠어요.';
+  }
+  // 오래된 퍼즐 칸 기록은 정리해요(지금 퍼즐 것만 남기고, 퍼즐은 최근 60개만)
+  function sPrune(){
+    var qs=items('q').sort(function(a,b){return b.at-a.at;}),keep={},cur=sCur();
+    qs.slice(0,60).forEach(function(q){keep[q.g]=1;});
+    qs.slice(60).forEach(function(q){delete store[q.id];delete seen[q.id];});
+    // 지금 퍼즐과 가장 최근 두 퍼즐(동시에 꺼낸 경우 대비)의 칸만 남겨요
+    var live={};if(cur)live[cur.g]=1;qs.slice(0,2).forEach(function(q){live[q.g]=1;});
+    items('e').concat(items('l')).forEach(function(e){if(!live[e.g])delete store[e.id],delete seen[e.id];});
+  }
+
+  // ===== 땅따먹기 =====
+  // 점 6×6, 칸 5×5. 선 번호: 가로선 0~29 (줄 j의 i번째 = j*5+i), 세로선 30~59 (30 + j*6+i)
+  // 판 {gid, first(먼저 긋는 사람), lines[선 번호 순서], over, winner, reason}
+  // 차례와 땅 주인은 lines를 처음부터 다시 따라가며 계산해요(두 폰이 늘 같은 결과).
+  var LN=5,LH=LN*(LN+1),LL=2*LH,LBOX=LN*LN;
+  var LA='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var LP=30,LG=56;
+  var LEDGE=[],LADJ=[];
+  (function(){
+    for(var l=0;l<LL;l++)LADJ.push([]);
+    for(var j=0;j<LN;j++)for(var i=0;i<LN;i++){
+      var b=j*LN+i,e=[j*LN+i,(j+1)*LN+i,LH+j*(LN+1)+i,LH+j*(LN+1)+i+1];
+      LEDGE.push(e);e.forEach(function(l){LADJ[l].push(b);});
+    }
+  })();
+  // 선 l의 양 끝 점 좌표
+  function lEnds(l){
+    if(l<LH){var j=Math.floor(l/LN),i=l%LN;return [LP+i*LG,LP+j*LG,LP+(i+1)*LG,LP+j*LG];}
+    var k=l-LH,jj=Math.floor(k/(LN+1)),ii=k%(LN+1);return [LP+ii*LG,LP+jj*LG,LP+ii*LG,LP+(jj+1)*LG];
+  }
+  function isLand(gid){return String(gid).indexOf('_d')>0;}
+  function lBlank(first){return {gid:'g'+Date.now().toString(36)+'_d'+Math.random().toString(36).slice(2,6),first:first,lines:[],over:false,winner:-1,reason:''};}
+  function lReplay(g){
+    var has={},own=[],by=[],turn=g.first,sc=[0,0],got=0;
+    for(var b=0;b<LBOX;b++)own.push(-1);
+    g.lines.forEach(function(l){
+      has[l]=1;by.push(turn);got=0;
+      LADJ[l].forEach(function(bx){
+        if(own[bx]<0&&LEDGE[bx].every(function(e){return has[e];})){own[bx]=turn;sc[turn]++;got++;}
+      });
+      if(!got)turn=1-turn;
+    });
+    return {has:has,own:own,by:by,turn:turn,score:sc,got:got,full:sc[0]+sc[1]===LBOX};
+  }
+  var lgame=null,lst=null,lseq=0,lServerMax=0,lBusy=false,lSel=-1,lFresh=-1,lPop={},lShownGid='',lShownOver=false,lLoaded=false,lEditing=false;
+  var lStatusEl=$('lStatus'),lBoardEl=$('lBoard');
+
+  function lCanPlay(){return !!lgame&&!lgame.over&&!lBusy&&me!==null&&lst.turn===me;}
+  function lCanUndo(){
+    if(!lgame||lgame.over||lBusy||!lgame.lines.length||me===null)return false;
+    return lst.by[lst.by.length-1]===me;
+  }
+  function lCanQuit(){return !!lgame&&!lgame.over&&!lBusy&&me!==null;}
+  function lSay(msg,kind){
+    lStatusEl.textContent=msg;
+    lStatusEl.classList.remove('no','mine');
+    if(kind==='no'){void lStatusEl.offsetWidth;lStatusEl.classList.add('no');}
+    else if(kind==='mine')lStatusEl.classList.add('mine');
+  }
+  function lTurnMsg(){
+    if(!lgame)return '판 불러오는 중…';
+    var n=NAMES[lst.turn],last=lgame.lines.length?lst.by[lst.by.length-1]:-1;
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(!lgame.lines.length)return lst.turn===me?'내가 먼저! 선 하나 그어요.':n+'부터 그어요. 기다리는 중…';
+    if(lst.turn===me)return last===me&&lst.got?'땅 먹었다! 한 번 더 그어요 ✏️':'내 차례! 선 하나 그어요.';
+    if(last===lst.turn&&lst.got)return n+'가 땅을 먹었어요! 한 번 더 긋는 중…';
+    return n+' 차례예요. 기다리는 중…';
+  }
+  function lSayTurn(){lSay(lTurnMsg(),lCanPlay()?'mine':'');}
+  function lEndTitle(g){return g.winner>=0?NAMES[g.winner]+' 승리!':'무승부!';}
+  function lEndBody(g){
+    if(g.reason==='resign')return NAMES[1-g.winner]+'의 기권으로 끝났어요.';
+    var sc=lReplay(g).score;
+    return '땅 '+sc[g.winner]+'칸 대 '+sc[1-g.winner]+'칸! '+NAMES[1-g.winner]+', 다시 붙어야죠?';
+  }
+  function lEndHtml(g){
+    var br=betResult(g),sc=scores();
+    return '<p>'+lEndBody(g)+'</p>'+(br?'<div class="betline">🎯 <b>내기</b><span class="sp">'+esc(br)+'</span></div>':'')+'<p>전체 전적 지원 '+sc[0]+' : '+sc[1]+' 지우</p>';
+  }
+  function lShowEnd(){
+    if(!lgame||!lgame.over)return;
+    openModal(lEndTitle(lgame),lEndHtml(lgame),[['한 판 더','sun',lRematch],['판 보기','',closeModal]]);
+  }
+
+  function lRender(){
+    if(!lgame)return;
+    var st=lst,live0=!lgame.over&&lgame.lines.length;
+    var hl=live0?'지금 게임 중 · 땅 '+st.score[0]+' : '+st.score[1]+' · '+NAMES[st.turn]+' 차례':'점 사이에 선을 그어 네모를 닫으면 내 땅! 땅을 더 많이 차지하면 이겨요.';
+    $('homeLand').textContent=hl;$('homeLand').classList.toggle('now',!!live0);
+    for(var p=0;p<2;p++){
+      var on=!lgame.over&&st.turn===p;
+      $('lChip'+p).classList.toggle('on',on);
+      $('lChipText'+p).textContent='땅 '+st.score[p]+'칸'+(on?' · 그을 차례':'');
+      $('lMeTag'+p).hidden=me!==p;
+    }
+    // 판 그리기
+    var h='',lastL=lgame.lines.length?lgame.lines[lgame.lines.length-1]:-1,winSet={};
+    for(var b=0;b<LBOX;b++){
+      var o=st.own[b];if(o<0)continue;
+      var x=LP+(b%LN)*LG,y=LP+Math.floor(b/LN)*LG,cx=x+LG/2,cy=y+LG/2,eye=o?'#1D1B26':'#fff';
+      h+='<g'+(lPop[b]?' class="pop"':'')+'><rect x="'+(x+4)+'" y="'+(y+4)+'" width="'+(LG-8)+'" height="'+(LG-8)+'" rx="10" fill="'+(o?'#FFFDF5':'#1D1B26')+'" stroke="#1D1B26" stroke-width="2.5"/>'
+        +'<circle cx="'+(cx-8)+'" cy="'+(cy-3)+'" r="4.5" fill="'+eye+'"/><circle cx="'+(cx+8)+'" cy="'+(cy-3)+'" r="4.5" fill="'+eye+'"/></g>';
+    }
+    lgame.lines.forEach(function(l){
+      var e=lEnds(l);
+      h+='<line class="ln'+(l===lFresh?' pop':'')+'" x1="'+e[0]+'" y1="'+e[1]+'" x2="'+e[2]+'" y2="'+e[3]+'" stroke="'+(l===lastL?'#FF5D8F':'#1D1B26')+'" stroke-width="7" stroke-linecap="round"/>';
+    });
+    if(lSel>=0&&!st.has[lSel]){
+      var se=lEnds(lSel);
+      h+='<line x1="'+se[0]+'" y1="'+se[1]+'" x2="'+se[2]+'" y2="'+se[3]+'" stroke="#FFD23F" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 13"/>';
+    }
+    for(var i=0;i<=LN;i++)for(var j=0;j<=LN;j++)h+='<circle cx="'+(LP+i*LG)+'" cy="'+(LP+j*LG)+'" r="8" fill="#FFFDF5" stroke="#1D1B26" stroke-width="3"/>';
+    lBoardEl.innerHTML=h;
+    lBoardEl.setAttribute('aria-label','땅따먹기 판. 그은 선 '+lgame.lines.length+'개, 지원 땅 '+st.score[0]+'칸, 지우 땅 '+st.score[1]+'칸');
+    lFresh=-1;lPop={};
+    if(!lStatusEl.classList.contains('no'))lStatusEl.classList.toggle('mine',lCanPlay());
+    $('lGoBtn').disabled=!lCanPlay()||lSel<0;
+    $('lUndoBtn').disabled=!lCanUndo();
+    $('lQuitBtn').disabled=!lCanQuit();
+    lRenderBet();
+  }
+
+  function lApply(g){
+    var prev=lgame,prevSt=lst;
+    var same=prev&&prev.gid===g.gid&&prev.over===g.over&&prev.lines.join()===g.lines.join();
+    lgame=g;lst=lReplay(g);
+    var newGame=!prev||prev.gid!==g.gid;
+    if(newGame){lSel=-1;lEditing=false;if(!$('land').hidden){closeModal();stopConfetti();}}
+    if(!newGame&&g.lines.length>prev.lines.length){
+      lFresh=g.lines[g.lines.length-1];
+      for(var b=0;b<LBOX;b++)if(lst.own[b]>=0&&prevSt.own[b]<0)lPop[b]=1;
+    }
+    if(lSel>=0&&(lst.has[lSel]||!lCanPlay()))lSel=-1;
+    if(g.over)lSel=-1;
+    var justEnded=g.over&&!(lShownGid===g.gid&&lShownOver);
+    var firstLook=!lLoaded||quiet;
+    lShownGid=g.gid;lShownOver=g.over;lLoaded=true;
+    if(g.over){
+      lSay(lEndTitle(g));lRender();
+      if(justEnded&&!firstLook&&!$('land').hidden){
+        if(g.winner>=0)startConfetti();
+        var gid=g.gid;
+        setTimeout(function(){if(lgame&&lgame.gid===gid&&lgame.over&&!$('land').hidden)lShowEnd();},g.winner>=0?900:200);
+      }
+    }else{
+      if(prev&&prev.gid===g.gid&&prev.over&&!$('land').hidden){closeModal();stopConfetti();}
+      if(!same)lSayTurn();
+      lRender();
+    }
+  }
+
+  // 보내고 받기
+  function lEnc(g){
+    return {id:g.gid,f:g.first,l:g.lines.map(function(l){return LA[l];}).join(''),o:g.over?1:0,w:g.winner,r:g.reason||''};
+  }
+  function lDec(e){
+    return {gid:String(e.id),first:e.f===1?1:0,lines:String(e.l||'').split('').map(function(c){return LA.indexOf(c);}),
+      over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:String(e.r||'')};
+  }
+  function lValid(e){
+    if(!e||typeof e!=='object'||typeof e.id!=='string'||!isLand(e.id)||e.id.length>60)return false;
+    if(e.f!==0&&e.f!==1)return false;
+    var l=e.l||'';if(typeof l!=='string'||l.length>LL)return false;
+    var seen0={};
+    for(var i=0;i<l.length;i++){var k=LA.indexOf(l[i]);if(k<0||k>=LL||seen0[k])return false;seen0[k]=1;}
+    if(typeof (e.r||'')!=='string'||(e.r||'').length>10)return false;
+    return true;
+  }
+  function lPacket(){return JSON.stringify({v:1,n:lseq,k:clientId,d:lEnc(lgame),t:tally});}
+  function lSaveLocal(){if(lgame&&NTFY)try{localStorage.setItem('tujipv-land-'+NTFY.slice(-12),lPacket());}catch(e){}}
+  function lCommit(g,result){
+    var before={g:lgame,t:JSON.parse(JSON.stringify(tally)),n:lseq};
+    if(result){tally=JSON.parse(JSON.stringify(tally));tally.r[g.gid]=result.winner;tally=fold(tally);}
+    lseq=Math.max(lseq+1,Date.now());lApply(g);lSaveLocal();
+    lBusy=true;lRender();
+    fetch(NTFY,{method:'POST',body:lPacket()}).then(function(r){
+      if(!r.ok)throw new Error('send '+r.status);
+      if(mode!=='live'){mode='live';note('');render();}
+      if(g.over&&lgame&&lgame.gid===g.gid)ensureRecord(lgame);
+    }).catch(function(){
+      if(lgame===g){lseq=before.n;tally=before.t;lApply(before.g);lSaveLocal();}
+      lSay('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
+    }).then(function(){lBusy=false;lRender();render();});
+  }
+
+  function lPlace(l){
+    if(!lCanPlay()||lst.has[l])return;
+    var g=clone(lgame);
+    g.lines.push(l);
+    var st=lReplay(g),result=null;
+    if(st.full){
+      g.over=true;g.winner=st.score[0]>st.score[1]?0:st.score[1]>st.score[0]?1:-1;g.reason=g.winner<0?'draw':'box';
+      result={winner:g.winner};
+    }
+    lSel=-1;
+    lCommit(g,result);
+  }
+  // 누른 곳에서 가장 가까운 안 그은 선 찾기
+  function lPick(px,py){
+    var best=-1,bs=1e9;
+    for(var l=0;l<LL;l++){
+      if(lst.has[l])continue;
+      var e=lEnds(l),mx=(e[0]+e[2])/2,my=(e[1]+e[3])/2,hz=e[1]===e[3];
+      var along=Math.abs(hz?px-mx:py-my),across=Math.abs(hz?py-my:px-mx);
+      if(along>LG/2+4||across>LG*0.42)continue;
+      var sc=across+along*0.35;
+      if(sc<bs){bs=sc;best=l;}
+    }
+    return best;
+  }
+  function lTap(ev){
+    if(!lgame||lgame.over)return;
+    var r=lBoardEl.getBoundingClientRect();if(!r.width)return;
+    var px=(ev.clientX-r.left)*340/r.width,py=(ev.clientY-r.top)*340/r.height;
+    var l=lPick(px,py);
+    if(l<0)return;
+    if(!lCanPlay()){
+      if(me!==null&&!lBusy)lSay(NAMES[lst.turn]+' 차례예요. 조금만 기다려요!','no');
+      else lSayTurn();
+      return;
+    }
+    if(lSel===l){lPlace(l);return;}
+    lSel=l;
+    lSay('여기? 한 번 더 누르면 그어져요.','mine');
+    lRender();
+  }
+  function lUndo(){
+    if(!lCanUndo())return;
+    var g=clone(lgame);g.lines.pop();
+    lCommit(g,null);
+    lSay('한 줄 물렀어요. '+lTurnMsg(),lCanPlay()?'mine':'');
+  }
+  function lRematch(){
+    closeModal();stopConfetti();
+    if(!lgame||!lgame.over)return;
+    lCommit(lBlank(1-lgame.first),null);
+  }
+
+  // 땅따먹기 내기 (오목과 같은 방식: 판이 끝나기 전엔 언제든 걸고 바꿔요)
+  function lRenderBet(){
+    var g=lgame;if(!g)return;
+    var b=betOf(g.gid),fresh0=!g.over;
+    if(!fresh0)lEditing=false;
+    $('lBetBox').hidden=!(fresh0&&lEditing&&me!==null);
+    $('lBetOpen').hidden=!(fresh0&&!b&&!lEditing&&me!==null);
+    $('lBetLine').hidden=!b||lEditing&&fresh0;
+    if(b)$('lBetLineText').textContent=g.over&&g.winner>=0?betResult(g):'지는 사람이 '+b.s;
+    $('lBetEditBtn').hidden=!(b&&fresh0&&me!==null);
+    var chips=$('lBetChips').children,v=$('lBetInput').value.trim();
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].textContent===v);
+    $('lBetCancel').textContent=b?'내기 빼기':'내기 없이';
+    var hb=!g.over&&b;
+    $('homeLandBet').hidden=!hb;
+    if(hb)$('homeLandBetText').textContent='지는 사람이 '+b.s;
+  }
+  function lOpenBet(){
+    if(!lgame||lgame.over||me===null)return;
+    var b=betOf(lgame.gid);
+    $('lBetInput').value=b?b.s:'';
+    lEditing=true;lRenderBet();
+    $('lBetInput').focus();
+  }
+  function lSaveBet(){
+    if(!lgame||lgame.over||me===null)return;
+    var text=$('lBetInput').value.trim().slice(0,40);
+    if(!text){$('lBetInput').focus();return;}
+    lEditing=false;
+    if(lseq===0)lCommit(clone(lgame),null);
+    put({id:'b'+lgame.gid,k:'b',w:me,g:lgame.gid,s:text});
+    $('lBetInput').blur();
+  }
+  function lCancelBet(){
+    lEditing=false;
+    var b=lgame&&betOf(lgame.gid);
+    if(b&&!lgame.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    else lRenderBet();
+  }
+
+  lBoardEl.addEventListener('click',lTap);
+  $('lGoBtn').addEventListener('click',function(){if(lSel>=0)lPlace(lSel);});
+  $('lUndoBtn').addEventListener('click',lUndo);
+  $('lQuitBtn').addEventListener('click',function(){
+    if(!lCanQuit())return;
+    var p=me;
+    openModal(NAMES[p]+', 진짜 기권?','<p>기권하면 '+NAMES[1-p]+'의 승리로 끝나요.</p>',[
+      ['계속 할래','sun',closeModal],
+      ['기권할게','pink',function(){
+        closeModal();
+        if(!lgame||lgame.over)return;
+        var g=clone(lgame);g.over=true;g.winner=1-p;g.reason='resign';
+        lCommit(g,{winner:g.winner});
+      }]
+    ]);
+  });
+  $('lRulesBtn').addEventListener('click',function(){
+    openModal('땅따먹기 규칙','<ul>'
+      +'<li>번갈아 가며 점 두 개 사이에 선을 하나씩 그어요.</li>'
+      +'<li>네 번째 선을 그어 네모를 닫으면 그 칸은 내 땅! 내 얼굴이 들어가고 한 번 더 그어요.</li>'
+      +'<li>한 번에 네모 두 개를 닫아도 둘 다 내 땅이에요. 연달아 계속 먹을 수도 있어요.</li>'
+      +'<li>25칸이 다 차면 끝. 땅을 더 많이 가진 사람이 이겨요.</li>'
+      +'<li>세 번째 선을 긋는 건 조심! 상대에게 네모를 넘겨줄 수 있어요.</li>'
+      +'<li>무르기는 상대가 다음 선을 긋기 전까지만 돼요. 한 판 더 하면 먼저 긋는 사람이 바뀌어요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+  $('landBtn').addEventListener('click',function(){
+    if(!needMe())return;
+    go('land');
+    if(lgame&&lgame.over)lShowEnd();
+    else if(lgame)lSayTurn();
+  });
+  $('lBetOpen').addEventListener('click',lOpenBet);
+  $('lBetEditBtn').addEventListener('click',lOpenBet);
+  $('lBetCancel').addEventListener('click',lCancelBet);
+  $('lBetBox').addEventListener('submit',function(e){e.preventDefault();lSaveBet();});
+  $('lBetInput').addEventListener('input',lRenderBet);
+  $('lBetChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('lBetInput').value=b.textContent;lRenderBet();});
+
+  // 같이 수도쿠 버튼
+  $('sdkBtn').addEventListener('click',function(){if(!needMe())return;sOpen();});
+  $('sBoard').addEventListener('click',function(e){
+    var b=e.target.closest('[data-i]');if(!b)return;
+    var i=+b.dataset.i;sSel=sSel===i?-1:i;sRender();
+  });
+  $('sKeys').addEventListener('click',function(e){var b=e.target.closest('[data-k]');if(b&&!b.disabled)sInput(+b.dataset.k);});
+  $('sEraseBtn').addEventListener('click',function(){sInput(0);});
+  $('sMemoBtn').addEventListener('click',function(){sMemo=!sMemo;sRender();});
+    $('sNewBtn').addEventListener('click',function(){if(needMe())sNew(false);});
+  document.addEventListener('keydown',function(e){
+    if($('sdk').hidden||!veil.hidden||e.ctrlKey||e.metaKey||e.altKey)return;
+    if(/^[1-9]$/.test(e.key)){sInput(+e.key);e.preventDefault();}
+    else if(e.key==='Backspace'||e.key==='Delete'||e.key==='0'){sInput(0);e.preventDefault();}
+    else if(sSel>=0&&/^Arrow/.test(e.key)){var r=Math.floor(sSel/9),c=sSel%9;
+      if(e.key==='ArrowUp')r=(r+8)%9;if(e.key==='ArrowDown')r=(r+1)%9;if(e.key==='ArrowLeft')c=(c+8)%9;if(e.key==='ArrowRight')c=(c+1)%9;
+      sSel=r*9+c;sRender();e.preventDefault();}
+  });
+  $('sRulesBtn').addEventListener('click',function(){
+    openModal('같이 수도쿠 규칙','<ul>'
+      +'<li>가로줄, 세로줄, 굵은 선 3×3 칸마다 1부터 9까지 한 번씩만 들어가요.</li>'
+      +'<li>차례가 없어요. 둘이 동시에 아무 칸이나 채우고 고칠 수 있어요.</li>'
+      +'<li>지원이 넣은 숫자는 노랑 칸, 지우가 넣은 숫자는 분홍 칸이에요.</li>'
+      +'<li>맞는 숫자만 들어가요. 틀린 숫자를 누르면 목숨이 하나 줄어요. 목숨은 둘이 합쳐 '+LIVES+'개예요.</li>'
+      +'<li>같은 칸에 같은 틀린 숫자를 또 누르면 목숨은 그대로예요. 둘이 같은 실수를 동시에 해도 하나만 줄어요.</li>'
+      +'<li>목숨을 다 쓰면 실패! 같은 퍼즐로 다시 하거나 새 퍼즐을 꺼내요.</li>'
+      +'<li>메모는 내 폰에만 보여요. 지우기는 메모를 지워요.</li>'
+      +'<li>퍼즐은 매번 무작위로 새로 만들고, 답이 딱 하나뿐인지 확인한 어려운 퍼즐만 나와요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+
+  // ----- 버튼 -----
+  function needMe(){
+    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return false;}
+    return true;
+  }
+  $('chatTile').addEventListener('click',function(){if(!needMe())return;go('chat');renderChat(true);markRead();setTimeout(function(){toBottom();},50);});
+  $('calTile').addEventListener('click',function(){if(!needMe())return;selD='';go('cal');renderCal();});
+  $('wordCard').addEventListener('click',function(){if(!needMe())return;go('word');renderWord();});
+  $('vsCard').addEventListener('click',function(){go('stats');renderStats();});
+  $('musicTile').addEventListener('click',function(){if(!needMe())return;go('music');renderMusic();});
+  $('tmTile').addEventListener('click',function(){if(!needMe())return;go('timer');renderTimer();});
+  $('tmGo').addEventListener('click',tmToggle);
+  $('tmWhat').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('tmWhat').blur();}});
+  $('drTile').addEventListener('click',function(){if(!needMe())return;drD=drToday();go('drink');renderDrink();});
+  $('drMine').addEventListener('click',function(e){var b=e.target.closest('[data-dr]');if(b&&!b.disabled)drBump(+b.dataset.dr,+b.dataset.v);});
+  $('drNone').addEventListener('click',function(){
+    var cur=drRec(drD,me);
+    if(cur&&drTotal(cur)){openModal('마신 술을 다 지울까요?','<p>이날 적은 잔 수가 0이 되고 "안 마셨어요"로 바뀌어요.</p>',[['그대로 둘래','sun',closeModal],['안 마셨어요','pink',function(){closeModal();drSet(DRINKS.map(function(){return 0;}));}]]);return;}
+    drSet(DRINKS.map(function(){return 0;}));
+  });
+  $('drForm').addEventListener('submit',function(e){e.preventDefault();var cur=drRec(drD,me);drSet(cur?cur.c.slice():DRINKS.map(function(){return 0;}),$('drSay').value.trim().slice(0,40));$('drSay').blur();drFlush();});
+  $('drPrev').addEventListener('click',function(){drShiftDay(-1);});
+  $('drNext').addEventListener('click',function(){drShiftDay(1);});
+  // 재는 중이면 1초마다 시계를 새로 그려요
+  setInterval(function(){
+    if(!tmRun(0)&&!tmRun(1))return;
+    if(!$('timer').hidden)renderTimer();
+    if(!$('home').hidden)renderTmTile();
+  },1000);
+  $('songNew').addEventListener('click',function(){if(needMe())openSongForm();});
+  $('musicFilt').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;mf=+b.dataset.f;renderMusic();});
+  $('songList').addEventListener('click',function(e){
+    var b=e.target.closest('[data-rev]');if(b){openReview(b.dataset.rev);return;}
+    b=e.target.closest('[data-sdel]');if(b)askDelSong(b.dataset.sdel);
+  });
+  $('revSong').addEventListener('click',function(e){var b=e.target.closest('[data-sdel]');if(b)askDelSong(b.dataset.sdel);});
+  $('songForm').addEventListener('submit',function(e){e.preventDefault();sendSong();});
+  $('songLink').addEventListener('input',checkLink);
+  $('revStars').addEventListener('click',function(e){var b=e.target.closest('[data-st]');if(!b)return;revSt=+b.dataset.st;$('revErr').hidden=true;renderRevForm();});
+  $('revEmos').addEventListener('click',function(e){var b=e.target.closest('[data-e]');if(!b)return;revE=revE===b.dataset.e?'':b.dataset.e;renderRevForm();});
+  $('revInput').addEventListener('input',function(){$('revCnt').textContent=$('revInput').value.length+' / 60';});
+  $('revForm').addEventListener('submit',function(e){e.preventDefault();sendReview();});
+  document.querySelectorAll('.toMusic').forEach(function(b){b.addEventListener('click',function(){go('music');renderMusic();});});
+  $('chatForm').addEventListener('submit',function(e){e.preventDefault();sendChat();$('chatInput').focus();});
+  $('calPrev').addEventListener('click',function(){calM--;if(calM<0){calM=11;calY--;}renderCal();});
+  $('calNext').addEventListener('click',function(){calM++;if(calM>11){calM=0;calY++;}renderCal();});
+  $('calGrid').addEventListener('click',function(e){
+    var b=e.target.closest('[data-d]');if(!b)return;
+    selD=b.dataset.d;var p=dpart(selD);calY=p.y;calM=p.m-1;renderCal();
+  });
+  $('cal').addEventListener('click',function(e){var b=e.target.closest('[data-del]');if(b)askDelPlan(b.dataset.del);});
+  $('planForm').addEventListener('submit',function(e){e.preventDefault();addPlan();});
+  $('wordForm').addEventListener('submit',function(e){e.preventDefault();saveWord();});
+  $('stRecent').addEventListener('click',function(e){var b=e.target.closest('[data-paid]');if(b)togglePaid(b.dataset.paid);});
+  $('betOpen').addEventListener('click',openBet);
+  $('betEditBtn').addEventListener('click',openBet);
+  $('betCancel').addEventListener('click',cancelBet);
+  $('betBox').addEventListener('submit',function(e){e.preventDefault();saveBet();});
+  $('betInput').addEventListener('input',renderBet);
+  $('betChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('betInput').value=b.textContent;renderBet();});
+  document.querySelectorAll('.back').forEach(function(b){b.addEventListener('click',goHome);});
+  // 자정이 지나면 '오늘'을 새로 그려요
+  setInterval(function(){var td=today();if(td!==renderStore.day){renderStore.day=td;renderStore();}},60000);
+  renderStore.day=today();
+
+  // 시작: 이 폰에 남은 판 → 우편함에 쌓인 판 → 실시간으로 듣기
+  render();if(!game)say('판 불러오는 중…');
+
+  function catchUp(){
+    return fetch(NTFY+'/json?poll=1&since='+(lastMsgId||'all')).then(function(r){
+      if(!r.ok)throw new Error('poll '+r.status);return r.text();
+    }).then(function(t){
+      t.split('\n').forEach(function(line){
+        if(!line)return;
+        try{var m=JSON.parse(line);if(m.event==='message')receive(m.message,m.id,m.time);}catch(e){}
+      });
+    });
+  }
+  function listen(){
+    if(es)es.close();
+    try{es=new EventSource(NTFY+'/sse?since='+(lastMsgId||'all'));}catch(e){return;}
+    es.onopen=function(){mode='live';note('');render();if(game&&!game.over)sayTurn();};
+    es.onmessage=function(e){
+      try{var m=JSON.parse(e.data);if(m.event==='message')receive(m.message,m.id,m.time);}catch(err){}
+    };
+    es.onerror=function(){if(mode==='live'){mode='wait';render();}};
+  }
+  // 우편함이 비었거나(12시간 지남) 이 폰 판이 더 최신이면 다시 올리고, 판이 없는 새 폰이면 "안녕"을 보내요
+  function heal(){
+    if(seq>0&&seq>serverMax)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
+    if(lseq>0&&lseq>lServerMax)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
+    if(seq===0||lseq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
+  }
+  var tries=0;
+  function connect(){
+    catchUp().then(function(){
+      quiet=false;
+      tries=0;mode='live';note('');
+      if(!game){loaded=true;apply(blankGame(0));}
+      if(!lgame){lLoaded=true;lApply(lBlank(0));}
+      render();if(!game.over)sayTurn();
+      listen();
+      heal();
+      healStore(false);
+    }).catch(function(){
+      quiet=false;
+      mode='off';
+      if(!game){loaded=true;apply(blankGame(0));}
+      if(!lgame){lLoaded=true;lApply(lBlank(0));}
+      note('인터넷 연결이 안 돼서 상대 폰과 이어지지 않았어요. 잠시 뒤 다시 시도할게요.');
+      render();
+      setTimeout(connect,Math.min(30000,3000*(++tries)));
+    });
+  }
+  // 암호 → 우편함 주소 (암호 자체는 어디에도 보내지 않아요)
+  function topicFor(code){
+    var data=new TextEncoder().encode('tujipv-omok:'+code);
+    return crypto.subtle.digest('SHA-256',data).then(function(h){
+      return 'tujipv-'+Array.prototype.map.call(new Uint8Array(h),function(x){return ('0'+x.toString(16)).slice(-2);}).join('').slice(0,32);
+    });
+  }
+  function unlock(code){
+    return topicFor(code).then(function(t){
+      NTFY='https://ntfy.sh/'+t;
+      try{localStorage.setItem('tujipv-key',code);}catch(e){}
+      $('lock').hidden=true;
+      loadStore();
+      try{var saved=localStorage.getItem('tujipv-state-'+NTFY.slice(-12));if(saved)receive(saved,'');}catch(e){}
+      try{var lsaved=localStorage.getItem('tujipv-land-'+NTFY.slice(-12));if(lsaved)receive(lsaved,'');}catch(e){}
+      renderStore();
+      render();if(!game)say('판 불러오는 중…');
+      connect();
+    });
+  }
+  var savedKey='';try{savedKey=localStorage.getItem('tujipv-key')||'';}catch(e){}
+  if(savedKey)unlock(savedKey);
+  else{$('lock').hidden=false;setTimeout(function(){$('lockInput').focus();},50);}
+  $('lockForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var v=$('lockInput').value.trim();
+    if(v.length<4){$('lockErr').textContent='4글자 이상으로 넣어 주세요.';return;}
+    $('lockErr').textContent='';
+    unlock(v).catch(function(){$('lockErr').textContent='이 브라우저에서는 열 수 없어요. 크롬이나 사파리로 열어 주세요.';});
+  });
+  $('relockBtn').addEventListener('click',function(){
+    try{localStorage.removeItem('tujipv-key');}catch(e){}
+    location.reload();
+  });
+
+  // 폰에 앱으로 깔기
+  (function(){
+    var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+    if(standalone)return;
+    var card=$('installCard'),btn=$('installBtn'),txt=$('installText'),deferred=null;
+    var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(ios){
+      txt.textContent='사파리 아래쪽 공유 버튼(네모에 화살표)을 누르고 "홈 화면에 추가"를 고르면 투지 아이콘이 생겨요.';
+      card.hidden=false;
+    }else if(/android/i.test(navigator.userAgent)){
+      txt.textContent='크롬 오른쪽 위 점 세 개 메뉴에서 "홈 화면에 추가"나 "앱 설치"를 누르면 투지 아이콘이 생겨요.';
+      card.hidden=false;
+    }
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();deferred=e;
+      txt.textContent='아래 버튼을 누르면 홈 화면에 투지 아이콘이 생겨요.';
+      btn.hidden=false;card.hidden=false;
+    });
+    btn.addEventListener('click',function(){
+      if(!deferred)return;
+      deferred.prompt();
+      deferred.userChoice.then(function(){deferred=null;btn.hidden=true;});
+    });
+    window.addEventListener('appinstalled',function(){card.hidden=true;});
+  })();
+  // 폰을 잠깐 껐다 켜면 놓친 수를 다시 받아요
+  document.addEventListener('visibilitychange',function(){
+    if(NTFY&&document.visibilityState==='visible'&&mode!=='off')catchUp().then(function(){heal();healStore(false);listen();markRead();renderStore();}).catch(function(){});
+  });
+})();
+</script>
+</body>
+</html>
