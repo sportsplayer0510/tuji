@@ -1,7 +1,11 @@
-# 투지: 빌드 없이 이 폴더 그대로 사이트로 올려요
+# 투지: 화면은 빌드 없이 그대로 올리고, 술 사진·AI 설명만 작은 서버 칸(netlify/functions)에서 처리해요
 [build]
-  publish = "."
-  command = ""
+  command = "mkdir -p site && cp index.html manifest.webmanifest *.png site/"
+  publish = "site"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
 
 # 폰이 앱 설치 정보를 정확히 알아보도록 형식 지정
 [[headers]]

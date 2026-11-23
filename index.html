@@ -422,6 +422,26 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .drmonth div{display:flex;flex-direction:column}
 .drmonth b{font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1}
 .drmonth span{font-size:12px;color:var(--muted)}
+.photos{display:flex;flex-direction:column;gap:12px}
+.pcard{border:3px solid var(--ink);border-radius:16px;background:#fff;overflow:hidden;box-shadow:3px 3px 0 var(--ink)}
+.pcard img{display:block;width:100%;max-height:340px;object-fit:cover;background:#EAE6D6;cursor:zoom-in}
+.pcard img.bad{min-height:80px;cursor:default}
+.pmeta{display:flex;align-items:center;gap:8px;padding:8px 12px 0;font-size:12px;color:var(--muted)}
+.pmeta .nm{padding:0 10px;border:2px solid var(--ink);border-radius:999px;background:var(--sun);font-family:var(--display);font-size:14px;color:var(--ink)}
+.pmeta .nm.u{background:var(--pink)}
+.pmeta .sdel{margin-left:auto;border:0;background:none;padding:2px 4px;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.som{margin:8px 12px 12px;padding:10px 12px;border:2px dashed var(--ink);border-radius:14px;background:#F3EEFF;display:flex;flex-direction:column;gap:4px}
+.som .h{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.som .h b{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.som .kd{font-size:12px;color:var(--muted)}
+.som .by{font-size:11px;color:var(--muted)}
+.som p{margin:0;font-size:14px;word-break:keep-all;overflow-wrap:anywhere}
+.som.wait{background:#F6F4EC;flex-direction:row;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.som.busy{background:#FFF6CF;color:var(--ink);font-family:var(--display);font-size:16px}
+.som .ask{margin-left:auto;min-height:36px;padding:0 12px;border:2px solid var(--ink);border-radius:999px;background:var(--sun);font:inherit;font-size:13px;color:var(--ink);box-shadow:2px 2px 0 var(--ink)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-left:2px}
+.thumbs img{width:52px;height:52px;object-fit:cover;border:2px solid var(--ink);border-radius:10px;background:#EAE6D6;cursor:zoom-in}
+.bigphoto{display:block;width:100%;max-height:60vh;object-fit:contain;border:3px solid var(--ink);border-radius:14px;background:#EAE6D6}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -708,6 +728,14 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <form class="addrow" id="drForm" autocomplete="off"><input class="field" id="drSay" maxlength="40" placeholder="누구랑·어디서 (안 써도 돼요)" aria-label="술 한마디"><button class="btn sun" type="submit">저장</button></form>
   </div>
   <div class="sticker daycard" id="drOther"></div>
+  <div class="sticker addplan">
+    <span class="lbl">📸 술 사진</span>
+    <p class="hint" style="margin:0">사진을 올리면 AI 소믈리에가 무슨 술인지, 어떤 특징이 있는지 알려 줘요. 둘 다 볼 수 있어요.</p>
+    <button class="btn sun" id="drPhotoBtn" type="button">📷 사진 올리기</button>
+    <input type="file" id="drFile" accept="image/*" hidden>
+    <p class="formerr" id="drPhotoErr" hidden></p>
+    <div class="photos" id="drPhotos"></div>
+  </div>
   <div class="sticker drmonth" id="drMonth"></div>
   <p class="sec">지난 술 기록</p>
   <div class="plans" id="drPast"></div>
@@ -1354,6 +1382,7 @@ function Rules(N){
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
       case 't':return DRE.test(it.d)&&it.id==='t'+it.d+'-'+it.w&&okNum(it.ms)&&it.ms<=2*DAY&&okNum(it.st)&&okStr(it.s,20);
       case 'a':return DRE.test(it.d)&&it.id==='a'+it.d+'-'+it.w&&Array.isArray(it.c)&&it.c.length===DRINKS.length&&it.c.every(function(n){return n%1===0&&n>=0&&n<=99;})&&okStr(it.s,40);
+      case 'f':return it.id.charAt(0)==='f'&&DRE.test(it.d)&&okNum(it.at)&&/^[a-z0-9]{8,32}$/.test(it.p)&&['n','kd','ab'].every(function(k){return it[k]===undefined||okStr(it[k],60);})&&(it.ds===undefined||okStr(it.ds,300))&&(it.ok===undefined||it.ok===0||it.ok===1)&&(it.why===undefined||okStr(it.why,10));
       case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
     }
     return false;
@@ -1967,17 +1996,19 @@ function Rules(N){
     var inp=$('drSay');
     if(document.activeElement!==inp)inp.value=mine?mine.s:'';
     $('drOther').innerHTML='<div class="dt">'+NAMES[o]+(o?'가':'이')+' 마신 술</div>'+drSumHtml(other,'아직 안 적었어요');
+    renderPhotos();
     // 이번 달 마신 날
     var recs={};items('a').forEach(function(it){if(!it.x)recs[it.id]=it;});if(drPend)recs[drPend.id]=drPend;
     var ym=drD.slice(0,7),cnt=[0,0];
     for(var id in recs){var it=recs[id];if(it.d.slice(0,7)===ym&&drTotal(it))cnt[it.w]++;}
     $('drMonth').innerHTML='<div><b>'+cnt[0]+'일</b><span>지원 '+(+ym.slice(5))+'월 마신 날</span></div><div><b>'+cnt[1]+'일</b><span>지우 '+(+ym.slice(5))+'월 마신 날</span></div>';
     var days={};for(var id2 in recs)if(recs[id2].d<dt)days[recs[id2].d]=1;
+    items('f').forEach(function(f){if(!f.x&&f.d<dt)days[f.d]=1;});
     var list=Object.keys(days).sort().reverse().slice(0,60);
     $('drPast').innerHTML=list.length?list.map(function(d){
       return '<div class="sticker daycard"><div class="dt">'+dlabel(d)+'</div>'
         +'<span class="line"><span class="nm">지원</span>'+drSumHtml(drRec(d,0),'안 적었어요')+'</span>'
-        +'<span class="line"><span class="nm u">지우</span>'+drSumHtml(drRec(d,1),'안 적었어요')+'</span></div>';
+        +'<span class="line"><span class="nm u">지우</span>'+drSumHtml(drRec(d,1),'안 적었어요')+'</span>'+thumbsHtml(d)+'</div>';
     }).join(''):'<p class="none">지난 술 기록이 여기에 쌓여요.</p>';
   }
   function drShort(it){
@@ -1987,11 +2018,101 @@ function Rules(N){
   }
   function renderDrTile(){
     var d=drToday(),a=drRec(d,0),b=drRec(d,1),pv=$('drPreview');
-    if(!a&&!b)pv.textContent='오늘 마신 술을 서로 보여 줘요';
-    else pv.innerHTML='<b>지원</b> '+drShort(a)+' · <b>지우</b> '+drShort(b);
+    var np=photosOf(d).length;
+    if(!a&&!b&&!np)pv.textContent='오늘 마신 술을 서로 보여 줘요';
+    else pv.innerHTML='<b>지원</b> '+drShort(a)+' · <b>지우</b> '+drShort(b)+(np?' <span class="nw">📸'+np+'</span>':'');
   }
   window.addEventListener('pagehide',function(){if(drPend)drFlush();});
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&drPend)drFlush();});
+
+  // ----- 술 사진 + AI 소믈리에 -----
+  // 사진(f): 날짜 d, 올린 시각 at, 사진 번호 p(사진은 작은 서버 칸에 보관), AI 결과 n 이름·kd 종류·ab 도수·ds 설명·ok 술 맞음, 못 받았으면 why
+  var PHOTO_API=(/netlify\.app$/.test(location.hostname)?'':'https://tujii.netlify.app')+'/api/drink-photo';
+  var upBusy='',upErr='';
+  function topicName(){return NTFY.split('/').pop();}
+  function photoUrl(p){return PHOTO_API+'?t='+topicName()+'&id='+encodeURIComponent(p);}
+  function photosOf(d){return items('f').filter(function(f){return !f.x&&f.d===d;}).sort(byAt);}
+  function kindEmo(k){var m={'와인':'🍷','위스키':'🥃','소주':'🍶','맥주':'🍺','막걸리':'🥛','칵테일':'🍹','하이볼':'🍹','사케':'🍶','전통주':'🍶'};return m[k]||'🥂';}
+  // 폰 사진은 크니까 긴 쪽 1280 정도로 줄여서 보내요
+  function shrink(file){
+    return new Promise(function(res,rej){
+      var url=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){
+        var s=Math.min(1,1280/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');
+        c.width=Math.max(1,Math.round(im.naturalWidth*s));c.height=Math.max(1,Math.round(im.naturalHeight*s));
+        c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(url);
+        res(c.toDataURL('image/jpeg',0.82).split(',')[1]);
+      };
+      im.onerror=function(){URL.revokeObjectURL(url);rej(new Error('img'));};
+      im.src=url;
+    });
+  }
+  function callPhoto(body){
+    body.t=topicName();
+    return fetch(PHOTO_API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+      return r.json().catch(function(){return {};}).then(function(j){if(!r.ok)throw new Error(j.error||'http');return j;});
+    });
+  }
+  function photoRec(base,j){
+    var a=j.ai;
+    if(a){base.n=a.n;base.kd=a.kd;base.ab=a.ab;base.ds=a.ds;base.ok=a.ok;}else base.why=String(j.why||'error').slice(0,10);
+    return base;
+  }
+  function upPhoto(file){
+    if(!needMe()||upBusy||!file)return;
+    var d=drD;upBusy='new';upErr='';renderPhotos();
+    shrink(file).then(function(b64){return callPhoto({img:b64,mime:'image/jpeg'});}).then(function(j){
+      put(photoRec({id:uid('f'),k:'f',w:me,d:d,at:Date.now(),p:j.id},j));
+    }).catch(function(e){
+      upErr=e.message==='limit'?'오늘은 사진을 너무 많이 올렸어요. 내일 다시 올려 주세요.':e.message==='img'?'이 사진은 열 수 없어요. 다른 사진으로 해 주세요.':'사진을 못 올렸어요. 인터넷을 확인하고 다시 해 주세요.';
+    }).then(function(){upBusy='';renderPhotos();});
+  }
+  function askAgain(id){
+    var f=store[id];if(!f||f.x||f.w!==me||upBusy)return;
+    upBusy=id;upErr='';renderPhotos();
+    callPhoto({id:f.p,ask:1}).then(function(j){
+      var c=store[id];if(c&&!c.x)put(photoRec({id:c.id,k:'f',w:c.w,d:c.d,at:c.at,p:c.p},j));
+      if(!j.ai)upErr=aiWhy(j.why);
+    }).catch(function(){upErr='AI에게 못 물어봤어요. 잠시 뒤 다시 해 주세요.';}).then(function(){upBusy='';renderPhotos();});
+  }
+  function aiWhy(w){return w==='nokey'?'AI 소믈리에가 아직 준비 중이에요.':w==='refusal'?'AI가 이 사진은 설명하지 않았어요.':w==='busy'?'AI가 바빠요. 잠시 뒤 다시 물어봐 주세요.':'AI 설명을 못 받았어요.';}
+  function askDelPhoto(id){
+    var f=store[id];if(!f||f.x||f.w!==me)return;
+    openModal('이 사진 지울까요?','<p>두 폰에서 모두 사라져요.</p>',[
+      ['그대로 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[id];if(!c||c.x||c.w!==me)return;put({id:c.id,k:'f',w:c.w,d:c.d,at:c.at,p:c.p,x:1});callPhoto({id:c.p,del:1}).catch(function(){});}]
+    ]);
+  }
+  function somHtml(f,mine){
+    if(upBusy===f.id)return '<div class="som busy">🔍 AI 소믈리에가 보는 중…</div>';
+    if(f.n||f.ds)return '<div class="som"><div class="h"><span aria-hidden="true">'+kindEmo(f.kd)+'</span><b>'+esc(f.n||'잘 모르겠어요')+'</b><span class="kd">'+esc([f.kd,f.ab].filter(Boolean).join(' · '))+'</span></div>'
+      +(f.ds?'<p>'+esc(f.ds)+'</p>':'')+'<span class="by">AI 소믈리에의 짐작이라 틀릴 수도 있어요</span></div>';
+    return '<div class="som wait">🔍 '+aiWhy(f.why)+(mine?'<button class="ask" type="button" data-ask="'+esc(f.id)+'">AI에게 물어보기</button>':'')+'</div>';
+  }
+  function renderPhotos(){
+    if(me===null||!drD)return;
+    var list=photosOf(drD).reverse(),h='';
+    if(upBusy==='new')h+='<div class="pcard"><div class="som busy">📤 올리는 중… AI 소믈리에가 무슨 술인지 보고 있어요 🔍</div></div>';
+    list.forEach(function(f){
+      var mine=f.w===me;
+      h+='<div class="pcard"><img src="'+esc(photoUrl(f.p))+'" alt="'+esc(NAMES[f.w]+'이 올린 술 사진'+(f.n?': '+f.n:''))+'" loading="lazy" data-big="'+esc(f.id)+'" onerror="this.classList.add(\'bad\');this.alt=\'사진을 불러오지 못했어요\'">'
+        +'<div class="pmeta"><span class="nm'+(f.w?' u':'')+'">'+NAMES[f.w]+'</span>'+clock(f.at)+(mine?'<button class="sdel" type="button" data-pdel="'+esc(f.id)+'">지우기</button>':'')+'</div>'
+        +somHtml(f,mine)+'</div>';
+    });
+    if(!h)h='<p class="none">아직 사진이 없어요. 오늘 마신 술을 찍어 올려 보세요!</p>';
+    $('drPhotos').innerHTML=h;
+    $('drPhotoBtn').disabled=!!upBusy;
+    $('drPhotoBtn').textContent=upBusy==='new'?'올리는 중…':'📷 사진 올리기';
+    $('drPhotoErr').hidden=!upErr;$('drPhotoErr').textContent=upErr;
+  }
+  function thumbsHtml(d){
+    var l=photosOf(d);if(!l.length)return '';
+    return '<div class="thumbs">'+l.map(function(f){return '<img src="'+esc(photoUrl(f.p))+'" alt="'+esc(NAMES[f.w]+'의 술 사진')+'" loading="lazy" data-big="'+esc(f.id)+'">';}).join('')+'</div>';
+  }
+  function bigPhoto(id){
+    var f=store[id];if(!f||f.x)return;
+    openModal(NAMES[f.w]+'의 술 사진','<img class="bigphoto" src="'+esc(photoUrl(f.p))+'" alt="술 사진">'+somHtml(f,false).replace('class="som wait"','class="som wait" style="margin:8px 0 0"').replace('class="som"','class="som" style="margin:8px 0 0"'),[['닫기','sun',closeModal]]);
+  }
 
   // ----- 홈 카드 -----
   function renderHomeStore(){
@@ -2781,6 +2902,13 @@ function Rules(N){
   });
   $('drForm').addEventListener('submit',function(e){e.preventDefault();var cur=drRec(drD,me);drSet(cur?cur.c.slice():DRINKS.map(function(){return 0;}),$('drSay').value.trim().slice(0,40));$('drSay').blur();drFlush();});
   $('drPrev').addEventListener('click',function(){drShiftDay(-1);});
+  $('drPhotoBtn').addEventListener('click',function(){if(needMe())$('drFile').click();});
+  $('drFile').addEventListener('change',function(){var f=this.files&&this.files[0];this.value='';if(f)upPhoto(f);});
+  $('drink').addEventListener('click',function(e){
+    var b=e.target.closest('[data-ask]');if(b){askAgain(b.dataset.ask);return;}
+    b=e.target.closest('[data-pdel]');if(b){askDelPhoto(b.dataset.pdel);return;}
+    b=e.target.closest('img[data-big]');if(b&&!b.classList.contains('bad'))bigPhoto(b.dataset.big);
+  });
   $('drNext').addEventListener('click',function(){drShiftDay(1);});
   // 재는 중이면 1초마다 시계를 새로 그려요
   setInterval(function(){
