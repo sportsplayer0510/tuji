@@ -368,6 +368,60 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .lives.zero{background:#FFD3DC}
 .tools .btn{min-height:48px;font-size:16px;padding:0 6px;white-space:nowrap}
 .tools .btn[aria-pressed="true"]{background:#8FD3FF}
+/* 일한 시간 */
+.ticon.tm{background:#B9A6FF;transform:rotate(3deg)}
+.ticon.dr{background:#FFA86B;transform:rotate(-4deg)}
+.tile .fire{display:inline-block;animation:pulse .7s ease-in-out infinite alternate}
+.tmcard{padding:18px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.tmcard.run{background:#FFF6CF}
+.tmhd{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:18px}
+.tmhd .mini{width:26px;height:26px;margin:0;flex:none}
+.tmhd .st{margin-left:auto;font-family:var(--body);font-size:13px;color:var(--muted);white-space:nowrap}
+.tmhd .st.on{color:var(--ink);font-weight:700}
+.tmbig{font-family:var(--display);font-size:62px;line-height:1;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px}
+.tmwhat{margin:-4px 0 0;text-align:center;font-size:14px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.tmwhat b{color:var(--ink)}
+.btn.go{min-height:64px;font-size:24px}
+.tmother{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.tmother.run{background:#FFE3EC}
+.tmother .tmbig{font-size:40px;text-align:left}
+.tmvs{font-family:var(--display);font-size:17px;text-align:center;margin:0}
+.week{padding:14px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.bars{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;align-items:end;height:130px}
+.bars .d{aspect-ratio:auto;padding:0;border:0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bars .pr{display:flex;gap:3px;align-items:flex-end;height:100%;width:100%;min-width:0;justify-content:center}
+.bars i{display:block;width:40%;max-width:16px;min-height:3px;border:2px solid var(--ink);border-radius:6px 6px 2px 2px;background:var(--sun)}
+.bars i.u{background:var(--pink)}
+.bars .lb{font-size:12px;color:var(--muted);line-height:1}
+.bars .lb.td{color:var(--ink);font-weight:700}
+.wsum{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--muted);border-top:2px dashed var(--ink);padding-top:8px;text-align:center}
+.wsum span{display:flex;flex-direction:column}
+.wsum b{font-family:var(--display);font-weight:400;font-size:20px;color:var(--ink)}
+.nw{white-space:nowrap}
+/* 오늘의 술 */
+.dayset{display:flex;align-items:center;gap:10px}
+.dayset b{flex:1;text-align:center;font-family:var(--display);font-weight:400;font-size:20px}
+.dayset .btn{width:48px;min-height:44px;padding:0;font-size:22px}
+.drlist{display:flex;flex-direction:column;gap:8px}
+.drrow{display:flex;align-items:center;gap:10px;padding:6px 8px;border:2px solid var(--ink);border-radius:14px;background:#fff}
+.drrow.has{background:#FFE9D6}
+.drrow .em{font-size:26px;width:34px;text-align:center;flex:none}
+.drrow .nm{flex:1;min-width:0;font-family:var(--display);font-size:18px;line-height:1.15}
+.drrow .nm small{display:block;font-family:var(--body);font-size:11px;color:var(--muted)}
+.drrow .n{min-width:46px;text-align:center;font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.drrow button{flex:none;width:44px;height:44px;border:3px solid var(--ink);border-radius:12px;background:var(--paper);box-shadow:2px 2px 0 var(--ink);font-family:var(--display);font-size:24px;line-height:1;padding:0}
+.drrow button.plus{background:var(--sun)}
+.drrow button:active{transform:translate(2px,2px);box-shadow:none}
+.drrow button:disabled{opacity:.3;box-shadow:none}
+.btn.none0{min-height:44px;font-size:16px}
+.btn.none0[aria-pressed="true"]{background:#8FD3FF}
+.drsum{font-size:15px;word-break:keep-all;overflow-wrap:anywhere}
+.drsum .tag2{display:inline-block;margin:2px 4px 2px 0;padding:1px 10px;border:2px solid var(--ink);border-radius:999px;background:#FFE9D6;white-space:nowrap}
+.drsum.empty{color:var(--muted)}
+.drmonth{padding:12px 16px;display:flex;justify-content:space-around;gap:8px;text-align:center}
+.drmonth div{display:flex;flex-direction:column}
+.drmonth b{font-family:var(--display);font-weight:400;font-size:26px;line-height:1.1}
+.drmonth span{font-size:12px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -440,6 +494,8 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <div class="duo">
     <button class="sticker tile" id="chatTile" type="button"><span class="badge" id="chatBadge" hidden></span><span class="ticon talk" aria-hidden="true">💬</span><h2>대화방</h2><p id="chatPreview">둘만 보는 대화방</p></button>
     <button class="sticker tile" id="calTile" type="button"><span class="ticon cal" aria-hidden="true">📅</span><h2>공유 달력</h2><p id="calPreview">약속을 같이 적어요</p></button>
+    <button class="sticker tile" id="tmTile" type="button"><span class="ticon tm" aria-hidden="true">⏱️</span><h2>일한 시간</h2><p id="tmPreview">열품타처럼 오늘 일한 시간을 재요</p></button>
+    <button class="sticker tile" id="drTile" type="button"><span class="ticon dr" aria-hidden="true">🍺</span><h2>오늘의 술</h2><p id="drPreview">오늘 마신 술을 서로 보여 줘요</p></button>
     <button class="sticker tile wide" id="musicTile" type="button"><span class="badge" id="musicBadge" hidden></span><span class="ticon mus" aria-hidden="true">🎵</span><span class="tx"><h2>음악 나눔</h2><p id="musicPreview">노래를 서로 추천하고 감상평을 남겨요</p></span></button>
   </div>
 
@@ -620,6 +676,41 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="btn sun" type="submit" id="revSend">감상평 남기기</button>
   </form>
   <p class="hint" id="revHint"></p>
+</section>
+
+<section class="view" id="timer" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘 일한 시간</h2></div>
+  <div class="sticker tmcard" id="tmMine">
+    <div class="tmhd" id="tmMineHd"></div>
+    <div class="tmbig" id="tmMineBig" role="timer" aria-live="off">0:00:00</div>
+    <p class="tmwhat" id="tmMineWhat" hidden></p>
+    <input class="field" id="tmWhat" maxlength="20" placeholder="지금 할 일 (안 써도 돼요) 예: 보고서" aria-label="지금 할 일">
+    <button class="btn sun go" id="tmGo" type="button">▶ 시작</button>
+  </div>
+  <div class="sticker tmother" id="tmOther"></div>
+  <p class="tmvs" id="tmVs"></p>
+  <p class="sec">최근 7일</p>
+  <div class="sticker week">
+    <div class="bars" id="tmBars"></div>
+    <div class="legend"><span><i></i>지원</span><span><i class="u"></i>지우</span></div>
+    <div class="wsum" id="tmWeek"></div>
+  </div>
+  <p class="hint">시작을 누르고 일하다가, 쉴 때 멈춤을 눌러요. 하루 동안 잰 시간이 다 더해지고, 밤 12시가 지나면 새 하루로 넘어가요. 폰을 꺼도 시간은 계속 재져요.</p>
+</section>
+
+<section class="view" id="drink" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>오늘의 술</h2></div>
+  <div class="sticker addplan">
+    <div class="dayset"><button class="btn" id="drPrev" type="button" aria-label="전날">‹</button><b id="drDate"></b><button class="btn" id="drNext" type="button" aria-label="다음 날">›</button></div>
+    <span class="lbl" id="drMineTitle">내가 마신 술</span>
+    <div class="drlist" id="drMine"></div>
+    <button class="btn none0" id="drNone" type="button" aria-pressed="false">🙅 이날은 안 마셨어요</button>
+    <form class="addrow" id="drForm" autocomplete="off"><input class="field" id="drSay" maxlength="40" placeholder="누구랑·어디서 (안 써도 돼요)" aria-label="술 한마디"><button class="btn sun" type="submit">저장</button></form>
+  </div>
+  <div class="sticker daycard" id="drOther"></div>
+  <div class="sticker drmonth" id="drMonth"></div>
+  <p class="sec">지난 술 기록</p>
+  <div class="plans" id="drPast"></div>
 </section>
 
 <section class="view" id="stats" hidden>
@@ -1143,7 +1234,7 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','sdk'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','sdk','timer','drink'];
   function show(id){
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
@@ -1238,6 +1329,8 @@ function Rules(N){
   function okNum(n){return typeof n==='number'&&isFinite(n)&&n>=0;}
   var DRE=/^\d{4}-\d{2}-\d{2}$/;
   var EMOS=['😍','🔥','🥰','😢','🕺','😴','🤔'];
+  // 술 종류: 그림, 이름, 단위
+  var DRINKS=[['🍶','소주','잔'],['🍺','맥주','잔'],['🍷','와인','잔'],['🥛','막걸리','잔'],['🥃','위스키','잔'],['🍹','하이볼·칵테일','잔']];
   function validItem(it){
     if(!it||typeof it!=='object'||Array.isArray(it)||!okStr(it.id,80)||!it.id||!okNum(it.u)||(it.w!==0&&it.w!==1))return false;
     if(it.x!==undefined&&it.x!==1)return false;
@@ -1253,6 +1346,8 @@ function Rules(N){
       case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
       case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
+      case 't':return DRE.test(it.d)&&it.id==='t'+it.d+'-'+it.w&&okNum(it.ms)&&it.ms<=2*DAY&&okNum(it.st)&&okStr(it.s,20);
+      case 'a':return DRE.test(it.d)&&it.id==='a'+it.d+'-'+it.w&&Array.isArray(it.c)&&it.c.length===DRINKS.length&&it.c.every(function(n){return n%1===0&&n>=0&&n<=99;})&&okStr(it.s,40);
       case 'g':return okStr(it.g,60)&&!!it.g&&it.id==='g'+it.g&&(it.wn===0||it.wn===1||it.wn===-1)&&okStr(it.rs,10)&&okNum(it.at)&&okNum(it.n);
     }
     return false;
@@ -1722,6 +1817,176 @@ function Rules(N){
     go('music');renderMusic();
   }
 
+  // ----- 일한 시간 (열품타처럼) -----
+  // 하루 기록(t): id 't'+날짜+'-'+사람, 멈춘 구간들의 합 ms, 재는 중이면 시작 시각 st(아니면 0), 지금 할 일 s
+  var TM_LONG=8*3600000;
+  function dayStart(d){var p=d.split('-');return new Date(+p[0],+p[1]-1,+p[2]).getTime();}
+  function nextDay(d){var p=d.split('-');return ymd(new Date(+p[0],+p[1]-1,+p[2]+1));}
+  function prevDay(d){var p=d.split('-');return ymd(new Date(+p[0],+p[1]-1,+p[2]-1));}
+  function tmRec(d,w){var it=store['t'+d+'-'+w];return it&&!it.x?it:null;}
+  function tmRun(w){var r=null;items('t').forEach(function(it){if(it.w===w&&!it.x&&it.st>0&&(!r||it.st>r.st))r=it;});return r;}
+  // 그날 잰 시간: 멈춘 것 + 지금 재는 중인 것 중 그날 몫(자정을 넘기면 날마다 나눠요)
+  function tmDay(d,w,now){
+    var it=tmRec(d,w),ms=it?it.ms:0,r=tmRun(w);
+    if(r&&r.d<=d){var a=Math.max(r.st,dayStart(d)),b=Math.min(now,dayStart(nextDay(d)));if(b>a)ms+=b-a;}
+    return ms;
+  }
+  function hms(ms){var t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h+':'+pad(m)+':'+pad(s);}
+  function hm(ms){var t=Math.floor(ms/60000),h=Math.floor(t/60),m=t%60;return h?h+'시간'+(m?' '+m+'분':''):m+'분';}
+  function tmStart(){
+    if(!needMe()||tmRun(me))return;
+    var td=today(),it=tmRec(td,me);
+    put({id:'t'+td+'-'+me,k:'t',w:me,d:td,ms:it?it.ms:0,st:Date.now(),s:$('tmWhat').value.trim().slice(0,20)});
+  }
+  function tmStop(drop){
+    var r=tmRun(me);if(!r)return;
+    var now=Date.now(),td=today(),d=r.d,first=true;
+    if(drop){put({id:r.id,k:'t',w:me,d:r.d,ms:r.ms,st:0,s:r.s});return;}
+    for(var n=0;n<60&&d<=td;n++){
+      var a=Math.max(r.st,dayStart(d)),b=Math.min(now,dayStart(nextDay(d))),add=b>a?b-a:0,cur=first?r:tmRec(d,me);
+      if(first||add)put({id:'t'+d+'-'+me,k:'t',w:me,d:d,ms:Math.min(2*DAY,(cur?cur.ms:0)+add),st:0,s:cur?cur.s:r.s});
+      first=false;d=nextDay(d);
+    }
+  }
+  function tmToggle(){
+    if(!needMe())return;
+    var r=tmRun(me);
+    if(!r){tmStart();return;}
+    var long=Date.now()-r.st;
+    if(long>TM_LONG){
+      openModal('혹시 깜빡했어요?','<p>타이머가 <b>'+hm(long)+'</b> 동안 켜져 있었어요. 이번에 잰 시간을 다 넣을까요?</p>',[
+        ['다 넣을래','sun',function(){closeModal();tmStop(false);}],
+        ['이번 건 빼 줘','pink',function(){closeModal();tmStop(true);}]
+      ]);
+      return;
+    }
+    tmStop(false);
+  }
+  function tmLabel(w,r){return r&&r.s?'<b>'+esc(r.s)+'</b> 하는 중':'하는 중';}
+  function renderTimer(){
+    if(me===null)return;
+    var now=Date.now(),td=today(),o=1-me,r=tmRun(me),ro=tmRun(o),mine=tmDay(td,me,now),other=tmDay(td,o,now);
+    $('tmMine').classList.toggle('run',!!r);
+    $('tmMineHd').innerHTML='<span class="mini '+(me?'w':'b')+'"></span>'+NAMES[me]+'의 오늘<span class="st'+(r?' on':'')+'">'+(r?'<span class="fire">🔥</span> 재는 중':'멈춤')+'</span>';
+    $('tmMineBig').textContent=hms(mine);
+    $('tmMineWhat').hidden=!r;
+    if(r)$('tmMineWhat').innerHTML=tmLabel(me,r)+' · '+clock(r.st)+'부터';
+    $('tmWhat').hidden=!!r;
+    if(!r&&document.activeElement!==$('tmWhat')){var it=tmRec(td,me);if(!$('tmWhat').value&&it&&it.s)$('tmWhat').value=it.s;}
+    var g=$('tmGo');g.textContent=r?'⏸ 멈춤':'▶ 시작';g.classList.toggle('sun',!r);g.classList.toggle('pink',!!r);
+    var oe=$('tmOther');oe.classList.toggle('run',!!ro);
+    oe.innerHTML='<div class="tmhd"><span class="mini '+(o?'w':'b')+'"></span>'+NAMES[o]+'의 오늘<span class="st'+(ro?' on':'')+'">'+(ro?'<span class="fire">🔥</span> '+tmLabel(o,ro):(other?'쉬는 중':'아직 시작 안 함'))+'</span></div>'
+      +'<div class="tmbig">'+hms(other)+'</div>';
+    var diff=mine-other,vs=$('tmVs');
+    if(!mine&&!other)vs.textContent='오늘 누가 더 오래 할까요? 🏁';
+    else if(Math.abs(diff)<60000)vs.textContent='거의 똑같이 했어요! 🤝';
+    else vs.textContent=(diff>0?SUBJ[me]:SUBJ[o])+' '+hm(Math.abs(diff))+' 더 했어요 '+(diff>0?'💪':'👀');
+    // 최근 7일 막대
+    var days=[],d=td;for(var i=0;i<7;i++){days.unshift(d);d=prevDay(d);}
+    var vals=days.map(function(d){return [tmDay(d,0,now),tmDay(d,1,now)];}),mx=3600000;
+    vals.forEach(function(v){mx=Math.max(mx,v[0],v[1]);});
+    $('tmBars').innerHTML=days.map(function(d,i){
+      var v=vals[i];
+      return '<div class="d" aria-label="'+dlabel(d)+' 지원 '+hm(v[0])+', 지우 '+hm(v[1])+'"><div class="pr"><i style="height:'+Math.max(2,v[0]/mx*100)+'%"></i><i class="u" style="height:'+Math.max(2,v[1]/mx*100)+'%"></i></div><span class="lb'+(d===td?' td':'')+'">'+(d===td?'오늘':dpart(d).w)+'</span></div>';
+    }).join('');
+    var s0=0,s1=0;vals.forEach(function(v){s0+=v[0];s1+=v[1];});
+    $('tmWeek').innerHTML='<span>지원 7일 합<b>'+hm(s0)+'</b></span><span>지우 7일 합<b>'+hm(s1)+'</b></span>';
+  }
+  function renderTmTile(){
+    var now=Date.now(),td=today(),pv=$('tmPreview'),h='',any=false;
+    [0,1].forEach(function(w){
+      var ms=tmDay(td,w,now),r=tmRun(w);if(ms||r)any=true;
+      h+=(w?' · ':'')+'<b>'+NAMES[w]+'</b> '+(r?'<span class="fire">🔥</span>':'')+hm(ms);
+    });
+    if(any)pv.innerHTML=h;else pv.textContent='열품타처럼 오늘 일한 시간을 재요';
+  }
+
+  // ----- 오늘의 술 -----
+  // 하루 기록(a): id 'a'+날짜+'-'+사람, 종류별 잔 수 c(DRINKS 순서), 한마디 s. 기록이 있고 다 0이면 '안 마심'
+  var drD='',drPend=null,drT=0;
+  // 새벽 6시 전에는 어젯밤 술로 쳐요
+  function drToday(){var d=new Date();return d.getHours()<6?prevDay(ymd(d)):ymd(d);}
+  function drRec(d,w){
+    if(drPend&&drPend.d===d&&w===me)return drPend;
+    var it=store['a'+d+'-'+w];return it&&!it.x?it:null;
+  }
+  function drTotal(it){var n=0;if(it)it.c.forEach(function(x){n+=x;});return n;}
+  function drSumHtml(it,emptyText){
+    if(!it)return '<span class="drsum empty">'+emptyText+'</span>';
+    var h='';
+    it.c.forEach(function(n,i){if(n)h+='<span class="tag2">'+DRINKS[i][0]+' '+DRINKS[i][1]+' '+n+DRINKS[i][2]+(i===0&&n>=7?' (약 '+(Math.round(n/7*10)/10)+'병)':'')+'</span>';});
+    if(!h)h='🙅 안 마셨어요';
+    return '<span class="drsum">'+h+(it.s?' <span class="hint">· '+esc(it.s)+'</span>':'')+'</span>';
+  }
+  function drSet(c,s){
+    if(!needMe())return;
+    var cur=drRec(drD,me);
+    drPend={id:'a'+drD+'-'+me,k:'a',w:me,d:drD,c:c,s:s===undefined?(cur?cur.s:''):s};
+    clearTimeout(drT);drT=setTimeout(drFlush,700);
+    renderDrink();renderDrTile();
+  }
+  function drFlush(){
+    clearTimeout(drT);drT=0;
+    var p=drPend;drPend=null;if(!p)return;
+    var cur=store[p.id];
+    if(cur&&!cur.x&&cur.s===p.s&&cur.c.join()===p.c.join())return;
+    put(p);
+  }
+  function drBump(i,delta){
+    var cur=drRec(drD,me),c=cur?cur.c.slice():DRINKS.map(function(){return 0;});
+    c[i]=Math.max(0,Math.min(99,c[i]+delta));
+    drSet(c);
+  }
+  function drShiftDay(n){
+    drFlush();
+    var d=n<0?prevDay(drD):nextDay(drD);
+    if(d>drToday())return;
+    drD=d;$('drSay').value='';renderDrink();
+  }
+  function renderDrink(){
+    if(me===null)return;
+    if(!drD)drD=drToday();
+    var dt=drToday(),mine=drRec(drD,me),o=1-me,other=drRec(drD,o);
+    $('drDate').textContent=(drD===dt?(dt===today()?'오늘 ':'어젯밤 '):drD===prevDay(today())?'어제 ':'')+dlabel(drD);
+    $('drNext').disabled=drD>=dt;
+    $('drMineTitle').textContent=NAMES[me]+(me?'가':'이')+' 마신 술';
+    $('drMine').innerHTML=DRINKS.map(function(k,i){
+      var n=mine?mine.c[i]:0;
+      return '<div class="drrow'+(n?' has':'')+'"><span class="em" aria-hidden="true">'+k[0]+'</span><span class="nm">'+k[1]+(i===0?'<small>7잔 ≈ 1병</small>':'')+'</span>'
+        +'<button type="button" data-dr="'+i+'" data-v="-1" aria-label="'+k[1]+' 한 '+k[2]+' 빼기"'+(n?'':' disabled')+'>−</button><span class="n">'+n+'<small style="font-size:13px">'+k[2]+'</small></span>'
+        +'<button class="plus" type="button" data-dr="'+i+'" data-v="1" aria-label="'+k[1]+' 한 '+k[2]+' 더하기">+</button></div>';
+    }).join('');
+    var none=!!mine&&!drTotal(mine);
+    $('drNone').setAttribute('aria-pressed',String(none));
+    var inp=$('drSay');
+    if(document.activeElement!==inp)inp.value=mine?mine.s:'';
+    $('drOther').innerHTML='<div class="dt">'+NAMES[o]+(o?'가':'이')+' 마신 술</div>'+drSumHtml(other,'아직 안 적었어요');
+    // 이번 달 마신 날
+    var recs={};items('a').forEach(function(it){if(!it.x)recs[it.id]=it;});if(drPend)recs[drPend.id]=drPend;
+    var ym=drD.slice(0,7),cnt=[0,0];
+    for(var id in recs){var it=recs[id];if(it.d.slice(0,7)===ym&&drTotal(it))cnt[it.w]++;}
+    $('drMonth').innerHTML='<div><b>'+cnt[0]+'일</b><span>지원 '+(+ym.slice(5))+'월 마신 날</span></div><div><b>'+cnt[1]+'일</b><span>지우 '+(+ym.slice(5))+'월 마신 날</span></div>';
+    var days={};for(var id2 in recs)if(recs[id2].d<dt)days[recs[id2].d]=1;
+    var list=Object.keys(days).sort().reverse().slice(0,60);
+    $('drPast').innerHTML=list.length?list.map(function(d){
+      return '<div class="sticker daycard"><div class="dt">'+dlabel(d)+'</div>'
+        +'<span class="line"><span class="nm">지원</span>'+drSumHtml(drRec(d,0),'안 적었어요')+'</span>'
+        +'<span class="line"><span class="nm u">지우</span>'+drSumHtml(drRec(d,1),'안 적었어요')+'</span></div>';
+    }).join(''):'<p class="none">지난 술 기록이 여기에 쌓여요.</p>';
+  }
+  function drShort(it){
+    if(!it)return '아직';
+    var h='';it.c.forEach(function(n,i){if(n)h+='<span class="nw">'+DRINKS[i][0]+n+'</span> ';});
+    return h?h.trim():'<span class="nw">안 마심 🙅</span>';
+  }
+  function renderDrTile(){
+    var d=drToday(),a=drRec(d,0),b=drRec(d,1),pv=$('drPreview');
+    if(!a&&!b)pv.textContent='오늘 마신 술을 서로 보여 줘요';
+    else pv.innerHTML='<b>지원</b> '+drShort(a)+' · <b>지우</b> '+drShort(b);
+  }
+  window.addEventListener('pagehide',function(){if(drPend)drFlush();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&drPend)drFlush();});
+
   // ----- 홈 카드 -----
   function renderHomeStore(){
     var td=today();
@@ -1737,7 +2002,7 @@ function Rules(N){
     var up=plans().filter(function(p){return p.d>=td;})[0],cp=$('calPreview');
     if(up){var diff=dnum(up.d)-dnum(td);cp.innerHTML='<b>'+(diff?'D-'+diff:'오늘')+'</b> '+esc(up.s);}
     else cp.textContent='약속을 같이 적어요';
-    renderMusicTile();
+    renderMusicTile();renderTmTile();renderDrTile();
   }
   function renderStore(){
     renderHomeStore();renderBet();lRenderBet();
@@ -1748,6 +2013,8 @@ function Rules(N){
     if(!$('stats').hidden)renderStats();
     if(!$('music').hidden)renderMusic();
     if(!$('review').hidden)renderRevSong();
+    if(!$('timer').hidden)renderTimer();
+    if(!$('drink').hidden)renderDrink();
   }
 
   // ===== 수도쿠 퍼즐 만들기 =====
@@ -2489,6 +2756,25 @@ function Rules(N){
   $('wordCard').addEventListener('click',function(){if(!needMe())return;go('word');renderWord();});
   $('vsCard').addEventListener('click',function(){go('stats');renderStats();});
   $('musicTile').addEventListener('click',function(){if(!needMe())return;go('music');renderMusic();});
+  $('tmTile').addEventListener('click',function(){if(!needMe())return;go('timer');renderTimer();});
+  $('tmGo').addEventListener('click',tmToggle);
+  $('tmWhat').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('tmWhat').blur();}});
+  $('drTile').addEventListener('click',function(){if(!needMe())return;drD=drToday();go('drink');renderDrink();});
+  $('drMine').addEventListener('click',function(e){var b=e.target.closest('[data-dr]');if(b&&!b.disabled)drBump(+b.dataset.dr,+b.dataset.v);});
+  $('drNone').addEventListener('click',function(){
+    var cur=drRec(drD,me);
+    if(cur&&drTotal(cur)){openModal('마신 술을 다 지울까요?','<p>이날 적은 잔 수가 0이 되고 "안 마셨어요"로 바뀌어요.</p>',[['그대로 둘래','sun',closeModal],['안 마셨어요','pink',function(){closeModal();drSet(DRINKS.map(function(){return 0;}));}]]);return;}
+    drSet(DRINKS.map(function(){return 0;}));
+  });
+  $('drForm').addEventListener('submit',function(e){e.preventDefault();var cur=drRec(drD,me);drSet(cur?cur.c.slice():DRINKS.map(function(){return 0;}),$('drSay').value.trim().slice(0,40));$('drSay').blur();drFlush();});
+  $('drPrev').addEventListener('click',function(){drShiftDay(-1);});
+  $('drNext').addEventListener('click',function(){drShiftDay(1);});
+  // 재는 중이면 1초마다 시계를 새로 그려요
+  setInterval(function(){
+    if(!tmRun(0)&&!tmRun(1))return;
+    if(!$('timer').hidden)renderTimer();
+    if(!$('home').hidden)renderTmTile();
+  },1000);
   $('songNew').addEventListener('click',function(){if(needMe())openSongForm();});
   $('musicFilt').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;mf=+b.dataset.f;renderMusic();});
   $('songList').addEventListener('click',function(e){
