@@ -1263,13 +1263,19 @@ function Rules(N){
   });
   document.querySelectorAll('.seg button').forEach(function(b){
     b.addEventListener('click',function(){
-      me=+b.dataset.seat;
-      try{localStorage.setItem('tuji-me',String(me));}catch(e){}
-      sel=null;render();renderStore();if(game&&!game.over)sayTurn();
+      setMe(+b.dataset.seat);
     });
   });
+  function setMe(n){
+    me=n;
+    try{localStorage.setItem('tuji-me',String(me));}catch(e){}
+    sel=null;render();renderStore();if(game&&!game.over)sayTurn();
+  }
+  // 마지막으로 누른 버튼을 기억해 두었다가, "이 폰은"을 고르면 이어서 열어 줘요
+  var lastTap=null;
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button');if(b&&!b.closest('#veil'))lastTap=b;},true);
   $('startBtn').addEventListener('click',function(){
-    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return;}
+    if(!needMe())return;
     go('game');
     if(game&&game.over)celebrateAgain();
   });
@@ -2748,7 +2754,14 @@ function Rules(N){
 
   // ----- 버튼 -----
   function needMe(){
-    if(me===null){note('먼저 "이 폰은"에서 지원인지 지우인지 골라 주세요.');return false;}
+    if(me===null){
+      var again=lastTap;
+      openModal('이 폰은 누구 거예요?','<p>처음 한 번만 골라 주세요. 나중에 홈의 "이 폰은"에서 바꿀 수 있어요.</p>',[
+        ['지원','sun',function(){closeModal();setMe(0);if(again)again.click();}],
+        ['지우','pink',function(){closeModal();setMe(1);if(again)again.click();}]
+      ]);
+      return false;
+    }
     return true;
   }
   $('chatTile').addEventListener('click',function(){if(!needMe())return;go('chat');renderChat(true);markRead();setTimeout(function(){toBottom();},50);});
