@@ -275,6 +275,20 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .landwrap svg{display:block;width:100%;height:auto;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none}
 .landwrap .pop{transform-box:fill-box;transform-origin:center;animation:drop .32s cubic-bezier(.3,1.6,.5,1)}
 .landwrap .ln{transition:stroke .15s}
+.thumb.four{transform:rotate(-4deg);overflow:hidden}
+.thumb.four svg{position:absolute;inset:0;width:100%;height:100%}
+.gamerow .thumb.four{width:44px;height:44px}
+.fourwrap{padding:8px;background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink)}
+.fourwrap svg{display:block;width:100%;height:auto;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none}
+.fourwrap .fall{animation:f4fall .5s cubic-bezier(.5,0,.75,0) both}
+.fourwrap .win{transform-box:fill-box;transform-origin:center;animation:f4win .45s ease-in-out infinite alternate}
+.fourwrap .win circle:first-child{stroke:#FF5D8F;stroke-width:5}
+.fourwrap .win.fall{animation:f4fall .5s cubic-bezier(.5,0,.75,0) both,f4win .45s .55s ease-in-out infinite alternate}
+.fourwrap .ghost{opacity:.6;animation:f4bob .6s ease-in-out infinite alternate}
+.fourwrap .land{transform-box:fill-box;transform-origin:center;animation:pulse .6s ease-in-out infinite alternate}
+@keyframes f4fall{0%{transform:translateY(var(--fy))}75%{transform:translateY(0)}87%{transform:translateY(-7px)}100%{transform:translateY(0)}}
+@keyframes f4win{to{transform:translateY(-5px)}}
+@keyframes f4bob{to{transform:translateY(5px)}}
 .landwrap .sel{animation:pulse .6s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
 
 /* 음악 나눔 */
@@ -320,6 +334,15 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .emos button[aria-pressed="true"]{background:var(--sun);transform:rotate(-6deg);box-shadow:3px 3px 0 var(--ink)}
 .cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:-6px}
 .formerr{margin:0;color:var(--ban);font-size:14px;font-family:var(--display)}
+/* 같이 해결한 게임 (홈) */
+.coop{padding:14px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;background:#E4F7FF}
+.coop .hd{font-family:var(--display);font-size:20px}
+.coop .num{display:flex;align-items:baseline;gap:4px;line-height:1}
+.coop .num b{font-family:var(--display);font-weight:400;font-size:52px;font-variant-numeric:tabular-nums}
+.coop .num small{font-family:var(--display);font-size:20px}
+.coop .names{font-size:13px;color:var(--muted)}
+.coop .kinds{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.coop .kinds span{padding:1px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font-size:13px}
 /* 같이 푸는 수도쿠 */
 .thumb.sdk{background:var(--paper);transform:rotate(-4deg);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr);font-family:var(--display);font-size:15px;line-height:1}
 .thumb.sdk span{display:flex;align-items:center;justify-content:center;border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
@@ -470,6 +493,13 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <span class="more">전적판 보기 ›</span>
   </button>
 
+  <div class="sticker coop" id="coopCard" role="group" aria-label="같이 해결한 게임">
+    <span class="hd">🤝 같이 해결한 게임</span>
+    <span class="num"><b id="coopTotal">0</b><small>개</small></span>
+    <span class="names">지원 + 지우</span>
+    <span class="kinds" id="coopKinds"></span>
+  </div>
+
   <div class="sticker me">
     <span>이 폰은</span>
     <div class="seg" role="group" aria-label="이 폰을 쓰는 사람">
@@ -499,6 +529,17 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     </div>
     <div class="betline" id="homeLandBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeLandBetText"></span></div>
     <button class="btn sun" id="landBtn" type="button">한 판 붙기</button>
+  </div>
+  <div class="sticker feature">
+    <div class="row">
+      <div class="thumb four" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="0" y="0" width="64" height="64" fill="#F6C177"/><g stroke="#1D1B26" stroke-width="2.5"><circle cx="13" cy="51" r="7.5" fill="#1D1B26"/><circle cx="32" cy="51" r="7.5" fill="#FFFDF5"/><circle cx="51" cy="51" r="7.5" fill="#1D1B26"/><circle cx="32" cy="32" r="7.5" fill="#1D1B26"/><circle cx="51" cy="32" r="7.5" fill="#FFFDF5"/><circle cx="51" cy="13" r="7.5" fill="#FFFDF5"/><circle cx="13" cy="32" r="7.5" fill="#C9F2DC" stroke-width="2"/><circle cx="13" cy="13" r="7.5" fill="#C9F2DC" stroke-width="2"/><circle cx="32" cy="13" r="7.5" fill="#C9F2DC" stroke-width="2"/></g><g fill="#fff"><circle cx="10.5" cy="50" r="1.6"/><circle cx="15.5" cy="50" r="1.6"/><circle cx="29.5" cy="31" r="1.6"/><circle cx="34.5" cy="31" r="1.6"/><circle cx="48.5" cy="50" r="1.6"/><circle cx="53.5" cy="50" r="1.6"/></g><g fill="#1D1B26"><circle cx="29.5" cy="50" r="1.6"/><circle cx="34.5" cy="50" r="1.6"/><circle cx="48.5" cy="31" r="1.6"/><circle cx="53.5" cy="31" r="1.6"/><circle cx="48.5" cy="12" r="1.6"/><circle cx="53.5" cy="12" r="1.6"/></g></svg></div>
+      <div>
+        <h2>사목 떨어뜨리기</h2>
+        <p id="homeFour">위에서 돌을 떨어뜨려 가로·세로·대각선으로 넷을 먼저 이으면 이겨요.</p>
+      </div>
+    </div>
+    <div class="betline" id="homeFourBet" hidden>🎯 <b>이번 판 내기</b><span class="sp" id="homeFourBetText"></span></div>
+    <button class="btn sun" id="fourBtn" type="button">한 판 붙기</button>
   </div>
 
   <div class="sticker feature">
@@ -592,6 +633,34 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="btn" id="lQuitBtn" type="button">기권</button>
   </div>
   <p class="hint">점 두 개 사이를 누르고 한 번 더 누르면 선이 그어져요. 네모를 닫으면 그 땅은 내 것이고 한 번 더 그어요. 무르기는 상대가 다음 선을 긋기 전까지만 돼요.</p>
+</section>
+<section class="view" id="four" hidden>
+  <div class="top">
+    <button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button>
+    <h2>사목 떨어뜨리기</h2>
+    <button class="btn small" id="fRulesBtn" type="button">규칙</button>
+  </div>
+  <div class="players">
+    <div class="chip" id="fChip0"><div class="mini b"></div><div><div class="n">지원<small id="fMeTag0" hidden>나</small></div><div class="t" id="fChipText0"></div></div></div>
+    <div class="chip" id="fChip1"><div class="mini w"></div><div><div class="n">지우<small id="fMeTag1" hidden>나</small></div><div class="t" id="fChipText1"></div></div></div>
+  </div>
+  <div class="betline" id="fBetLine" hidden>🎯 <b>내기</b><span class="sp" id="fBetLineText"></span><button class="btn" id="fBetEditBtn" type="button" hidden>바꾸기</button></div>
+  <form class="sticker addplan betbox" id="fBetBox" hidden autocomplete="off">
+    <b>🎯 이번 판 내기 걸기</b>
+    <p class="hint">지는 사람이 할 일을 적어요. 판이 끝나기 전엔 언제든 걸고 바꿀 수 있어요.</p>
+    <input class="field" id="fBetInput" maxlength="40" placeholder="지는 사람이 할 일 (예: 떡볶이 쏘기)" aria-label="내기 내용">
+    <div class="chips" id="fBetChips"><button type="button">커피 사기</button><button type="button">떡볶이 쏘기</button><button type="button">설거지</button><button type="button">소원 들어주기</button><button type="button">노래 한 곡</button></div>
+    <div class="actions"><button class="btn" id="fBetCancel" type="button">내기 없이</button><button class="btn sun go" type="submit">이걸로 걸기</button></div>
+  </form>
+  <button class="btn" id="fBetOpen" type="button" hidden>🎯 이번 판 내기 걸기</button>
+  <div class="status" id="fStatus" role="status" aria-live="polite"></div>
+  <div class="fourwrap"><svg id="fBoard" viewBox="0 0 342 338" role="img" aria-label="사목 떨어뜨리기 판"></svg></div>
+  <div class="actions">
+    <button class="btn" id="fUndoBtn" type="button">무르기</button>
+    <button class="btn sun go" id="fGoBtn" type="button">떨어뜨리기</button>
+    <button class="btn" id="fQuitBtn" type="button">기권</button>
+  </div>
+  <p class="hint">줄을 누르고 한 번 더 누르면 돌이 떨어져요. 넷을 먼저 이으면 이겨요. 무르기는 상대가 다음 돌을 두기 전까지만 돼요.</p>
 </section>
 <section class="view" id="sdk" hidden>
   <div class="top">
@@ -753,6 +822,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   <p class="sec">게임별</p>
   <div class="sticker gamerow"><div class="thumb" aria-hidden="true"><i></i><i></i></div><span class="nm">오목</span><span class="sc" id="stOmok">0 : 0</span></div>
   <div class="sticker gamerow"><div class="thumb land" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="9" y="9" width="22" height="22" rx="5" fill="#1D1B26"/><circle cx="16" cy="19" r="2.6" fill="#fff"/><circle cx="24" cy="19" r="2.6" fill="#fff"/><g stroke="#1D1B26" stroke-width="4" stroke-linecap="round"><line x1="31" y1="9" x2="53" y2="9"/><line x1="53" y1="9" x2="53" y2="31"/><line x1="9" y1="31" x2="9" y2="53"/></g></svg></div><span class="nm">땅따먹기</span><span class="sc" id="stLand">0 : 0</span></div>
+  <div class="sticker gamerow"><div class="thumb four" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="0" y="0" width="64" height="64" fill="#F6C177"/><g stroke="#1D1B26" stroke-width="2.5"><circle cx="13" cy="51" r="7.5" fill="#1D1B26"/><circle cx="32" cy="51" r="7.5" fill="#FFFDF5"/><circle cx="51" cy="51" r="7.5" fill="#1D1B26"/><circle cx="32" cy="32" r="7.5" fill="#1D1B26"/><circle cx="51" cy="32" r="7.5" fill="#FFFDF5"/><circle cx="51" cy="13" r="7.5" fill="#FFFDF5"/><circle cx="13" cy="32" r="7.5" fill="#C9F2DC" stroke-width="2"/><circle cx="13" cy="13" r="7.5" fill="#C9F2DC" stroke-width="2"/><circle cx="32" cy="13" r="7.5" fill="#C9F2DC" stroke-width="2"/></g><g fill="#fff"><circle cx="10.5" cy="50" r="1.6"/><circle cx="15.5" cy="50" r="1.6"/><circle cx="29.5" cy="31" r="1.6"/><circle cx="34.5" cy="31" r="1.6"/><circle cx="48.5" cy="50" r="1.6"/><circle cx="53.5" cy="50" r="1.6"/></g><g fill="#1D1B26"><circle cx="29.5" cy="50" r="1.6"/><circle cx="34.5" cy="50" r="1.6"/><circle cx="48.5" cy="31" r="1.6"/><circle cx="53.5" cy="31" r="1.6"/><circle cx="48.5" cy="12" r="1.6"/><circle cx="53.5" cy="12" r="1.6"/></g></svg></div><span class="nm">사목 떨어뜨리기</span><span class="sc" id="stFour">0 : 0</span></div>
   <div class="sticker gamerow"><div class="thumb sdk" aria-hidden="true"><span>5</span><span class="a">3</span><span></span><span class="b">6</span><span>9</span><span class="a">8</span><span></span><span class="b">1</span><span>4</span></div><span class="nm">같이 푼 수도쿠</span><span class="sc" id="stSdk">0개</span></div>
   <div class="slot"><b>다음 게임 자리</b><span>게임이 늘어나면 여기에 같이 쌓여요.</span></div>
   <p class="sec">최근 판</p>
@@ -979,6 +1049,7 @@ function Rules(N){
     $('homeGame').classList.toggle('now',hg!=='렌주룰, 15×15. 각자 폰에서 실시간으로 둬요.');
     if(store)renderHomeStore();
     if(lgame)lRender();
+    if(fGame)fRender();
     if(!game){$('goBtn').disabled=$('undoBtn').disabled=$('quitBtn').disabled=true;return;}
 
     var last=game.moves.length?game.moves[game.moves.length-1]:null;
@@ -1112,7 +1183,7 @@ function Rules(N){
   }
   // 지금 판의 승패는 언제나 '지금 판'을 따라가요 (동시 기권 같은 엇갈림 정리)
   function syncTally(){
-    [game,lgame].forEach(function(g){
+    [game,lgame,fGame].forEach(function(g){
       if(!g)return;
       if(g.over)tally.r[g.gid]=g.winner;
       else delete tally.r[g.gid];
@@ -1140,8 +1211,19 @@ function Rules(N){
       if(o.hello!==clientId&&!quiet){
         if(seq>0&&game)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
         if(lseq>0&&lgame)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
+        if(fSeq>0&&fGame)fetch(NTFY,{method:'POST',body:fPacket()}).catch(function(){});
         healStore(true);
       }
+      return;
+    }
+    // 사목 떨어뜨리기 판
+    if(o&&o.v===1&&o.f4){
+      if(typeof o.n!=='number'||!isFinite(o.n)||!fValid(o.f4))return;
+      if(id&&o.n>fServerMax)fServerMax=o.n;
+      tally=mergeTally(tally,o.t);
+      if(o.n>=fSeq){fSeq=o.n;fApply(fDec(o.f4));}
+      syncTally();
+      render();saveLocal();lSaveLocal();fSaveLocal();
       return;
     }
     // 땅따먹기 판
@@ -1151,7 +1233,7 @@ function Rules(N){
       tally=mergeTally(tally,o.t);
       if(o.n>=lseq){lseq=o.n;lApply(lDec(o.d));}
       syncTally();
-      render();saveLocal();lSaveLocal();
+      render();saveLocal();lSaveLocal();fSaveLocal();
       return;
     }
     if(!o||o.v!==1||typeof o.n!=='number'||!isFinite(o.n)||!o.g||!valid(o.g))return;
@@ -1264,12 +1346,13 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','sdk','timer','drink'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','four','sdk','timer','drink'];
   function show(id){
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
     if(id==='home')render();
     if(id==='land')lRender();
+    if(id==='four')fRender();
     if(id==='sdk')sRender();
   }
   // 폰의 '뒤로' 버튼으로도 홈에 돌아오게 기록을 남겨요
@@ -1379,7 +1462,7 @@ function Rules(N){
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
       case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
       case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
-      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
+      case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&(it.nd===undefined||(it.nd%1===0&&it.nd>=1&&it.nd<1e6))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
       case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
       case 't':return DRE.test(it.d)&&it.id==='t'+it.d+'-'+it.w&&okNum(it.ms)&&it.ms<=2*DAY&&okNum(it.st)&&okStr(it.s,20);
@@ -1403,6 +1486,9 @@ function Rules(N){
         var was=cur;store[it.id]=it;cur=it;changed=true;
         sOnRecv(it,was);
         // 상대가 지금 판에 내기를 걸거나 바꾸거나 빼면 알려 줘요
+        if(it.k==='b'&&fGame&&!fGame.over&&it.g===fGame.gid&&me!==null&&it.w!==me&&!quiet){
+          fBetNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
+        }
         if(it.k==='b'&&lgame&&!lgame.over&&it.g===lgame.gid&&me!==null&&it.w!==me&&!quiet){
           lBetNote=it.x?SUBJ[it.w]+' 내기를 뺐어요.':SUBJ[it.w]+' 내기를 '+(was&&!was.x?'바꿨어요':'걸었어요')+': 지는 사람이 '+it.s;
         }
@@ -1415,6 +1501,7 @@ function Rules(N){
     if(changed){prune();saveStore();renderStore();}
     if(betNote){var n=betNote;betNote='';say(n,canPlay()?'mine':'');}
     if(lBetNote){var ln=lBetNote;lBetNote='';lSay(ln,lCanPlay()?'mine':'');}
+    if(fBetNote){var fn=fBetNote;fBetNote='';fSay(fn,fCanPlay()?'mine':'');}
   }
   // 대화는 이 폰에 최근 2000개까지만 남겨요
   function prune(){
@@ -1668,13 +1755,13 @@ function Rules(N){
     betEditing=false;
     var b=game&&betOf(game.gid);
     if(b&&!game.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
-    else renderBet();
+    else{renderBet();if(fGame)fRenderBet();}
   }
 
   // ----- 판 기록과 전적판 -----
   function ensureRecord(g){
     if(!g||!g.over||store['g'+g.gid])return;
-    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:(g.moves||g.lines||[]).length,at:Date.now()});
+    put({id:'g'+g.gid,k:'g',w:me===null?0:me,g:g.gid,wn:g.winner,rs:g.reason||'',n:(g.moves||g.lines||g.cols||[]).length,at:Date.now()});
   }
   // 승패는 언제나 공유 전적을 따라가요(동시 기권 같은 엇갈림이 있어도 점수와 같게)
   function records(){
@@ -1688,10 +1775,11 @@ function Rules(N){
     $('stScore0').textContent=sc[0];$('stScore1').textContent=sc[1];
     var draws=0;for(var k in tally.r)if(tally.r[k]===-1)draws++;
     $('stTotal').textContent=(tot+draws)+'판';
-    var per={o:tally.b.slice(),l:[0,0]};
-    for(var gk in tally.r){var gw=tally.r[gk];if(gw===0||gw===1)per[isLand(gk)?'l':'o'][gw]++;}
+    var per={o:tally.b.slice(),l:[0,0],f:[0,0]};
+    for(var gk in tally.r){var gw=tally.r[gk];if(gw===0||gw===1)per[isLand(gk)?'l':isFour(gk)?'f':'o'][gw]++;}
     $('stOmok').textContent=per.o[0]+' : '+per.o[1];
     $('stLand').textContent=per.l[0]+' : '+per.l[1];
+    $('stFour').textContent=per.f[0]+' : '+per.f[1];
     $('stBar').innerHTML=tot?(sc[0]?'<i class="a" style="flex:'+sc[0]+'"></i>':'')+(sc[1]?'<i class="b" style="flex:'+sc[1]+'"></i>':''):'';
     var recs=records(),streak=0,sw=-1;
     for(var i=0;i<recs.length;i++){
@@ -1705,7 +1793,7 @@ function Rules(N){
     var unpaid=0;
     recs.forEach(function(x){var b=betOf(x.r.g);if(b&&x.w>=0&&!b.pd)unpaid++;});
     $('stUnpaid').textContent=unpaid+'개';
-    var RS={five:'5목',resign:'기권',draw:'무승부',box:'땅 많이'};
+    var RS={five:'5목',resign:'기권',draw:'무승부',box:'땅 많이',four:'4목'};
     $('stRecent').innerHTML=recs.length?recs.slice(0,30).map(function(x){
       var r=x.r,b=betOf(r.g),dd=new Date(r.at),chip,sub,btn='';
       if(x.w>=0)chip='<div class="wl'+(x.w===1?' u':'')+'">'+NAMES[x.w]+' 승</div>';
@@ -1715,7 +1803,7 @@ function Rules(N){
         sub+='🎯 '+esc(SUBJ[1-x.w]+' '+b.s);
         btn=b.pd?'<button class="paid" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙 했음">✓ 했어요</button>':'<button class="paid no" type="button" data-paid="'+esc(b.id)+'" aria-label="내기 벌칙을 했으면 누르기">했으면 누르기</button>';
       }else sub+=b?'🎯 '+esc(b.s)+' (비김)':'내기 없음';
-      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">'+(isLand(r.g)?'땅따먹기':'오목')+' · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
+      return '<div class="sticker rec">'+chip+'<div class="txt"><div class="t">'+(isLand(r.g)?'땅따먹기':isFour(r.g)?'사목 떨어뜨리기':'오목')+' · '+(RS[r.rs]||'끝')+'</div><div class="s">'+sub+'</div></div>'+btn+'</div>';
     }).join(''):'<p class="none">이제부터 끝난 판이 여기에 쌓여요.</p>';
   }
   function togglePaid(id){
@@ -2029,7 +2117,7 @@ function Rules(N){
 
   // ----- 술 사진 + AI 소믈리에 -----
   // 사진(f): 날짜 d, 올린 시각 at, 사진 번호 p(사진은 작은 서버 칸에 보관), AI 결과 n 이름·kd 종류·ab 도수·ds 설명·ok 술 맞음, 못 받았으면 why
-  var PHOTO_API=(/netlify\.app$/.test(location.hostname)?'':'https://deploy-preview-1--tujii.netlify.app')+'/api/drink-photo';
+  var PHOTO_API=(/netlify\.app$/.test(location.hostname)?'':'https://tujii.netlify.app')+'/api/drink-photo';
   var upBusy='',upErr='';
   function topicName(){return NTFY.split('/').pop();}
   function photoUrl(p){return PHOTO_API+'?t='+topicName()+'&id='+encodeURIComponent(p);}
@@ -2134,7 +2222,7 @@ function Rules(N){
     renderMusicTile();renderTmTile();renderDrTile();
   }
   function renderStore(){
-    renderHomeStore();renderBet();lRenderBet();
+    renderHomeStore();renderBet();lRenderBet();if(fGame)fRenderBet();
     sRender();
     if(!$('chat').hidden){renderChat(false);markRead();}
     if(!$('cal').hidden)renderCal();
@@ -2315,15 +2403,26 @@ function Rules(N){
   function eun(d){return d+('136780'.indexOf(String(d))>=0?'은':'는');}
   function ro(d){return d?d+('36'.indexOf(String(d))>=0?'으로':'로'):'빈칸으로';}
   function sDoneList(){return sPuzzles().filter(function(q){return q.dn;});}
+  // 지금까지 같이 깬 수도쿠 수: 다 푼 기록 개수와, 깰 때마다 적어 둔 번호(nd) 중 큰 쪽(오래된 기록이 정리돼도 줄지 않게)
+  function sCount(){var n=0,dl=sDoneList();dl.forEach(function(q){if(q.nd>n)n=q.nd;});return Math.max(n,dl.length);}
   function sBest(){var b=0;sDoneList().forEach(function(q){var d=q.dn-q.at;if(d>0&&(!b||d<b))b=d;});return b;}
   function sHome(){
     var q=sCur(),el=$('homeSdk'),dl=sDoneList(),best=sBest();
-    var tail=dl.length?' 같이 푼 퍼즐 '+dl.length+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
+    var cnt=sCount(),tail=cnt?' 같이 깬 수도쿠 '+cnt+'개'+(best?', 최고 기록 '+dur(best)+'.':'.'):'';
     var fst=q&&!q.dn?sState(q):null;
     if(fst&&fst.failed){el.textContent='목숨을 다 써서 실패했어요. 다시 도전해요!'+tail;el.classList.remove('now');}
-    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움';el.classList.add('now');}
+    else if(q&&!q.dn){var st=fst;el.textContent='지금 같이 푸는 중 · 81칸 중 '+st.filled+'칸 채움'+'';el.classList.add('now');}
     else{el.textContent='차례 없이 둘이 아무 칸이나 같이 채워요. 어려움 난이도, 매번 새 퍼즐!'+tail;el.classList.remove('now');}
-    $('stSdk').textContent=dl.length+'개';
+    $('stSdk').textContent=cnt+'개';
+    renderCoop();
+  }
+  // 홈 '같이 해결한 게임': 협동 게임마다 [이름, 깬 수 세는 함수]를 여기에 더하면 합계에 같이 들어가요
+  var COOP_GAMES=[['수도쿠',function(){return sCount();}]];
+  function renderCoop(){
+    var tot=0,h='';
+    COOP_GAMES.forEach(function(gm){var n=gm[1]()||0;tot+=n;h+='<span>'+gm[0]+' '+n+'개</span>';});
+    $('coopTotal').textContent=tot;$('coopKinds').innerHTML=h;
+    $('coopCard').setAttribute('aria-label','같이 해결한 게임 '+tot+'개');
   }
   function sStatusMsg(q,st){
     if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
@@ -2410,7 +2509,7 @@ function Rules(N){
       return;
     }
     if(!st.solved||me===null)return;
-    put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1]});
+    put({id:'q'+q.g,k:'q',w:q.w,g:q.g,p:q.p,at:q.at,dn:Date.now(),c0:st.n[0],c1:st.n[1],nd:sCount()+1});
   }
   function sShowFail(q,st){
     var g=q.g;
@@ -2530,8 +2629,9 @@ function Rules(N){
   // 오래된 퍼즐 칸 기록은 정리해요(지금 퍼즐 것만 남기고, 퍼즐은 최근 60개만)
   function sPrune(){
     var qs=items('q').sort(function(a,b){return b.at-a.at;}),keep={},cur=sCur();
-    qs.slice(0,60).forEach(function(q){keep[q.g]=1;});
-    qs.slice(60).forEach(function(q){delete store[q.id];delete seen[q.id];});
+    // 다 푼 기록은 500개까지 남기고(깬 수와 최고 기록), 못 푼 퍼즐은 최근 60개만
+    var nd=0,ot=0;
+    qs.forEach(function(q){if(q.dn?++nd>500:++ot>60){delete store[q.id];delete seen[q.id];}});
     // 지금 퍼즐과 가장 최근 두 퍼즐(동시에 꺼낸 경우 대비)의 칸만 남겨요
     var live={};if(cur)live[cur.g]=1;qs.slice(0,2).forEach(function(q){live[q.g]=1;});
     items('e').concat(items('l')).forEach(function(e){if(!live[e.g])delete store[e.id],delete seen[e.id];});
@@ -2844,6 +2944,311 @@ function Rules(N){
   $('lBetInput').addEventListener('input',lRenderBet);
   $('lBetChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('lBetInput').value=b.textContent;lRenderBet();});
 
+  // ===== 사목 떨어뜨리기 =====
+  // 7줄(세로) × 6칸(높이). 위에서 돌을 떨어뜨리면 그 줄 맨 아래 빈칸에 쌓여요.
+  // 판 {gid, first(먼저 두는 사람), cols[떨어뜨린 줄 번호 순서], over, winner, reason, win[[줄,칸]...]}
+  // 차례·돌 위치는 cols를 처음부터 다시 따라가며 계산해요(두 폰이 늘 같은 결과). 지원 = 까만 돌, 지우 = 하얀 돌.
+  var FC=7,FR=6,FP=10,FG=46,FT=52,FW=FP*2+FC*FG,FH=FT+FR*FG+FP;
+  function isFour(gid){return String(gid).indexOf('_f')>0;}
+  function fBlank(first){return {gid:'g'+Date.now().toString(36)+'_f'+Math.random().toString(36).slice(2,6),first:first,cols:[],over:false,winner:-1,reason:'',win:[]};}
+  // 칸 번호: 줄 c, 아래에서 r번째(0이 맨 아래) → r*FC+c
+  function fReplay(g){
+    var bd=[],h=[],by=[],turn=g.first;
+    for(var i=0;i<FC*FR;i++)bd.push(-1);
+    for(var c=0;c<FC;c++)h.push(0);
+    g.cols.forEach(function(c){bd[h[c]*FC+c]=turn;h[c]++;by.push(turn);turn=1-turn;});
+    return {bd:bd,h:h,by:by,turn:turn,full:g.cols.length>=FC*FR};
+  }
+  function fAt(bd,c,r){return c<0||r<0||c>=FC||r>=FR?-2:bd[r*FC+c];}
+  // (c,r)에 둔 돌로 넷 이상 이어졌으면 이어진 칸들을 돌려줘요
+  function fLine(bd,c,r){
+    var p=fAt(bd,c,r),out=[];if(p<0)return out;
+    [[1,0],[0,1],[1,1],[1,-1]].forEach(function(d){
+      var run=[[c,r]],k;
+      for(k=1;fAt(bd,c+d[0]*k,r+d[1]*k)===p;k++)run.push([c+d[0]*k,r+d[1]*k]);
+      for(k=1;fAt(bd,c-d[0]*k,r-d[1]*k)===p;k++)run.push([c-d[0]*k,r-d[1]*k]);
+      if(run.length>=4)out=out.concat(run);
+    });
+    return out;
+  }
+  var fGame=null,fSt=null,fSeq=0,fFreshAt=0,fHtml=['','',''],fServerMax=0,fBusy=false,fSel=-1,fFresh=-1,fShownGid='',fShownOver=false,fLoaded=false,fEditing=false,fBetNote='';
+  var fStatusEl=$('fStatus'),fBoardEl=$('fBoard');
+
+  function fCanPlay(){return !!fGame&&!fGame.over&&!fBusy&&me!==null&&fSt.turn===me;}
+  function fCanUndo(){
+    if(!fGame||fGame.over||fBusy||!fGame.cols.length||me===null)return false;
+    return fSt.by[fSt.by.length-1]===me;
+  }
+  function fCanQuit(){return !!fGame&&!fGame.over&&!fBusy&&me!==null;}
+  function fSay(msg,kind){
+    fStatusEl.textContent=msg;
+    fStatusEl.classList.remove('no','mine');
+    if(kind==='no'){void fStatusEl.offsetWidth;fStatusEl.classList.add('no');}
+    else if(kind==='mine')fStatusEl.classList.add('mine');
+  }
+  function fTurnMsg(){
+    if(!fGame)return '판 불러오는 중…';
+    var n=NAMES[fSt.turn];
+    if(me===null)return '홈에서 이 폰이 누구 건지 먼저 골라 주세요.';
+    if(!fGame.cols.length)return fSt.turn===me?'내가 먼저! 줄을 골라 돌을 떨어뜨려요.':n+'부터 둬요. 기다리는 중…';
+    if(fSt.turn===me)return '내 차례! 줄을 골라 돌을 떨어뜨려요.';
+    return n+' 차례예요. 기다리는 중…';
+  }
+  function fSayTurn(){fSay(fTurnMsg(),fCanPlay()?'mine':'');}
+  function fEndTitle(g){return g.winner>=0?NAMES[g.winner]+' 승리!':'무승부!';}
+  function fEndBody(g){
+    if(g.reason==='resign')return NAMES[1-g.winner]+'의 기권으로 끝났어요.';
+    if(g.winner<0)return '42칸이 다 찼는데 아무도 넷을 못 이었어요.';
+    return g.cols.length+'번째 돌로 넷을 이었어요! '+NAMES[1-g.winner]+', 다시 붙어야죠?';
+  }
+  function fEndHtml(g){
+    var br=betResult(g),sc=scores();
+    return '<p>'+fEndBody(g)+'</p>'+(br?'<div class="betline">🎯 <b>내기</b><span class="sp">'+esc(br)+'</span></div>':'')+'<p>전체 전적 지원 '+sc[0]+' : '+sc[1]+' 지우</p>';
+  }
+  function fShowEnd(){
+    if(!fGame||!fGame.over)return;
+    openModal(fEndTitle(fGame),fEndHtml(fGame),[['한 판 더','sun',fRematch],['판 보기','',closeModal]]);
+  }
+  function fX(c){return FP+c*FG+FG/2;}
+  function fY(r){return FT+(FR-1-r)*FG+FG/2;}
+  function fStone(x,y,p,cls,extra){
+    var eye=p?'#1D1B26':'#fff';
+    return '<g class="'+cls+'"'+(extra||'')+'><circle cx="'+x+'" cy="'+y+'" r="19" fill="'+(p?'#FFFDF5':'#1D1B26')+'" stroke="#1D1B26" stroke-width="3"/>'
+      +'<circle cx="'+(x-6.5)+'" cy="'+(y-3)+'" r="3.6" fill="'+eye+'"/><circle cx="'+(x+6.5)+'" cy="'+(y-3)+'" r="3.6" fill="'+eye+'"/></g>';
+  }
+
+  function fRender(){
+    if(!fGame)return;
+    var st=fSt,live0=!fGame.over&&fGame.cols.length;
+    var hl=live0?'지금 게임 중 · '+fGame.cols.length+'수째 · '+NAMES[st.turn]+' 차례':'위에서 돌을 떨어뜨려 가로·세로·대각선으로 넷을 먼저 이으면 이겨요.';
+    $('homeFour').textContent=hl;$('homeFour').classList.toggle('now',!!live0);
+    for(var p=0;p<2;p++){
+      var on=!fGame.over&&st.turn===p;
+      $('fChip'+p).classList.toggle('on',on);
+      var cnt=0;st.by.forEach(function(w){if(w===p)cnt++;});
+      $('fChipText'+p).textContent=(p?'하얀 돌':'까만 돌')+(on?' · 둘 차례':' · '+cnt+'개');
+      $('fMeTag'+p).hidden=me!==p;
+    }
+    var winSet={};(fGame.win||[]).forEach(function(w){winSet[w[1]*FC+w[0]]=1;});
+    var lastI=-1;
+    if(fGame.cols.length){var lc=fGame.cols[fGame.cols.length-1];lastI=(st.h[lc]-1)*FC+lc;}
+    // 판은 세 겹: 틀·구멍(아래) / 돌 / 미리 보기(위). 바뀐 겹만 새로 그려서 떨어지는 돌 움직임이 끊기지 않게 해요.
+    var h0='<rect x="3" y="'+(FT-7)+'" width="'+(FW-6)+'" height="'+(FR*FG+14)+'" rx="18" fill="#F6C177" stroke="#1D1B26" stroke-width="3"/>';
+    if(fSel>=0)h0+='<rect x="'+(FP+fSel*FG+2)+'" y="'+(FT-3)+'" width="'+(FG-4)+'" height="'+(FR*FG+6)+'" rx="14" fill="#FFD23F" opacity=".75"/>';
+    var h1='',h2='';
+    for(var r=0;r<FR;r++)for(var c=0;c<FC;c++){
+      var i=r*FC+c,x=fX(c),y=fY(r),o=st.bd[i];
+      h0+='<circle cx="'+x+'" cy="'+y+'" r="19" fill="#C9F2DC" stroke="#1D1B26" stroke-width="2"/>';
+      if(o<0)continue;
+      var cls='st'+(winSet[i]?' win':'')+(i===fFresh?' fall':'');
+      var extra=i===fFresh?' style="--fy:'+(-(y-FT+FG/2+4))+'px"':'';
+      h1+=fStone(x,y,o,cls,extra);
+      if(i===lastI&&!winSet[i])h1+='<circle cx="'+x+'" cy="'+(y+9)+'" r="3.2" fill="#FF5D8F" class="'+(i===fFresh?'lastdot fall':'lastdot')+'"'+extra+'/>';
+    }
+    // 떨어뜨릴 자리 미리 보기
+    if(fSel>=0&&st.h[fSel]<FR&&fCanPlay()){
+      h2+=fStone(fX(fSel),FT/2-2,me,'ghost');
+      h2+='<circle cx="'+fX(fSel)+'" cy="'+fY(st.h[fSel])+'" r="16" fill="none" stroke="#1D1B26" stroke-width="3" stroke-dasharray="4 5" class="land"/>';
+    }
+    if(!fBoardEl.firstChild)fBoardEl.innerHTML='<g></g><g></g><g></g>';
+    var gs=fBoardEl.children;
+    [h0,h1,h2].forEach(function(t,k){if(fHtml[k]!==t){gs[k].innerHTML=t;fHtml[k]=t;}});
+    fBoardEl.setAttribute('aria-label','사목 떨어뜨리기 판. 놓인 돌 '+fGame.cols.length+'개');
+    if(fFresh>=0&&Date.now()-fFreshAt>700)fFresh=-1;
+    if(!fStatusEl.classList.contains('no'))fStatusEl.classList.toggle('mine',fCanPlay());
+    $('fGoBtn').disabled=!fCanPlay()||fSel<0;
+    $('fUndoBtn').disabled=!fCanUndo();
+    $('fQuitBtn').disabled=!fCanQuit();
+    fRenderBet();
+  }
+
+  function fApply(g){
+    var prev=fGame;
+    var same=prev&&prev.gid===g.gid&&prev.over===g.over&&prev.cols.join()===g.cols.join();
+    fGame=g;fSt=fReplay(g);
+    var newGame=!prev||prev.gid!==g.gid;
+    if(newGame){fSel=-1;fFresh=-1;fEditing=false;if(!$('four').hidden){closeModal();stopConfetti();}}
+    if(!newGame&&g.cols.length===prev.cols.length+1&&g.cols.join().indexOf(prev.cols.join())===0){
+      var lc=g.cols[g.cols.length-1];fFresh=(fSt.h[lc]-1)*FC+lc;fFreshAt=Date.now();
+      setTimeout(function(){if(fFresh>=0&&Date.now()-fFreshAt>=700){fFresh=-1;fRender();}},750);
+    }
+    if(fSel>=0&&(fSt.h[fSel]>=FR||!fCanPlay()))fSel=-1;
+    if(g.over)fSel=-1;
+    var justEnded=g.over&&!(fShownGid===g.gid&&fShownOver);
+    var firstLook=!fLoaded||quiet;
+    fShownGid=g.gid;fShownOver=g.over;fLoaded=true;
+    if(g.over){
+      fSay(fEndTitle(g));fRender();
+      if(justEnded&&!firstLook&&!$('four').hidden){
+        var gid=g.gid;
+        setTimeout(function(){if(fGame&&fGame.gid===gid&&fGame.over&&!$('four').hidden&&fGame.winner>=0)startConfetti();},450);
+        setTimeout(function(){if(fGame&&fGame.gid===gid&&fGame.over&&!$('four').hidden)fShowEnd();},g.winner>=0?1400:400);
+      }
+    }else{
+      if(prev&&prev.gid===g.gid&&prev.over&&!$('four').hidden){closeModal();stopConfetti();}
+      if(!same)fSayTurn();
+      fRender();
+    }
+  }
+
+  // 보내고 받기
+  function fEnc(g){
+    return {id:g.gid,f:g.first,c:g.cols.join(''),o:g.over?1:0,w:g.winner,r:g.reason||''};
+  }
+  // 이긴 줄은 받은 쪽에서도 다시 계산해요
+  function fWinOf(g){
+    if(!g.over||g.winner<0||g.reason!=='four'||!g.cols.length)return [];
+    var st=fReplay(g),lc=g.cols[g.cols.length-1];
+    return fLine(st.bd,lc,st.h[lc]-1);
+  }
+  function fDec(e){
+    var g={gid:String(e.id),first:e.f===1?1:0,cols:String(e.c||'').split('').filter(Boolean).map(Number),
+      over:!!e.o,winner:(e.w===0||e.w===1)?e.w:-1,reason:String(e.r||''),win:[]};
+    g.win=fWinOf(g);return g;
+  }
+  function fValid(e){
+    if(!e||typeof e!=='object'||typeof e.id!=='string'||!isFour(e.id)||e.id.length>60)return false;
+    if(e.f!==0&&e.f!==1)return false;
+    var s=e.c||'';if(typeof s!=='string'||s.length>FC*FR||!/^[0-6]*$/.test(s))return false;
+    var h=[0,0,0,0,0,0,0];
+    for(var i=0;i<s.length;i++)if(++h[+s[i]]>FR)return false;
+    if(typeof (e.r||'')!=='string'||(e.r||'').length>10)return false;
+    return true;
+  }
+  function fPacket(){return JSON.stringify({v:1,n:fSeq,k:clientId,f4:fEnc(fGame),t:tally});}
+  function fSaveLocal(){if(fGame&&NTFY)try{localStorage.setItem('tujipv-four-'+NTFY.slice(-12),fPacket());}catch(e){}}
+  function fCommit(g,result){
+    var before={g:fGame,t:JSON.parse(JSON.stringify(tally)),n:fSeq};
+    if(result){tally=JSON.parse(JSON.stringify(tally));tally.r[g.gid]=result.winner;tally=fold(tally);}
+    fSeq=Math.max(fSeq+1,Date.now());fApply(g);fSaveLocal();
+    fBusy=true;fRender();
+    fetch(NTFY,{method:'POST',body:fPacket()}).then(function(r){
+      if(!r.ok)throw new Error('send '+r.status);
+      if(mode!=='live'){mode='live';note('');render();}
+      if(g.over&&fGame&&fGame.gid===g.gid)ensureRecord(fGame);
+    }).catch(function(){
+      if(fGame===g){fSeq=before.n;tally=before.t;fApply(before.g);fSaveLocal();}
+      fSay('인터넷이 불안해서 못 보냈어요. 다시 눌러 주세요.','no');
+    }).then(function(){fBusy=false;fRender();render();});
+  }
+
+  function fPlace(c){
+    if(!fCanPlay()||fSt.h[c]>=FR)return;
+    var g=clone(fGame);
+    g.cols.push(c);
+    var st=fReplay(g),line=fLine(st.bd,c,st.h[c]-1),result=null;
+    if(line.length){g.over=true;g.winner=me;g.reason='four';g.win=line;result={winner:me};}
+    else if(st.full){g.over=true;g.winner=-1;g.reason='draw';result={winner:-1};}
+    fSel=-1;
+    fCommit(g,result);
+  }
+  function fTap(ev){
+    if(!fGame||fGame.over)return;
+    var r=fBoardEl.getBoundingClientRect();if(!r.width)return;
+    var px=(ev.clientX-r.left)*FW/r.width;
+    var c=Math.floor((px-FP)/FG);
+    if(c<0)c=0;if(c>=FC)c=FC-1;
+    if(!fCanPlay()){
+      if(me!==null&&!fBusy)fSay(NAMES[fSt.turn]+' 차례예요. 조금만 기다려요!','no');
+      else fSayTurn();
+      return;
+    }
+    if(fSt.h[c]>=FR){fSay('이 줄은 꽉 찼어요. 다른 줄을 골라요.','no');return;}
+    if(fSel===c){fPlace(c);return;}
+    fSel=c;
+    fSay('이 줄? 한 번 더 누르면 떨어져요.','mine');
+    fRender();
+  }
+  function fUndo(){
+    if(!fCanUndo())return;
+    var g=clone(fGame);g.cols.pop();
+    fCommit(g,null);
+    fSay('한 수 물렀어요. '+fTurnMsg(),fCanPlay()?'mine':'');
+  }
+  function fRematch(){
+    closeModal();stopConfetti();
+    if(!fGame||!fGame.over)return;
+    fCommit(fBlank(1-fGame.first),null);
+  }
+
+  // 사목 내기 (오목과 같은 방식: 판이 끝나기 전엔 언제든 걸고 바꿔요)
+  function fRenderBet(){
+    var g=fGame;if(!g)return;
+    var b=betOf(g.gid),fresh0=!g.over;
+    if(!fresh0)fEditing=false;
+    $('fBetBox').hidden=!(fresh0&&fEditing&&me!==null);
+    $('fBetOpen').hidden=!(fresh0&&!b&&!fEditing&&me!==null);
+    $('fBetLine').hidden=!b||fEditing&&fresh0;
+    if(b)$('fBetLineText').textContent=g.over&&g.winner>=0?betResult(g):'지는 사람이 '+b.s;
+    $('fBetEditBtn').hidden=!(b&&fresh0&&me!==null);
+    var chips=$('fBetChips').children,v=$('fBetInput').value.trim();
+    for(var i=0;i<chips.length;i++)chips[i].classList.toggle('on',chips[i].textContent===v);
+    $('fBetCancel').textContent=b?'내기 빼기':'내기 없이';
+    var hb=!g.over&&b;
+    $('homeFourBet').hidden=!hb;
+    if(hb)$('homeFourBetText').textContent='지는 사람이 '+b.s;
+  }
+  function fOpenBet(){
+    if(!fGame||fGame.over||me===null)return;
+    var b=betOf(fGame.gid);
+    $('fBetInput').value=b?b.s:'';
+    fEditing=true;fRenderBet();
+    $('fBetInput').focus();
+  }
+  function fSaveBet(){
+    if(!fGame||fGame.over||me===null)return;
+    var text=$('fBetInput').value.trim().slice(0,40);
+    if(!text){$('fBetInput').focus();return;}
+    fEditing=false;
+    if(fSeq===0)fCommit(clone(fGame),null);
+    put({id:'b'+fGame.gid,k:'b',w:me,g:fGame.gid,s:text});
+    $('fBetInput').blur();
+  }
+  function fCancelBet(){
+    fEditing=false;
+    var b=fGame&&betOf(fGame.gid);
+    if(b&&!fGame.over&&me!==null)put({id:b.id,k:'b',w:me,g:b.g,s:'',x:1});
+    else fRenderBet();
+  }
+
+  fBoardEl.addEventListener('click',fTap);
+  $('fGoBtn').addEventListener('click',function(){if(fSel>=0)fPlace(fSel);});
+  $('fUndoBtn').addEventListener('click',fUndo);
+  $('fQuitBtn').addEventListener('click',function(){
+    if(!fCanQuit())return;
+    var p=me;
+    openModal(NAMES[p]+', 진짜 기권?','<p>기권하면 '+NAMES[1-p]+'의 승리로 끝나요.</p>',[
+      ['계속 할래','sun',closeModal],
+      ['기권할게','pink',function(){
+        closeModal();
+        if(!fGame||fGame.over)return;
+        var g=clone(fGame);g.over=true;g.winner=1-p;g.reason='resign';g.win=[];
+        fCommit(g,{winner:g.winner});
+      }]
+    ]);
+  });
+  $('fRulesBtn').addEventListener('click',function(){
+    openModal('사목 떨어뜨리기 규칙','<ul>'
+      +'<li>판은 7줄, 높이 6칸이에요. 번갈아 가며 줄 하나를 골라 위에서 돌을 떨어뜨려요.</li>'
+      +'<li>돌은 그 줄의 맨 아래 빈칸까지 쭉 떨어져요. 지원은 까만 돌, 지우는 하얀 돌이에요.</li>'
+      +'<li>가로, 세로, 대각선 어느 쪽이든 내 돌 넷을 먼저 이으면 이겨요.</li>'
+      +'<li>42칸이 다 찰 때까지 아무도 못 이으면 무승부예요.</li>'
+      +'<li>무르기는 상대가 다음 돌을 두기 전까지만 돼요. 한 판 더 하면 먼저 두는 사람이 바뀌어요.</li>'
+      +'</ul>',[['알겠어','sun',closeModal]]);
+  });
+  $('fourBtn').addEventListener('click',function(){
+    if(!needMe())return;
+    go('four');
+    if(fGame&&fGame.over)fShowEnd();
+    else if(fGame)fSayTurn();
+  });
+  $('fBetOpen').addEventListener('click',fOpenBet);
+  $('fBetEditBtn').addEventListener('click',fOpenBet);
+  $('fBetCancel').addEventListener('click',fCancelBet);
+  $('fBetBox').addEventListener('submit',function(e){e.preventDefault();fSaveBet();});
+  $('fBetInput').addEventListener('input',fRenderBet);
+  $('fBetChips').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$('fBetInput').value=b.textContent;fRenderBet();});
+
   // 같이 수도쿠 버튼
   $('sdkBtn').addEventListener('click',function(){if(!needMe())return;sOpen();});
   $('sBoard').addEventListener('click',function(e){
@@ -2980,7 +3385,8 @@ function Rules(N){
   function heal(){
     if(seq>0&&seq>serverMax)fetch(NTFY,{method:'POST',body:packet()}).catch(function(){});
     if(lseq>0&&lseq>lServerMax)fetch(NTFY,{method:'POST',body:lPacket()}).catch(function(){});
-    if(seq===0||lseq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
+    if(fSeq>0&&fSeq>fServerMax)fetch(NTFY,{method:'POST',body:fPacket()}).catch(function(){});
+    if(seq===0||lseq===0||fSeq===0)fetch(NTFY,{method:'POST',body:JSON.stringify({v:1,hello:clientId})}).catch(function(){});
   }
   var tries=0;
   function connect(){
@@ -2989,6 +3395,7 @@ function Rules(N){
       tries=0;mode='live';note('');
       if(!game){loaded=true;apply(blankGame(0));}
       if(!lgame){lLoaded=true;lApply(lBlank(0));}
+      if(!fGame){fLoaded=true;fApply(fBlank(0));}
       render();if(!game.over)sayTurn();
       listen();
       heal();
@@ -2998,6 +3405,7 @@ function Rules(N){
       mode='off';
       if(!game){loaded=true;apply(blankGame(0));}
       if(!lgame){lLoaded=true;lApply(lBlank(0));}
+      if(!fGame){fLoaded=true;fApply(fBlank(0));}
       note('인터넷 연결이 안 돼서 상대 폰과 이어지지 않았어요. 잠시 뒤 다시 시도할게요.');
       render();
       setTimeout(connect,Math.min(30000,3000*(++tries)));
@@ -3018,6 +3426,7 @@ function Rules(N){
       loadStore();
       try{var saved=localStorage.getItem('tujipv-state-'+NTFY.slice(-12));if(saved)receive(saved,'');}catch(e){}
       try{var lsaved=localStorage.getItem('tujipv-land-'+NTFY.slice(-12));if(lsaved)receive(lsaved,'');}catch(e){}
+      try{var fsaved=localStorage.getItem('tujipv-four-'+NTFY.slice(-12));if(fsaved)receive(fsaved,'');}catch(e){}
       renderStore();
       render();if(!game)say('판 불러오는 중…');
       connect();
