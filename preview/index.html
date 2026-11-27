@@ -321,6 +321,41 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .btns{display:flex;gap:10px}
 .btns .btn{flex:1}
 .filt{display:flex;gap:8px;flex-wrap:wrap}
+.mtabs{display:flex;gap:8px}
+.mtabs button{position:relative;flex:1;min-height:48px;padding:0 8px;border:3px solid var(--ink);border-radius:16px;background:#fff;font-family:var(--display);font-size:17px;color:var(--ink)}
+.mtabs button[aria-pressed="true"]{background:var(--sun);box-shadow:3px 3px 0 var(--ink)}
+.mtabs .badge{top:-12px;right:-6px;min-width:26px;height:26px;padding:0 6px;font-size:13px}
+.mpane{display:flex;flex-direction:column;gap:14px}
+.mpane[hidden]{display:none}
+.rklist{display:flex;flex-direction:column;gap:10px}
+.rkrow{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.rkrow.top1{background:#FFF6CF}
+.rkn{flex:none;width:40px;height:40px;border:3px solid var(--ink);border-radius:50%;background:#fff;font-family:var(--display);font-size:18px;display:flex;align-items:center;justify-content:center}
+.rkn.m1{background:#FFD23F;width:48px;height:48px;font-size:22px;transform:rotate(-6deg);box-shadow:2px 2px 0 var(--ink)}
+.rkn.m2{background:#DCDDE6}
+.rkn.m3{background:#F2B48A}
+.rkinfo{flex:1;min-width:0}
+.rkinfo .t{font-family:var(--display);font-size:18px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.rkinfo .a{font-size:12px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.rkby{display:flex;gap:10px;margin-top:4px;font-size:13px;font-family:var(--display);flex-wrap:wrap}
+.rkby span{display:inline-flex;align-items:center;gap:4px}
+.rkby .mini{width:18px;height:18px;border-width:2px;margin:0}
+.rkby .up{color:var(--live)}
+.rkplay{flex:none;width:44px;height:44px;border:3px solid var(--ink);border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;color:var(--ink);font-size:16px;box-shadow:2px 2px 0 var(--ink)}
+.rkgap{padding:10px 12px;background:#FFE3EC;font-size:14px;word-break:keep-all;overflow-wrap:anywhere}
+.rkgap b{font-family:var(--display)}
+.rknote{padding:10px 12px;background:#FFF6CF;font-size:14px;word-break:keep-all}
+.rksub{margin:6px 0 0;font-family:var(--display);font-size:15px;color:var(--muted)}
+.rkrow.fresh{opacity:.7;border-style:dashed}
+.rkedit{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rke{display:flex;align-items:center;gap:8px;padding:8px 8px 8px 10px;border:3px solid var(--ink);border-radius:16px;background:var(--paper);box-shadow:3px 3px 0 var(--ink);user-select:none;-webkit-user-select:none}
+.rke.drag{position:relative;z-index:5;background:#FFF6CF;box-shadow:6px 8px 0 var(--ink)}
+.rke .rkn{width:34px;height:34px;font-size:16px}
+.rke .new{display:inline-block;margin-left:4px;padding:0 6px;border:2px solid var(--ink);border-radius:999px;background:var(--pink);font-size:11px;font-family:var(--display);vertical-align:2px}
+.rke .ud{flex:none;display:flex;flex-direction:column;gap:4px}
+.rke .ud button{width:38px;height:30px;border:2px solid var(--ink);border-radius:10px;background:#fff;font-size:13px;color:var(--ink);padding:0}
+.rke .ud button:disabled{opacity:.3}
+.rkh{flex:none;width:40px;height:56px;border:0;background:none;font-size:28px;color:var(--ink);touch-action:none;cursor:grab;padding:0;display:flex;align-items:center;justify-content:center}
 .filt button{min-height:38px;padding:0 14px;border:3px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:14px;color:var(--ink)}
 .filt button[aria-pressed="true"]{background:var(--sun)}
 .linkok{font-size:13px;color:var(--live);font-family:var(--display);margin-top:-4px}
@@ -798,11 +833,32 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 
 <section class="view" id="music" hidden>
   <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>음악 나눔</h2></div>
-  <button class="btn sun" id="songNew" type="button">🎵 노래 추천하기</button>
-  <div class="filt" id="musicFilt" role="group" aria-label="누가 추천한 노래만 볼지">
-    <button type="button" data-f="-1" aria-pressed="true">모두</button><button type="button" data-f="0" aria-pressed="false">지원 추천</button><button type="button" data-f="1" aria-pressed="false">지우 추천</button>
+  <div class="mtabs" id="musicTab" role="group" aria-label="볼 화면">
+    <button type="button" data-t="0" aria-pressed="true">🎵 노래 목록</button><button type="button" data-t="1" aria-pressed="false">🏆 우리 순위<span class="badge" id="rkBadge" hidden></span></button>
   </div>
-  <div class="plans" id="songList"></div>
+  <div class="mpane" id="musicSongs">
+    <button class="btn sun" id="songNew" type="button">🎵 노래 추천하기</button>
+    <div class="filt" id="musicFilt" role="group" aria-label="누가 추천한 노래만 볼지">
+      <button type="button" data-f="-1" aria-pressed="true">모두</button><button type="button" data-f="0" aria-pressed="false">지원 추천</button><button type="button" data-f="1" aria-pressed="false">지우 추천</button>
+    </div>
+    <div class="plans" id="songList"></div>
+  </div>
+  <div class="mpane" id="musicRank" hidden>
+    <div id="rkNote"></div>
+    <button class="btn sun" id="rkEdit" type="button">✏️ 내 순위 정하기</button>
+    <div class="filt" id="rkWho" role="group" aria-label="누구 순위를 볼지">
+      <button type="button" data-f="-1" aria-pressed="true">우리 순위</button><button type="button" data-f="0" aria-pressed="false">지원 순위</button><button type="button" data-f="1" aria-pressed="false">지우 순위</button>
+    </div>
+    <p class="hint" id="rkHow"></p>
+    <div class="rklist" id="rkList"></div>
+  </div>
+</section>
+
+<section class="view" id="rank" hidden>
+  <div class="top"><button class="btn icon toRank" type="button" aria-label="우리 순위로">&#8592;</button><h2>내 순위 정하기</h2></div>
+  <p class="hint">맨 위가 1위예요. 오른쪽 <b>≡</b>을 꾹 잡고 끌거나 ▲▼를 눌러 옮겨요. 옮기면 바로 저장돼요.</p>
+  <ol class="rkedit" id="rkEditList"></ol>
+  <button class="btn sun" id="rkDone" type="button">다 정했어요</button>
 </section>
 
 <section class="view" id="song" hidden>
@@ -1465,8 +1521,9 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','books','bookEdit','bookOne','land','four','sdk','timer','drink'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','rank','books','bookEdit','bookOne','land','four','sdk','timer','drink'];
   function show(id){
+    if(id!=='rank'&&rkT)rkFlush();
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
     if(id==='home')render();
@@ -1580,6 +1637,7 @@ function Rules(N){
       case 'r':return it.id==='r'+it.w&&okNum(it.t);
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
       case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
+      case 'o':return it.id==='o'+it.w&&Array.isArray(it.o)&&it.o.length<=150&&it.o.every(function(m){return okStr(m,80)&&m.charAt(0)==='m';})&&okNum(it.at);
       case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
       case 'k':return it.id.charAt(0)==='k'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&(it.st===0||it.st===1)&&it.pr%1===0&&it.pr>=0&&it.pr<=100&&it.sc%1===0&&it.sc>=0&&it.sc<=5&&okStr(it.s,500)&&okStr(it.q,200)&&okNum(it.at)&&okNum(it.dn);
       case 'j':return okStr(it.b,80)&&it.b.charAt(0)==='k'&&it.id==='j'+it.b&&(it.st===0||it.st===1)&&it.pr%1===0&&it.pr>=0&&it.pr<=100&&it.sc%1===0&&it.sc>=0&&it.sc<=5&&okStr(it.s,500)&&okStr(it.q,200)&&okNum(it.at)&&okNum(it.dn);
@@ -1641,8 +1699,8 @@ function Rules(N){
     saveT=setTimeout(flushStore,200);
   }
   // 앱을 닫거나 다른 앱으로 넘어갈 때는 바로 저장해요
-  window.addEventListener('pagehide',function(){if(saveT)flushStore();});
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden'&&saveT)flushStore();});
+  window.addEventListener('pagehide',function(){if(rkT)rkFlush();if(saveT)flushStore();});
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState!=='hidden')return;if(rkT)rkFlush();if(saveT)flushStore();});
   function loadStore(){
     try{
       var o=JSON.parse(localStorage.getItem(storeKey())||'null');
@@ -1698,7 +1756,7 @@ function Rules(N){
       var it=store[id],recent=t-it.u<KEEP,keep;
       if(it.k==='c')keep=recentChat[id]&&recent;
       else if(it.k==='p')keep=recent||(!it.x&&it.d>=td);
-      else if(it.k==='r')keep=true;
+      else if(it.k==='r'||it.k==='o')keep=true;
       else keep=recent;
       if(!keep)continue;
       var s=seen[id];
@@ -1978,6 +2036,11 @@ function Rules(N){
   }
   function playBtn(m,txt,cls){return '<a class="btn play'+(cls||'')+'" href="'+esc(playUrl(m))+'" target="_blank" rel="noopener noreferrer">'+txt+'</a>';}
   function renderMusic(){
+    $('musicTab').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.t===mTab));});
+    $('musicSongs').hidden=mTab!==0;$('musicRank').hidden=mTab!==1;
+    var nf=me===null?0:rkOrder(me).fresh.length,rb=$('rkBadge');
+    rb.hidden=!(rkRec(me)&&nf);rb.textContent=nf>99?'99+':nf;
+    if(mTab===1){renderRank();return;}
     var all=songs(),list=all.filter(function(m){return mf<0||m.w===mf;}),h='';
     $('musicFilt').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.f===mf));});
     list.forEach(function(m){
@@ -2004,6 +2067,7 @@ function Rules(N){
     if(me!==null)all.forEach(function(m){var v=reviewOf(m);if(m.w===me&&v&&(!last||v.u>last.u))last=v;});
     if(w.length)pv.innerHTML='<b>'+NAMES[1-me]+'</b>'+(me===0?'가':'이')+' 추천한 노래가 왔어요. 들어 보고 감상평 남겨 주세요!';
     else if(last&&store[last.m]&&Date.now()-last.u<3*DAY)pv.innerHTML='<b>'+NAMES[last.w]+'</b>의 감상평: “'+esc(store[last.m].t)+'” '+'★'.repeat(last.st)+(last.s?' '+esc(last.s):'');
+    else if(rkTop())pv.innerHTML='🏆 우리 순위 1위: <b>'+esc(rkTop().t)+'</b>'+(rkTop().a?' · '+esc(rkTop().a):'');
     else if(all.length)pv.innerHTML='최근 노래: <b>'+esc(all[0].t)+'</b>'+(all[0].a?' · '+esc(all[0].a):'');
     else pv.textContent='노래를 서로 추천하고 감상평을 남겨요';
     $('musicTile').setAttribute('aria-label','음악 나눔'+(w.length?', 감상평 기다리는 노래 '+w.length+'개':''));
@@ -2028,7 +2092,7 @@ function Rules(N){
     if(!t){err.textContent='노래 제목을 적어 주세요.';err.hidden=false;$('songTitle').focus();return;}
     err.hidden=true;
     put({id:uid('m'),k:'m',w:me,at:Date.now(),l:l,t:t,a:a,s:s});
-    mf=-1;go('music');renderMusic();
+    mf=-1;mTab=0;go('music');renderMusic();
   }
   function askDelSong(id){
     var m=store[id];if(!m||m.x||m.w!==me)return;
@@ -2062,6 +2126,165 @@ function Rules(N){
     if(!revSt){$('revErr').textContent='별점을 골라 주세요.';$('revErr').hidden=false;return;}
     put({id:'v'+m.id,k:'v',w:me,m:m.id,st:revSt,e:revE,s:$('revInput').value.trim().slice(0,60)});
     go('music');renderMusic();
+  }
+
+  // ----- 음악 순위 -----
+  // 순위(o): id 'o'+w, 그 사람이 정한 노래 순서 o(노래 id 목록, 1위부터), 정한 시각 at.
+  // 순위에 아직 없는 노래(새로 올라온 노래)는 그 사람 순위의 맨 아래에 있는 걸로 쳐요.
+  // 우리 순위 = 두 사람 등수를 더해서 작은 순서. 같으면 감상평 별점 높은 노래, 그다음 최근 노래가 위로.
+  var RKMAX=150,mTab=0,rkWho=-1,rkDraft=null,rkNew={},rkT=0,rkDrag=null;
+  function rkRec(w){if(w===null)return null;var r=store['o'+w];return r&&Array.isArray(r.o)?r:null;}
+  function rkOrder(w){
+    var all=songs(),byId={},seen={},ord=[],r=rkRec(w);
+    all.forEach(function(m){byId[m.id]=m;});
+    if(r)r.o.forEach(function(id){if(byId[id]&&!seen[id]){seen[id]=1;ord.push(byId[id]);}});
+    var fresh=all.filter(function(m){return !seen[m.id];}).reverse();
+    return {ord:ord.concat(fresh),fresh:fresh,has:!!r};
+  }
+  function rkStar(m){var v=reviewOf(m);return v?v.st:0;}
+  function rkCombined(){
+    var o=[rkOrder(0),rkOrder(1)],pos=[{},{}];
+    o.forEach(function(x,w){x.ord.forEach(function(m,i){pos[w][m.id]=i+1;});});
+    var all=songs(),list=all.map(function(m){return {m:m,p:[pos[0][m.id],pos[1][m.id]],sc:(o[0].has?pos[0][m.id]:0)+(o[1].has?pos[1][m.id]:0)};});
+    list.sort(function(a,b){return a.sc-b.sc||rkStar(b.m)-rkStar(a.m)||b.m.at-a.m.at;});
+    return {list:list,o:o};
+  }
+  function rkTop(){var c=rkCombined();return (c.o[0].has||c.o[1].has)&&c.list.length?c.list[0].m:null;}
+  function rkRow(m,n,extra,cls){
+    return '<div class="sticker rkrow'+(cls||'')+'"><span class="rkn'+(n&&n<=3?' m'+n:'')+'">'+(n||'–')+'</span><div class="rkinfo"><div class="t">'+esc(m.t)+'</div>'
+      +'<div class="a">'+(m.a?esc(m.a)+' · ':'')+NAMES[m.w]+' 추천</div>'+(extra||'')+'</div>'
+      +'<a class="rkplay" href="'+esc(playUrl(m))+'" target="_blank" rel="noopener noreferrer" aria-label="'+esc(m.t)+' 듣기">▶</a></div>';
+  }
+  function renderRank(){
+    var c=rkCombined(),o=c.o,mine=me===null?{has:true,fresh:[]}:o[me],h='',note='';
+    $('rkWho').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.f===rkWho));});
+    $('rkEdit').textContent=mine.has?'✏️ 내 순위 고치기':'✏️ 내 순위 정하기';
+    $('rkEdit').hidden=!c.list.length;$('rkWho').hidden=!c.list.length;
+    if(!c.list.length){
+      $('rkNote').innerHTML='';$('rkHow').textContent='';
+      $('rkList').innerHTML='<p class="none">아직 올린 노래가 없어요. 노래 목록에서 첫 노래를 추천해 보세요!</p>';return;
+    }
+    if(!mine.has)note='아직 내 순위를 안 정했어요. 아래 버튼을 눌러 둘이 올린 노래 '+c.list.length+'곡에 순위를 매겨 보세요!';
+    else if(mine.fresh.length)note='새 노래 <b>'+mine.fresh.length+'곡</b>이 아직 내 순위에 없어요. 지금은 맨 아래에 있는 걸로 쳐요.';
+    $('rkNote').innerHTML=note?'<div class="sticker rknote">'+note+'</div>':'';
+    if(rkWho<0){
+      if(!o[0].has&&!o[1].has){
+        $('rkHow').textContent='';
+        $('rkList').innerHTML='<p class="none">아직 둘 다 순위를 안 정했어요. 먼저 정하는 사람의 순위가 우리 순위가 돼요.</p>';return;
+      }
+      var one=o[0].has&&o[1].has?-1:o[0].has?0:1;
+      $('rkHow').textContent=one<0?'둘이 매긴 등수를 더해서 작은 노래가 위로 가요. 같으면 감상평 별점이 높은 노래가 위예요.'
+        :NAMES[1-one]+(one===0?'가':'이')+' 아직 순위를 안 정해서, 지금은 '+NAMES[one]+' 순위대로 보여요.';
+      if(one<0){
+        var gap=null;
+        c.list.forEach(function(x){
+          if(o[0].fresh.indexOf(x.m)>=0||o[1].fresh.indexOf(x.m)>=0)return;
+          var d=Math.abs(x.p[0]-x.p[1]);if(d>=3&&(!gap||d>gap.d))gap={x:x,d:d};
+        });
+        if(gap)h+='<div class="sticker rkgap">🤔 의견이 가장 갈린 노래: <b>'+esc(gap.x.m.t)+'</b><br>지원 '+gap.x.p[0]+'위 · 지우 '+gap.x.p[1]+'위</div>';
+      }
+      c.list.forEach(function(x,i){
+        var by='';
+        if(one<0)by='<div class="rkby"><span><i class="mini b"></i>지원 '+(o[0].fresh.indexOf(x.m)>=0?'아직':x.p[0]+'위')+'</span><span><i class="mini w"></i>지우 '+(o[1].fresh.indexOf(x.m)>=0?'아직':x.p[1]+'위')+'</span></div>';
+        h+=rkRow(x.m,i+1,by,i===0?' top1':'');
+      });
+    }else{
+      var w=rkWho,x=o[w];
+      if(!x.has){
+        $('rkHow').textContent='';
+        $('rkList').innerHTML='<p class="none">'+NAMES[w]+(w===0?'은':'는')+' 아직 순위를 안 정했어요.</p>';return;
+      }
+      $('rkHow').textContent=NAMES[w]+(w===0?'이':'가')+' 직접 매긴 순위예요.';
+      var ranked=x.ord.length-x.fresh.length;
+      x.ord.slice(0,ranked).forEach(function(m,i){
+        var p=c.list.findIndex(function(y){return y.m===m;})+1;
+        h+=rkRow(m,i+1,'<div class="rkby"><span>🏆 우리 순위 '+p+'위</span></div>',i===0?' top1':'');
+      });
+      if(x.fresh.length){
+        h+='<p class="rksub">아직 순위에 안 넣은 노래</p>';
+        x.fresh.forEach(function(m){h+=rkRow(m,0,'',' fresh');});
+      }
+    }
+    $('rkList').innerHTML=h;
+  }
+  function openRank(){
+    if(!needMe())return;
+    var o=rkOrder(me);
+    rkDraft=o.ord.map(function(m){return m.id;});rkNew={};
+    if(o.has)o.fresh.forEach(function(m){rkNew[m.id]=1;});
+    go('rank');renderRankEdit();
+  }
+  // 노래가 새로 오거나 지워지면 고치는 중인 순서에도 반영해요
+  function rkMerge(){
+    if(!rkDraft||rkDrag)return;
+    var all=songs(),ok={},has={},out=[],ch=false;
+    all.forEach(function(m){ok[m.id]=1;});
+    rkDraft.forEach(function(id){if(ok[id]){out.push(id);has[id]=1;}else ch=true;});
+    all.slice().reverse().forEach(function(m){if(!has[m.id]){out.push(m.id);rkNew[m.id]=1;ch=true;}});
+    if(ch){rkDraft=out;renderRankEdit();}
+  }
+  function renderRankEdit(){
+    var n=rkDraft.length,h='';
+    rkDraft.forEach(function(id,i){
+      var m=store[id];if(!m)return;
+      h+='<li class="rke" data-id="'+esc(id)+'"><span class="rkn'+(i<3?' m'+(i+1):'')+'">'+(i+1)+'</span><div class="rkinfo"><div class="t">'+esc(m.t)+(rkNew[id]?'<span class="new">새 노래</span>':'')+'</div>'
+        +'<div class="a">'+(m.a?esc(m.a)+' · ':'')+NAMES[m.w]+' 추천</div></div>'
+        +'<span class="ud"><button type="button" data-mv="-1" aria-label="'+esc(m.t)+' 한 칸 위로"'+(i===0?' disabled':'')+'>▲</button><button type="button" data-mv="1" aria-label="'+esc(m.t)+' 한 칸 아래로"'+(i===n-1?' disabled':'')+'>▼</button></span>'
+        +'<span class="rkh" aria-hidden="true">≡</span></li>';
+    });
+    $('rkEditList').innerHTML=h||'<p class="none">아직 올린 노래가 없어요.</p>';
+  }
+  function rkChanged(){
+    clearTimeout(rkT);rkT=setTimeout(rkFlush,800);
+    renderRankEdit();
+  }
+  function rkFlush(){
+    clearTimeout(rkT);rkT=0;
+    if(me===null||!rkDraft)return;
+    var o=rkDraft.slice(0,RKMAX),r=rkRec(me);
+    if(r&&r.o.join()===o.join())return;
+    put({id:'o'+me,k:'o',w:me,o:o,at:Date.now()});
+  }
+  function rkMove(id,d){
+    var i=rkDraft.indexOf(id),j=i+d;
+    if(i<0||j<0||j>=rkDraft.length)return;
+    rkDraft.splice(i,1);rkDraft.splice(j,0,id);delete rkNew[id];
+    rkChanged();
+    var li=$('rkEditList').querySelector('[data-id="'+(window.CSS&&CSS.escape?CSS.escape(id):id)+'"] [data-mv="'+d+'"]');
+    if(li&&!li.disabled)li.focus();
+  }
+  // ≡ 을 잡고 끌어서 옮기기
+  function rkDown(e){
+    var hd=e.target.closest('.rkh');if(!hd||!rkDraft)return;
+    e.preventDefault();
+    var li=hd.closest('.rke');
+    rkDrag={li:li,y0:e.clientY,pid:e.pointerId};
+    li.classList.add('drag');
+    try{hd.setPointerCapture(e.pointerId);}catch(er){}
+  }
+  function rkMoveP(e){
+    var d=rkDrag;if(!d||e.pointerId!==d.pid)return;
+    e.preventDefault();
+    var y=e.clientY;
+    if(y<70)window.scrollBy(0,-10);else if(y>window.innerHeight-70)window.scrollBy(0,10);
+    var list=$('rkEditList'),rows=[].slice.call(list.children).filter(function(r){return r!==d.li;}),t=0;
+    rows.forEach(function(r){var b=r.getBoundingClientRect();if(b.top+b.height/2<y)t++;});
+    var cur=[].slice.call(list.children).indexOf(d.li);
+    if(t!==cur){
+      d.li.style.transform='';
+      var before=d.li.getBoundingClientRect().top;
+      list.insertBefore(d.li,rows[t]||null);
+      d.y0+=d.li.getBoundingClientRect().top-before;
+    }
+    d.li.style.transform='translateY('+(y-d.y0)+'px)';
+  }
+  function rkUp(e){
+    var d=rkDrag;if(!d||e.pointerId!==d.pid)return;
+    rkDrag=null;d.li.style.transform='';d.li.classList.remove('drag');
+    var ord=[].slice.call($('rkEditList').children).map(function(r){return r.dataset.id;});
+    if(ord.join()!==rkDraft.join()){rkDraft=ord;delete rkNew[d.li.dataset.id];rkChanged();}
+    else renderRankEdit();
+    rkMerge();
   }
 
   // ----- 독서 기록 -----
@@ -2540,6 +2763,7 @@ function Rules(N){
     if(!$('stats').hidden)renderStats();
     if(!$('music').hidden)renderMusic();
     if(!$('review').hidden)renderRevSong();
+    if(!$('rank').hidden)rkMerge();
     if(!$('books').hidden)renderBooks();
     if(!$('bookOne').hidden)renderBookOne();
     if(!$('timer').hidden)renderTimer();
@@ -3608,7 +3832,7 @@ function Rules(N){
   $('calTile').addEventListener('click',function(){if(!needMe())return;selD='';go('cal');renderCal();});
   $('wordCard').addEventListener('click',function(){if(!needMe())return;go('word');renderWord();});
   $('vsCard').addEventListener('click',function(){go('stats');renderStats();});
-  $('musicTile').addEventListener('click',function(){if(!needMe())return;go('music');renderMusic();});
+  $('musicTile').addEventListener('click',function(){if(!needMe())return;mTab=0;go('music');renderMusic();});
   $('tmTile').addEventListener('click',function(){if(!needMe())return;go('timer');renderTimer();});
   $('tmGo').addEventListener('click',tmToggle);
   $('tmWhat').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('tmWhat').blur();}});
@@ -3637,6 +3861,17 @@ function Rules(N){
   },1000);
   $('songNew').addEventListener('click',function(){if(needMe())openSongForm();});
   $('musicFilt').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;mf=+b.dataset.f;renderMusic();});
+  $('musicTab').addEventListener('click',function(e){var b=e.target.closest('[data-t]');if(!b)return;mTab=+b.dataset.t;renderMusic();});
+  $('rkWho').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;rkWho=+b.dataset.f;renderRank();});
+  $('rkEdit').addEventListener('click',openRank);
+  $('rkEditList').addEventListener('click',function(e){var b=e.target.closest('[data-mv]');if(!b)return;rkMove(b.closest('.rke').dataset.id,+b.dataset.mv);});
+  $('rkEditList').addEventListener('pointerdown',rkDown);
+  $('rkEditList').addEventListener('pointermove',rkMoveP);
+  $('rkEditList').addEventListener('pointerup',rkUp);
+  $('rkEditList').addEventListener('pointercancel',rkUp);
+  function backToRank(){rkFlush();mTab=1;rkWho=-1;go('music');renderMusic();}
+  $('rkDone').addEventListener('click',backToRank);
+  document.querySelectorAll('.toRank').forEach(function(b){b.addEventListener('click',backToRank);});
   $('songList').addEventListener('click',function(e){
     var b=e.target.closest('[data-rev]');if(b){openReview(b.dataset.rev);return;}
     b=e.target.closest('[data-sdel]');if(b)askDelSong(b.dataset.sdel);
