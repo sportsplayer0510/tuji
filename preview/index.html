@@ -466,6 +466,64 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .thumbs img{width:52px;height:52px;object-fit:cover;border:2px solid var(--ink);border-radius:10px;background:#EAE6D6;cursor:zoom-in}
 .bigphoto{display:block;width:100%;max-height:60vh;object-fit:contain;border:3px solid var(--ink);border-radius:14px;background:#EAE6D6}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* 독서 기록 */
+.ticon.bk{background:#7BE0AD;transform:rotate(4deg)}
+.bkyear{padding:12px 14px;display:flex;align-items:center;gap:10px;background:#FFF6CF}
+.bkyear .yl{font-family:var(--display);font-size:16px;flex:1;line-height:1.3}
+.bkyear .yn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.bkyear .yn b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--ink);line-height:1}
+.bkyear .yn .mini{width:22px;height:22px;border-width:2px;margin:0}
+.bkcard{padding:14px;display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:var(--ink);cursor:pointer;position:relative}
+.bkcard.new{background:#FFF6CF}
+.bkcover{flex:none;width:58px;height:82px;border:3px solid var(--ink);border-radius:4px 10px 10px 4px;background:linear-gradient(90deg,rgba(0,0,0,.18) 0 7px,transparent 7px 100%),var(--c,#FF5D8F);box-shadow:3px 3px 0 var(--ink);transform:rotate(-4deg);display:flex;align-items:center;justify-content:center;padding:4px 4px 4px 10px;overflow:hidden}
+.bkcover>span{font-family:var(--display);font-size:12px;line-height:1.15;text-align:center;word-break:keep-all;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.bkcover.big{width:92px;height:130px;transform:rotate(-5deg)}
+.bkcover.big>span{font-size:16px}
+.bkinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.bkinfo .t{font-family:var(--display);font-size:20px;line-height:1.2;word-break:keep-all;overflow-wrap:anywhere}
+.bkinfo .a{font-size:13px;color:var(--muted);word-break:keep-all;overflow-wrap:anywhere}
+.bkwho{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.bkwho .mini{flex:none;width:20px;height:20px;border-width:2px;margin:0}
+.bkwho b{color:var(--ink)}
+.bkwho .when{margin-left:auto;white-space:nowrap}
+.bktag{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:1px 10px;border:2px solid var(--ink);border-radius:999px;font-family:var(--display);font-size:13px;background:#fff}
+.bktag.rd{background:#8FD3FF}
+.bktag.dn{background:#7BE0AD}
+.bkex{margin:2px 0 0;font-size:14px;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;overflow-wrap:anywhere}
+.bkfoot{display:flex;gap:10px;font-size:12px;color:var(--muted)}
+.bknew{position:absolute;top:-10px;right:10px;padding:0 8px;border:2px solid var(--ink);border-radius:999px;background:var(--pink);font-family:var(--display);font-size:13px;transform:rotate(5deg)}
+.bkbar{height:12px;border:2px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.bkbar i{display:block;height:100%;background:var(--sun);border-right:2px solid var(--ink)}
+.bkbar i[style="width:0%"]{border-right:0}
+.bkhead{padding:16px;display:flex;gap:16px;align-items:center}
+.bkhead .bkinfo .t{font-size:24px}
+.bkbody{padding:16px;display:flex;flex-direction:column;gap:12px}
+.bkbody .lbl{margin:0}
+.bkrev{margin:0;font-size:16px;line-height:1.65;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.bkquote{margin:0;padding:12px 14px 12px 16px;border:3px solid var(--ink);border-left-width:8px;border-radius:12px;background:var(--ground);font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.bkmine{display:flex;gap:10px}
+.bkmine .btn{flex:1;min-height:44px;font-size:16px}
+.bkcmts{display:flex;flex-direction:column;gap:10px}
+.bkcmt{display:flex;gap:8px;align-items:flex-start}
+.bkcmt .mini{flex:none;width:26px;height:26px;border-width:2px;margin:2px 0 0}
+.bkcmt .bb{flex:1;min-width:0;padding:8px 12px;border:3px solid var(--ink);border-radius:6px 16px 16px 16px;background:#fff}
+.bkcmt.mine .bb{background:var(--sun)}
+.bkcmt .bb p{margin:0;font-size:15px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.bkcmt .bm{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:2px}
+.bkcmt .bm b{color:var(--ink);font-family:var(--display);font-weight:400;font-size:13px}
+.bkcmt .bm button{margin-left:auto;border:0;background:none;padding:0;font:inherit;font-size:11px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.bkchips{display:flex;flex-wrap:wrap;gap:6px}
+.bkchips button{min-height:34px;padding:0 12px;border:2px solid var(--ink);border-radius:999px;background:#fff;font:inherit;font-size:13px;color:var(--ink)}
+.bkst{display:flex;gap:8px}
+.bkst button{flex:1;min-height:48px;border:3px solid var(--ink);border-radius:14px;background:#fff;font-family:var(--display);font-size:17px;color:var(--ink)}
+.bkst button[aria-pressed="true"]{background:var(--sun);box-shadow:3px 3px 0 var(--ink);transform:rotate(-1deg)}
+.bkta{min-height:130px;padding:10px 12px;line-height:1.6;resize:vertical}
+.bkta.sm{min-height:76px}
+.bkrange[hidden]{display:none}
+.bkrange{display:flex;align-items:center;gap:12px}
+.bkrange input{flex:1;accent-color:#E8A100;height:28px}
+.bkrange b{flex:none;width:52px;text-align:right;font-family:var(--display);font-weight:400;font-size:20px}
+.bkstarnote{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -559,6 +617,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="sticker tile" id="tmTile" type="button"><span class="ticon tm" aria-hidden="true">⏱️</span><h2>일한 시간</h2><p id="tmPreview">열품타처럼 오늘 일한 시간을 재요</p></button>
     <button class="sticker tile" id="drTile" type="button"><span class="ticon dr" aria-hidden="true">🍺</span><h2>오늘의 술</h2><p id="drPreview">오늘 마신 술을 서로 보여 줘요</p></button>
     <button class="sticker tile wide" id="musicTile" type="button"><span class="badge" id="musicBadge" hidden></span><span class="ticon mus" aria-hidden="true">🎵</span><span class="tx"><h2>음악 나눔</h2><p id="musicPreview">노래를 서로 추천하고 감상평을 남겨요</p></span></button>
+    <button class="sticker tile wide" id="bookTile" type="button"><span class="badge" id="bookBadge" hidden></span><span class="ticon bk" aria-hidden="true">📚</span><span class="tx"><h2>독서 기록</h2><p id="bookPreview">읽은 책과 감상평을 서로 보여 줘요</p></span></button>
   </div>
 
   <p class="note" id="homeNote" hidden></p>
@@ -766,6 +825,49 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
     <button class="btn sun" type="submit" id="revSend">감상평 남기기</button>
   </form>
   <p class="hint" id="revHint"></p>
+</section>
+
+<section class="view" id="books" hidden>
+  <div class="top"><button class="btn icon back" type="button" aria-label="홈으로">&#8592;</button><h2>독서 기록</h2></div>
+  <div class="sticker bkyear" id="bookYear"></div>
+  <button class="btn sun" id="bookNew" type="button">📖 책 기록하기</button>
+  <div class="filt" id="bookFilt" role="group" aria-label="누구 책만 볼지">
+    <button type="button" data-f="-1" aria-pressed="true">모두</button><button type="button" data-f="0" aria-pressed="false">지원의 책</button><button type="button" data-f="1" aria-pressed="false">지우의 책</button>
+  </div>
+  <div class="plans" id="bookList"></div>
+</section>
+
+<section class="view" id="bookEdit" hidden>
+  <div class="top"><button class="btn icon toBooks" type="button" aria-label="독서 기록으로">&#8592;</button><h2 id="bookEditTitle">책 기록하기</h2></div>
+  <form class="sticker addplan" id="bookForm" autocomplete="off" novalidate>
+    <label class="lbl" for="bkTitle">📕 책 제목</label>
+    <input class="field" id="bkTitle" maxlength="60" placeholder="예: 아몬드">
+    <label class="lbl" for="bkAuthor">✒️ 지은이 (안 써도 돼요)</label>
+    <input class="field" id="bkAuthor" maxlength="60" placeholder="예: 손원평">
+    <span class="lbl">📍 지금 어디까지?</span>
+    <div class="bkst" id="bkSt" role="group" aria-label="읽는 중인지 다 읽었는지">
+      <button type="button" data-s="0" aria-pressed="true">📖 읽는 중</button><button type="button" data-s="1" aria-pressed="false">✅ 다 읽었어요</button>
+    </div>
+    <div class="bkrange" id="bkPrWrap"><input type="range" id="bkPr" min="0" max="100" step="10" value="0" aria-label="얼마나 읽었는지"><b id="bkPrTx">0%</b></div>
+    <div id="bkStarWrap" hidden>
+      <span class="lbl">⭐ 몇 점?</span>
+      <div class="bigstars" id="bkStars" role="group" aria-label="별점"></div>
+      <p class="bkstarnote">한 번 더 누르면 별점을 뺄 수 있어요</p>
+    </div>
+    <label class="lbl" for="bkRev" id="bkRevLbl">✍️ 감상평</label>
+    <textarea class="field bkta" id="bkRev" maxlength="500" placeholder="읽으면서 든 생각, 좋았던 점, 아쉬웠던 점을 자유롭게 적어요"></textarea>
+    <div class="cnt" id="bkRevCnt">0 / 500</div>
+    <label class="lbl" for="bkQuote">🔖 기억에 남는 문장 (안 써도 돼요)</label>
+    <textarea class="field bkta sm" id="bkQuote" maxlength="200" placeholder="밑줄 긋고 싶었던 한 문장"></textarea>
+    <p class="formerr" id="bkErr" hidden></p>
+    <button class="btn sun" id="bkSend" type="submit">저장하기</button>
+  </form>
+  <p class="hint" id="bkHint"></p>
+</section>
+
+<section class="view" id="bookOne" hidden>
+  <div class="top"><button class="btn icon toBooks" type="button" aria-label="독서 기록으로">&#8592;</button><h2>책 이야기</h2></div>
+  <div id="bookOneBody" class="plans"></div>
 </section>
 
 <section class="view" id="timer" hidden>
@@ -1346,7 +1448,7 @@ function Rules(N){
   }
 
   // 화면 전환과 버튼
-  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','land','four','sdk','timer','drink'];
+  var VIEWS=['home','game','chat','cal','word','stats','music','song','review','books','bookEdit','bookOne','land','four','sdk','timer','drink'];
   function show(id){
     VIEWS.forEach(function(v){$(v).hidden=v!==id;});
     window.scrollTo(0,0);
@@ -1462,6 +1564,8 @@ function Rules(N){
       case 'b':return okStr(it.g,60)&&!!it.g&&it.id==='b'+it.g&&okStr(it.s,100)&&(x||!!it.s)&&(it.pd===undefined||it.pd===0||it.pd===1);
       case 'm':return it.id.charAt(0)==='m'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&okStr(it.s,100)&&okStr(it.l,500)&&(it.l===''||/^https?:\/\//i.test(it.l))&&okNum(it.at);
       case 'v':return okStr(it.m,80)&&it.m.charAt(0)==='m'&&it.id==='v'+it.m&&(x||(it.st>=1&&it.st<=5&&it.st%1===0))&&(it.e===''||EMOS.indexOf(it.e)>=0)&&okStr(it.s,60);
+      case 'k':return it.id.charAt(0)==='k'&&okStr(it.t,60)&&(x||!!it.t)&&okStr(it.a,60)&&(it.st===0||it.st===1)&&it.pr%1===0&&it.pr>=0&&it.pr<=100&&it.sc%1===0&&it.sc>=0&&it.sc<=5&&okStr(it.s,500)&&okStr(it.q,200)&&okNum(it.at)&&okNum(it.dn);
+      case 'h':return it.id.charAt(0)==='h'&&okStr(it.b,80)&&it.b.charAt(0)==='k'&&okStr(it.s,200)&&(x||!!it.s)&&okNum(it.at);
       case 'q':return SGRE.test(it.g)&&it.id==='q'+it.g&&/^[0-9]{81}$/.test(it.p)&&okNum(it.at)&&(it.dn===undefined||okNum(it.dn))&&(it.fl===undefined||okNum(it.fl))&&(it.nd===undefined||(it.nd%1===0&&it.nd>=1&&it.nd<1e6))&&[it.c0,it.c1].every(function(c){return c===undefined||(c%1===0&&c>=0&&c<=81);});
       case 'l':return SGRE.test(it.g)&&it.id.indexOf('l'+it.g+'-')===0&&/^[0-9a-z]{4,24}$/.test(it.id.slice(it.g.length+2))&&it.c%1===0&&it.c>=0&&it.c<81&&it.v%1===0&&it.v>=1&&it.v<=9;
       case 'e':return SGRE.test(it.g)&&it.c%1===0&&it.c>=0&&it.c<81&&it.id==='e'+it.g+'-'+it.c&&it.v%1===0&&it.v>=0&&it.v<=9;
@@ -1942,6 +2046,157 @@ function Rules(N){
     go('music');renderMusic();
   }
 
+  // ----- 독서 기록 -----
+  // 책(k): 제목 t, 지은이 a, 읽는 중 0 / 다 읽음 1 = st, 진도 pr(0~100), 별 sc(0~5, 0은 안 줌), 감상평 s, 문장 q, 올린 시각 at, 다 읽은 날 dn
+  // 이야기(h): 책 b 에 남긴 한마디 s, 시각 at. 둘 다 쓸 수 있고 쓴 사람만 지워요
+  var bkF=-1,bkId='',bkEditId='',bkSt=0,bkSc=0;
+  var BKC=['#FF5D8F','#8FD3FF','#FFD23F','#B9A6FF','#7BE0AD','#FFA86B','#FF9EC7'];
+  var BKCHIPS=['나도 읽어 볼래! 🙋','빌려줘 📚','이 문장 좋다 🔖','다 읽으면 얘기하자 ☕','감상평 잘 읽었어 👍'];
+  function books(){return items('k').filter(function(b){return !b.x;});}
+  function bookCmts(id){return items('h').filter(function(h){return !h.x&&h.b===id;}).sort(function(a,b){return a.at-b.at||(a.id<b.id?-1:1);});}
+  function bkColor(b){var h=0;for(var i=0;i<b.id.length;i++)h=(h*31+b.id.charCodeAt(i))%9973;return BKC[h%BKC.length];}
+  function bkSeenKey(){return 'tujipv-bookseen-'+NTFY.slice(-12)+'-'+me;}
+  function bkSeen(){try{var o=JSON.parse(localStorage.getItem(bkSeenKey())||'{}');return o&&typeof o==='object'?o:{};}catch(e){return {};}}
+  function bkMarkSeen(id){
+    if(me===null||!NTFY)return;
+    var o=bkSeen(),live={};books().forEach(function(b){live[b.id]=1;});
+    for(var k in o)if(!live[k])delete o[k];
+    o[id]=Date.now();
+    try{localStorage.setItem(bkSeenKey(),JSON.stringify(o));}catch(e){}
+  }
+  // 상대가 새로 올리거나 고친 책, 또는 상대가 새로 남긴 이야기가 있으면 '새 글'
+  function bkIsNew(b,seen){
+    if(me===null)return false;
+    var t=seen[b.id]||0;
+    if(b.w!==me&&b.u>t)return true;
+    return bookCmts(b.id).some(function(h){return h.w!==me&&h.at>t;});
+  }
+  function bkNewList(){var s=bkSeen();return books().filter(function(b){return bkIsNew(b,s);});}
+  function bkLast(b){var t=b.u;bookCmts(b.id).forEach(function(h){if(h.at>t)t=h.at;});return t;}
+  function bkSorted(list){
+    // 읽는 중인 책 먼저, 그다음 다 읽은 책. 같은 무리에선 최근에 바뀐 것부터
+    return list.sort(function(a,b){return (a.st-b.st)||(bkLast(b)-bkLast(a))||(a.id<b.id?1:-1);});
+  }
+  function bkCover(b,big){return '<span class="bkcover'+(big?' big':'')+'" style="--c:'+bkColor(b)+'" aria-hidden="true"><span>'+esc(b.t)+'</span></span>';}
+  function bkTag(b){
+    if(b.st)return '<span class="bktag dn">✅ 다 읽음'+(b.sc?' '+starsHtml(b.sc):'')+'</span>';
+    return '<span class="bktag rd">📖 읽는 중 '+b.pr+'%</span>';
+  }
+  function bkWho(b){return '<span class="bkwho"><span class="mini '+(b.w?'w':'b')+'"></span><span><b>'+NAMES[b.w]+'</b>의 책</span><span class="when">'+whenLabel(b.st&&b.dn?b.dn:b.at)+(b.st&&b.dn?' 다 읽음':' 시작')+'</span></span>';}
+  function renderBookYear(){
+    var y=new Date().getFullYear(),n=[0,0];
+    books().forEach(function(b){if(b.st&&b.dn&&new Date(b.dn).getFullYear()===y)n[b.w]++;});
+    var reading=books().filter(function(b){return !b.st;}).length;
+    $('bookYear').innerHTML='<span class="yl">올해 다 읽은 책'+(reading?'<br><span class="hint">지금 읽는 중 '+reading+'권</span>':'')+'</span>'
+      +[0,1].map(function(w){return '<span class="yn"><span class="mini '+(w?'w':'b')+'"></span>'+NAMES[w]+' <b>'+n[w]+'</b>권</span>';}).join('');
+  }
+  function renderBooks(){
+    renderBookYear();
+    $('bookFilt').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.f===bkF));});
+    var all=books(),list=bkSorted(all.filter(function(b){return bkF<0||b.w===bkF;})),seen=bkSeen(),h='';
+    list.forEach(function(b){
+      var nw=bkIsNew(b,seen),nc=bookCmts(b.id).length;
+      h+='<button type="button" class="sticker bkcard'+(nw?' new':'')+'" data-bk="'+esc(b.id)+'">'+(nw?'<span class="bknew">새 글</span>':'')+bkCover(b)
+        +'<span class="bkinfo">'+bkWho(b)+'<span class="t">'+esc(b.t)+'</span>'+(b.a?'<span class="a">'+esc(b.a)+'</span>':'')+bkTag(b)
+        +(b.s?'<span class="bkex">'+esc(b.s)+'</span>':'')
+        +'<span class="bkfoot">'+(b.q?'<span>🔖 문장 있음</span>':'')+'<span>💬 이야기 '+nc+'</span></span></span></button>';
+    });
+    if(!list.length)h='<p class="none">'+(all.length?'이 사람이 기록한 책은 아직 없어요.':'아직 기록한 책이 없어요. 지금 읽는 책부터 적어 보세요!')+'</p>';
+    $('bookList').innerHTML=h;
+  }
+  function renderBookTile(){
+    var nw=bkNewList(),bd=$('bookBadge'),pv=$('bookPreview');
+    bd.hidden=!nw.length;bd.textContent=nw.length>99?'99+':nw.length;
+    var other=me===null?null:bkSorted(books().filter(function(b){return b.w!==me;}))[0];
+    var mine=me===null?null:books().filter(function(b){return b.w===me&&!b.st;}).sort(function(a,b){return b.u-a.u;})[0];
+    if(nw.length)pv.innerHTML='<b>'+NAMES[1-me]+'</b>의 새 독서 기록이 있어요. 읽어 보세요!';
+    else if(other&&!other.st)pv.innerHTML='<b>'+NAMES[other.w]+'</b>'+(other.w?'가':'이')+' 읽는 중: “'+esc(other.t)+'” '+other.pr+'%';
+    else if(mine)pv.innerHTML='내가 읽는 중: <b>'+esc(mine.t)+'</b> '+mine.pr+'%';
+    else if(other)pv.innerHTML='<b>'+NAMES[other.w]+'</b>'+(other.w?'가':'이')+' 다 읽은 책: “'+esc(other.t)+'”'+(other.sc?' '+'★'.repeat(other.sc):'');
+    else pv.textContent='읽은 책과 감상평을 서로 보여 줘요';
+    $('bookTile').setAttribute('aria-label','독서 기록'+(nw.length?', 새 글 '+nw.length+'개':''));
+  }
+  function openBook(id){
+    var b=store[id];if(!b||b.x||me===null)return;
+    bkId=id;bkMarkSeen(id);go('bookOne');renderBookOne();
+  }
+  function renderBookOne(){
+    var b=store[bkId],el=$('bookOneBody');
+    if(!b||b.x){el.innerHTML='<p class="none">이 책 기록은 지워졌어요.</p>';return;}
+    if(!$('bookOne').hidden)bkMarkSeen(b.id);
+    var mine=b.w===me,cm=bookCmts(b.id),h='';
+    h+='<div class="sticker bkhead">'+bkCover(b,true)+'<div class="bkinfo">'+bkWho(b)+'<span class="t">'+esc(b.t)+'</span>'+(b.a?'<span class="a">'+esc(b.a)+'</span>':'')+bkTag(b)
+      +(b.st?'':'<div class="bkbar" role="img" aria-label="'+b.pr+'% 읽음"><i style="width:'+b.pr+'%"></i></div>')+'</div></div>';
+    h+='<div class="sticker bkbody"><span class="lbl">✍️ '+NAMES[b.w]+'의 감상평'+(b.st?'':' (읽는 중)')+'</span>'
+      +(b.s?'<p class="bkrev">'+esc(b.s)+'</p>':'<p class="none">'+(mine?'아직 감상평을 안 썼어요. 고치기에서 적어 보세요.':'아직 감상평이 없어요.')+'</p>')
+      +(b.q?'<span class="lbl">🔖 기억에 남는 문장</span><p class="bkquote">“'+esc(b.q)+'”</p>':'')
+      +(mine?'<div class="bkmine"><button class="btn sun" type="button" id="bkEditBtn">✏️ 고치기'+(b.st?'':' · 진도')+'</button><button class="btn" type="button" id="bkDelBtn">지우기</button></div>':'')+'</div>';
+    h+='<div class="sticker addplan"><b>💬 이 책 이야기</b><div class="bkcmts">';
+    cm.forEach(function(c){
+      h+='<div class="bkcmt'+(c.w===me?' mine':'')+'"><span class="mini '+(c.w?'w':'b')+'"></span><div class="bb"><div class="bm"><b>'+NAMES[c.w]+'</b><span>'+whenLabel(c.at)+'</span>'
+        +(c.w===me?'<button type="button" data-hdel="'+esc(c.id)+'">지우기</button>':'')+'</div><p>'+esc(c.s)+'</p></div></div>';
+    });
+    if(!cm.length)h+='<p class="none">'+(mine?NAMES[1-me]+'의 이야기를 기다리는 중이에요.':'감상평에 한마디 남겨 보세요!')+'</p>';
+    h+='</div>';
+    if(!mine)h+='<div class="bkchips" id="bkChips">'+BKCHIPS.map(function(c){return '<button type="button">'+c+'</button>';}).join('')+'</div>';
+    h+='<form class="addrow" id="bkCmtForm" autocomplete="off"><input class="field" id="bkCmtIn" maxlength="200" placeholder="'+(mine?'답글 남기기':'한마디 남기기')+'" aria-label="이야기 남기기"><button class="btn sun" type="submit">남기기</button></form></div>';
+    var keep=document.activeElement&&document.activeElement.id==='bkCmtIn'?$('bkCmtIn').value:null;
+    el.innerHTML=h;
+    if(keep!==null){$('bkCmtIn').value=keep;$('bkCmtIn').focus();}
+  }
+  function sendBookCmt(){
+    var b=store[bkId],inp=$('bkCmtIn');if(!b||b.x||!needMe()||!inp)return;
+    var s=inp.value.trim().slice(0,200);if(!s)return;
+    inp.value='';
+    put({id:uid('h'),k:'h',w:me,b:b.id,s:s,at:Date.now()});
+    bkMarkSeen(b.id);renderBookOne();
+  }
+  function openBookForm(id){
+    var b=id?store[id]:null;if(b&&(b.x||b.w!==me))return;
+    bkEditId=b?b.id:'';bkSt=b?b.st:0;bkSc=b?b.sc:0;
+    $('bkTitle').value=b?b.t:'';$('bkAuthor').value=b?b.a:'';$('bkRev').value=b?b.s:'';$('bkQuote').value=b?b.q:'';
+    $('bkPr').value=b?b.pr:0;$('bkErr').hidden=true;
+    $('bookEditTitle').textContent=b?'책 기록 고치기':'책 기록하기';
+    $('bkSend').textContent=b?'고친 것 저장하기':'저장하기';
+    $('bkHint').textContent='저장하면 '+NAMES[1-me]+' 폰에도 바로 보여요. 나중에 언제든 고칠 수 있어요.';
+    go('bookEdit');renderBookForm();
+  }
+  function renderBookForm(){
+    $('bkSt').querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',String(+x.dataset.s===bkSt));});
+    $('bkPrWrap').hidden=!!bkSt;$('bkStarWrap').hidden=!bkSt;
+    $('bkPrTx').textContent=$('bkPr').value+'%';
+    var h='';for(var i=1;i<=5;i++)h+='<button type="button" class="'+(i<=bkSc?'on':'')+'" data-st="'+i+'" aria-label="별 '+i+'개" aria-pressed="'+(i===bkSc)+'">★</button>';
+    $('bkStars').innerHTML=h;
+    $('bkRevLbl').textContent=bkSt?'✍️ 감상평':'✍️ 읽으면서 든 생각 (안 써도 돼요)';
+    $('bkRevCnt').textContent=$('bkRev').value.length+' / 500';
+  }
+  function saveBook(){
+    if(!needMe())return;
+    var t=$('bkTitle').value.trim().slice(0,60),err=$('bkErr');
+    if(!t){err.textContent='책 제목을 적어 주세요.';err.hidden=false;$('bkTitle').focus();return;}
+    err.hidden=true;
+    var old=bkEditId?store[bkEditId]:null;if(old&&(old.x||old.w!==me))old=null;
+    var now=Date.now(),dn=bkSt?(old&&old.st&&old.dn?old.dn:now):0;
+    var it={id:old?old.id:uid('k'),k:'k',w:me,at:old?old.at:now,t:t,a:$('bkAuthor').value.trim().slice(0,60),st:bkSt,pr:bkSt?100:Math.max(0,Math.min(100,Math.round(+$('bkPr').value/10)*10)),sc:bkSt?bkSc:0,s:$('bkRev').value.trim().slice(0,500),q:$('bkQuote').value.trim().slice(0,200),dn:dn};
+    put(it);
+    bkId=it.id;bkMarkSeen(it.id);
+    if(old){go('bookOne');renderBookOne();}else{bkF=-1;go('books');renderBooks();}
+  }
+  function askDelBook(){
+    var b=store[bkId];if(!b||b.x||b.w!==me)return;
+    openModal('이 책 기록 지울까요?','<p>“'+esc(b.t)+'”의 감상평과 이야기가 두 폰에서 모두 사라져요.</p>',[
+      ['그대로 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var c=store[bkId];if(c&&!c.x&&c.w===me){put({id:c.id,k:'k',w:c.w,at:c.at,t:'',a:'',st:0,pr:0,sc:0,s:'',q:'',dn:0,x:1});go('books');renderBooks();}}]
+    ]);
+  }
+  function askDelCmt(id){
+    var c=store[id];if(!c||c.x||c.w!==me)return;
+    openModal('이 이야기 지울까요?','<p>“'+esc(c.s)+'”</p>',[
+      ['그대로 둘래','sun',closeModal],
+      ['지울게','pink',function(){closeModal();var d=store[id];if(d&&!d.x&&d.w===me)put({id:d.id,k:'h',w:d.w,b:d.b,s:'',at:d.at,x:1});}]
+    ]);
+  }
+
   // ----- 일한 시간 (열품타처럼) -----
   // 하루 기록(t): id 't'+날짜+'-'+사람, 멈춘 구간들의 합 ms, 재는 중이면 시작 시각 st(아니면 0), 지금 할 일 s
   var TM_LONG=8*3600000;
@@ -2219,7 +2474,7 @@ function Rules(N){
     var up=plans().filter(function(p){return p.d>=td;})[0],cp=$('calPreview');
     if(up){var diff=dnum(up.d)-dnum(td);cp.innerHTML='<b>'+(diff?'D-'+diff:'오늘')+'</b> '+esc(up.s);}
     else cp.textContent='약속을 같이 적어요';
-    renderMusicTile();renderTmTile();renderDrTile();
+    renderMusicTile();renderBookTile();renderTmTile();renderDrTile();
   }
   function renderStore(){
     renderHomeStore();renderBet();lRenderBet();if(fGame)fRenderBet();
@@ -2230,6 +2485,8 @@ function Rules(N){
     if(!$('stats').hidden)renderStats();
     if(!$('music').hidden)renderMusic();
     if(!$('review').hidden)renderRevSong();
+    if(!$('books').hidden)renderBooks();
+    if(!$('bookOne').hidden)renderBookOne();
     if(!$('timer').hidden)renderTimer();
     if(!$('drink').hidden)renderDrink();
   }
@@ -3337,6 +3594,23 @@ function Rules(N){
   $('revInput').addEventListener('input',function(){$('revCnt').textContent=$('revInput').value.length+' / 60';});
   $('revForm').addEventListener('submit',function(e){e.preventDefault();sendReview();});
   document.querySelectorAll('.toMusic').forEach(function(b){b.addEventListener('click',function(){go('music');renderMusic();});});
+  $('bookTile').addEventListener('click',function(){if(!needMe())return;go('books');renderBooks();});
+  $('bookNew').addEventListener('click',function(){if(needMe())openBookForm('');});
+  $('bookFilt').addEventListener('click',function(e){var b=e.target.closest('[data-f]');if(!b)return;bkF=+b.dataset.f;renderBooks();});
+  $('bookList').addEventListener('click',function(e){var b=e.target.closest('[data-bk]');if(b)openBook(b.dataset.bk);});
+  $('bkSt').addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(!b)return;bkSt=+b.dataset.s;renderBookForm();});
+  $('bkPr').addEventListener('input',function(){$('bkPrTx').textContent=this.value+'%';});
+  $('bkStars').addEventListener('click',function(e){var b=e.target.closest('[data-st]');if(!b)return;var n=+b.dataset.st;bkSc=bkSc===n?0:n;renderBookForm();});
+  $('bkRev').addEventListener('input',function(){$('bkRevCnt').textContent=this.value.length+' / 500';});
+  $('bookForm').addEventListener('submit',function(e){e.preventDefault();saveBook();});
+  $('bookOneBody').addEventListener('click',function(e){
+    if(e.target.closest('#bkEditBtn')){openBookForm(bkId);return;}
+    if(e.target.closest('#bkDelBtn')){askDelBook();return;}
+    var b=e.target.closest('[data-hdel]');if(b){askDelCmt(b.dataset.hdel);return;}
+    b=e.target.closest('#bkChips button');if(b){var inp=$('bkCmtIn');inp.value=b.textContent;inp.focus();}
+  });
+  $('bookOneBody').addEventListener('submit',function(e){if(e.target.id==='bkCmtForm'){e.preventDefault();sendBookCmt();}});
+  document.querySelectorAll('.toBooks').forEach(function(b){b.addEventListener('click',function(){go('books');renderBooks();});});
   $('chatForm').addEventListener('submit',function(e){e.preventDefault();sendChat();$('chatInput').focus();});
   $('calPrev').addEventListener('click',function(){calM--;if(calM<0){calM=11;calY--;}renderCal();});
   $('calNext').addEventListener('click',function(){calM++;if(calM>11){calM=0;calY++;}renderCal();});
